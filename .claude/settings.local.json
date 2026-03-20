@@ -5,7 +5,11 @@
       "Bash(printf 'N\\\\nN\\\\n')",
       "Bash(yes \"N\")",
       "Bash(pnpm:*)",
-      "WebFetch(domain:ui.aceternity.com)"
+      "WebFetch(domain:ui.aceternity.com)",
+      "Bash(curl -s -L \"https://www.speakeasy.com/\" -o /tmp/speakeasy.html)",
+      "WebFetch(domain:www.speakeasy.com)",
+      "Bash(curl -s \"https://www.speakeasy.com/_next/static/css/b49523f851222949.css\" -o /tmp/speakeasy-css1.css)",
+      "Bash(curl -s \"https://www.speakeasy.com/_next/static/css/883ffd4aedfb5458.css\" -o /tmp/speakeasy-css2.css)"
     ]
   }
 }

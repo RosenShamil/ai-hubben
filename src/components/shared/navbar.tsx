@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Moon, Sun, Search } from "lucide-react";
@@ -44,10 +44,9 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Avoid hydration mismatch
-  useState(() => {
+  useEffect(() => {
     setMounted(true);
-  });
+  }, []);
 
   return (
     <>

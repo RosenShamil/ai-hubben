@@ -47,7 +47,7 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${GeistMono.variable} ${bodoniModa.variable} ${generalSans.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full flex flex-col bg-background text-foreground" suppressHydrationWarning>
         <ThemeProvider>
           <Navbar />
           <main className="flex-1 pb-20 md:pb-0">{children}</main>
