@@ -17,6 +17,7 @@ export default function AdminLoginPage() {
     setLoading(true);
     try {
       await signIn(email, password);
+      router.refresh();
       router.push("/admin");
     } catch (err: unknown) {
       const message =

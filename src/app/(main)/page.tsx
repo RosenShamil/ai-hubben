@@ -157,7 +157,7 @@ export default function Home() {
             >
               Kommunens
               <br />
-              AI-hub
+              AI-resa
             </h1>
           </FadeIn>
           <FadeIn delay={0.3}>

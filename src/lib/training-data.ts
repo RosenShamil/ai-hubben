@@ -38,9 +38,8 @@ export async function fetchTrainingStats(): Promise<TrainingStats> {
       byDepartment: [
         { name: "Kommunledningsförvaltningen", trained: 82 },
         { name: "Bildningsförvaltningen", trained: 74 },
-        { name: "Vård- och omsorgsförvaltningen", trained: 68 },
         { name: "Samhällsbyggnadsförvaltningen", trained: 61 },
-        { name: "Socialförvaltningen", trained: 55 },
+        { name: "Social- och omsorgsförvaltningen", trained: 123 },
       ],
       byRole: [
         { name: "Förvaltningschefer", trained: 18 },

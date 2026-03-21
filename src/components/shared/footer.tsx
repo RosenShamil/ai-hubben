@@ -55,7 +55,7 @@ export function Footer() {
             className="text-[0.75rem] text-muted-foreground"
             style={{ fontFamily: "var(--font-geist-mono), monospace" }}
           >
-            © {new Date().getFullYear()} Katrineholms kommun
+            © {new Date().getFullYear()} Digitaliseringsavdelningen
           </p>
           <div
             className="h-px w-24"

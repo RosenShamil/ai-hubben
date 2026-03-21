@@ -175,9 +175,8 @@ export const TRAINING_METRICS: TrainingMetric[] = [
 export const DEPARTMENT_TRAINING: DepartmentTraining[] = [
   { name: "Kommunledningsförvaltningen", trained: 82 },
   { name: "Bildningsförvaltningen", trained: 74 },
-  { name: "Vård- och omsorgsförvaltningen", trained: 68 },
   { name: "Samhällsbyggnadsförvaltningen", trained: 61 },
-  { name: "Socialförvaltningen", trained: 55 },
+  { name: "Social- och omsorgsförvaltningen", trained: 123 },
 ];
 
 export const ROLE_TRAINING: RoleTraining[] = [

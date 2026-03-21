@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { Plus, Pencil, Trash2, X, Check } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, Users, Loader2 } from "lucide-react";
 
 interface TrainingSession {
   id: string;
@@ -12,16 +12,28 @@ interface TrainingSession {
   role_group: string;
   participants: number;
   description: string | null;
+  time: string | null;
+  location: string | null;
+  max_participants: number;
+  created_at: string;
+}
+
+interface TrainingRegistration {
+  id: string;
+  session_id: string;
+  name: string;
+  email: string;
   created_at: string;
 }
 
 const DEPARTMENTS = [
   "Kommunledningsforvaltningen",
   "Bildningsforvaltningen",
-  "Vard- och omsorgsforvaltningen",
   "Samhallsbyggnadsforvaltningen",
-  "Socialforvaltningen",
+  "Social- och omsorgsforvaltningen",
   "Kultur- och turismforvaltningen",
+  "STF",
+  "Ovriga",
 ];
 
 const ROLE_GROUPS = [
@@ -42,6 +54,9 @@ const emptyForm = {
   role_group: ROLE_GROUPS[0],
   participants: 0,
   description: "",
+  time: "",
+  location: "",
+  max_participants: 30,
 };
 
 export default function AdminUtbildningPage() {
@@ -56,6 +71,19 @@ export default function AdminUtbildningPage() {
     message: string;
   } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [registrationCounts, setRegistrationCounts] = useState<
+    Record<string, number>
+  >({});
+
+  // Registration viewer state
+  const [regModalSessionId, setRegModalSessionId] = useState<string | null>(
+    null
+  );
+  const [registrations, setRegistrations] = useState<TrainingRegistration[]>(
+    []
+  );
+  const [loadingRegs, setLoadingRegs] = useState(false);
+  const [deleteRegConfirm, setDeleteRegConfirm] = useState<string | null>(null);
 
   const showToast = useCallback(
     (type: "success" | "error", message: string) => {
@@ -75,8 +103,22 @@ export default function AdminUtbildningPage() {
       showToast("error", "Kunde inte hamta utbildningar");
       return;
     }
-    setSessions(data ?? []);
+    setSessions((data ?? []) as TrainingSession[]);
     setLoading(false);
+
+    // Fetch registration counts for all sessions
+    if (data) {
+      for (const session of data) {
+        const { count } = await supabase
+          .from("training_registrations")
+          .select("*", { count: "exact", head: true })
+          .eq("session_id", session.id);
+        setRegistrationCounts((prev) => ({
+          ...prev,
+          [session.id]: count ?? 0,
+        }));
+      }
+    }
   }, [showToast]);
 
   useEffect(() => {
@@ -97,6 +139,9 @@ export default function AdminUtbildningPage() {
       role_group: session.role_group,
       participants: session.participants,
       description: session.description ?? "",
+      time: session.time ?? "",
+      location: session.location ?? "",
+      max_participants: session.max_participants ?? 30,
     });
     setEditingId(session.id);
     setModalOpen(true);
@@ -113,6 +158,9 @@ export default function AdminUtbildningPage() {
       role_group: form.role_group,
       participants: form.participants,
       description: form.description || null,
+      time: form.time || null,
+      location: form.location || null,
+      max_participants: form.max_participants,
     };
 
     if (editingId) {
@@ -153,6 +201,54 @@ export default function AdminUtbildningPage() {
     }
     setDeleteConfirm(null);
     fetchSessions();
+  }
+
+  async function openRegistrations(sessionId: string) {
+    setRegModalSessionId(sessionId);
+    setLoadingRegs(true);
+    setDeleteRegConfirm(null);
+
+    const { data, error } = await supabase
+      .from("training_registrations")
+      .select("*")
+      .eq("session_id", sessionId)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      showToast("error", "Kunde inte hamta anmalningar");
+      setLoadingRegs(false);
+      return;
+    }
+    setRegistrations((data ?? []) as TrainingRegistration[]);
+    setLoadingRegs(false);
+  }
+
+  async function handleDeleteRegistration(regId: string, sessionId: string) {
+    const { error } = await supabase
+      .from("training_registrations")
+      .delete()
+      .eq("id", regId);
+
+    if (error) {
+      showToast("error", "Kunde inte ta bort anmalan: " + error.message);
+    } else {
+      showToast("success", "Anmalan borttagen");
+      setRegistrations((prev) => prev.filter((r) => r.id !== regId));
+      setRegistrationCounts((prev) => ({
+        ...prev,
+        [sessionId]: Math.max(0, (prev[sessionId] ?? 1) - 1),
+      }));
+    }
+    setDeleteRegConfirm(null);
+  }
+
+  function formatRegDate(dateStr: string): string {
+    const d = new Date(dateStr);
+    const months = [
+      "jan", "feb", "mar", "apr", "maj", "jun",
+      "jul", "aug", "sep", "okt", "nov", "dec",
+    ];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}, ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   }
 
   return (
@@ -211,17 +307,21 @@ export default function AdminUtbildningPage() {
             <tr className="border-b border-border">
               {[
                 "Datum",
+                "Tid",
                 "Typ",
                 "Forvaltning",
-                "Yrkesgrupp",
-                "Deltagare",
+                "Plats",
+                "Anmalda",
                 "Beskrivning",
                 "Atgarder",
               ].map((h) => (
                 <th
                   key={h}
                   className="px-4 py-3 text-left font-medium uppercase tracking-[0.1em] text-muted-foreground"
-                  style={{ fontFamily: "var(--font-geist-mono), monospace", fontSize: "0.625rem" }}
+                  style={{
+                    fontFamily: "var(--font-geist-mono), monospace",
+                    fontSize: "0.625rem",
+                  }}
                 >
                   {h}
                 </th>
@@ -231,90 +331,115 @@ export default function AdminUtbildningPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
+                <td
+                  colSpan={8}
+                  className="px-4 py-8 text-center text-muted-foreground"
+                >
                   Laddar...
                 </td>
               </tr>
             ) : sessions.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
+                <td
+                  colSpan={8}
+                  className="px-4 py-8 text-center text-muted-foreground"
+                >
                   Inga utbildningstillfallen registrerade
                 </td>
               </tr>
             ) : (
-              sessions.map((s, i) => (
-                <tr
-                  key={s.id}
-                  className={`border-b border-border last:border-0 transition-colors hover:bg-secondary/50 ${
-                    i % 2 === 0 ? "" : "bg-secondary/20"
-                  }`}
-                >
-                  <td className="whitespace-nowrap px-4 py-3">{s.date}</td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-block rounded-full px-2 py-0.5 text-[0.6875rem] font-medium ${
-                        s.type === "workshop"
-                          ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
-                          : "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300"
-                      }`}
-                    >
-                      {s.type === "workshop" ? "Workshop" : "Individuell"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">{s.department}</td>
-                  <td className="px-4 py-3">{s.role_group}</td>
-                  <td className="px-4 py-3 text-center">{s.participants}</td>
-                  <td className="max-w-[200px] truncate px-4 py-3 text-muted-foreground">
-                    {s.description ?? "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => openEdit(s)}
-                        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                        title="Redigera"
+              sessions.map((s, i) => {
+                const regCount = registrationCounts[s.id] ?? 0;
+                return (
+                  <tr
+                    key={s.id}
+                    className={`border-b border-border last:border-0 transition-colors hover:bg-secondary/50 ${
+                      i % 2 === 0 ? "" : "bg-secondary/20"
+                    }`}
+                  >
+                    <td className="whitespace-nowrap px-4 py-3">{s.date}</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
+                      {s.time || "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-block rounded-full px-2 py-0.5 text-[0.6875rem] font-medium ${
+                          s.type === "workshop"
+                            ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+                            : "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300"
+                        }`}
                       >
-                        <Pencil size={14} />
+                        {s.type === "workshop" ? "Workshop" : "Individuell"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">{s.department}</td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {s.location || "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => openRegistrations(s.id)}
+                        className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[0.75rem] font-medium transition-colors hover:bg-secondary"
+                        title="Visa anmalningar"
+                      >
+                        <Users size={12} />
+                        <span>
+                          {regCount}/{s.max_participants}
+                        </span>
                       </button>
-                      {deleteConfirm === s.id ? (
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => handleDelete(s.id)}
-                            className="rounded-md p-1.5 text-destructive transition-colors hover:bg-destructive/10"
-                            title="Bekrafta"
-                          >
-                            <Check size={14} />
-                          </button>
-                          <button
-                            onClick={() => setDeleteConfirm(null)}
-                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary"
-                            title="Avbryt"
-                          >
-                            <X size={14} />
-                          </button>
-                        </div>
-                      ) : (
+                    </td>
+                    <td className="max-w-[200px] truncate px-4 py-3 text-muted-foreground">
+                      {s.description ?? "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1">
                         <button
-                          onClick={() => setDeleteConfirm(s.id)}
-                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                          title="Ta bort"
+                          onClick={() => openEdit(s)}
+                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                          title="Redigera"
                         >
-                          <Trash2 size={14} />
+                          <Pencil size={14} />
                         </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))
+                        {deleteConfirm === s.id ? (
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => handleDelete(s.id)}
+                              className="rounded-md p-1.5 text-destructive transition-colors hover:bg-destructive/10"
+                              title="Bekrafta"
+                            >
+                              <Check size={14} />
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirm(null)}
+                              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary"
+                              title="Avbryt"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setDeleteConfirm(s.id)}
+                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                            title="Ta bort"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
       </div>
 
-      {/* Modal */}
+      {/* Create/Edit Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-[520px] rounded-lg border border-border bg-card shadow-xl">
+          <div className="max-h-[90vh] w-full max-w-[520px] overflow-y-auto rounded-lg border border-border bg-card shadow-xl">
             <div className="flex items-center justify-between border-b border-border px-6 py-4">
               <h2
                 className="text-[1.125rem] tracking-[-0.02em]"
@@ -323,7 +448,9 @@ export default function AdminUtbildningPage() {
                   fontWeight: 400,
                 }}
               >
-                {editingId ? "Redigera tillfalle" : "Nytt utbildningstillfalle"}
+                {editingId
+                  ? "Redigera tillfalle"
+                  : "Nytt utbildningstillfalle"}
               </h2>
               <button
                 onClick={() => setModalOpen(false)}
@@ -338,7 +465,9 @@ export default function AdminUtbildningPage() {
                 <div>
                   <label
                     className="mb-1.5 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
-                    style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                    style={{
+                      fontFamily: "var(--font-geist-mono), monospace",
+                    }}
                   >
                     Datum *
                   </label>
@@ -355,7 +484,9 @@ export default function AdminUtbildningPage() {
                 <div>
                   <label
                     className="mb-1.5 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
-                    style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                    style={{
+                      fontFamily: "var(--font-geist-mono), monospace",
+                    }}
                   >
                     Typ *
                   </label>
@@ -376,10 +507,53 @@ export default function AdminUtbildningPage() {
                 </div>
               </div>
 
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label
+                    className="mb-1.5 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
+                    style={{
+                      fontFamily: "var(--font-geist-mono), monospace",
+                    }}
+                  >
+                    Tid
+                  </label>
+                  <input
+                    type="text"
+                    value={form.time}
+                    onChange={(e) =>
+                      setForm({ ...form, time: e.target.value })
+                    }
+                    placeholder="t.ex. 09:00-12:00"
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-[0.875rem] outline-none focus:border-foreground"
+                  />
+                </div>
+                <div>
+                  <label
+                    className="mb-1.5 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
+                    style={{
+                      fontFamily: "var(--font-geist-mono), monospace",
+                    }}
+                  >
+                    Plats
+                  </label>
+                  <input
+                    type="text"
+                    value={form.location}
+                    onChange={(e) =>
+                      setForm({ ...form, location: e.target.value })
+                    }
+                    placeholder="t.ex. Stadshuset, rum 201"
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-[0.875rem] outline-none focus:border-foreground"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label
                   className="mb-1.5 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
-                  style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                  style={{
+                    fontFamily: "var(--font-geist-mono), monospace",
+                  }}
                 >
                   Forvaltning *
                 </label>
@@ -402,7 +576,9 @@ export default function AdminUtbildningPage() {
               <div>
                 <label
                   className="mb-1.5 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
-                  style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                  style={{
+                    fontFamily: "var(--font-geist-mono), monospace",
+                  }}
                 >
                   Yrkesgrupp *
                 </label>
@@ -422,32 +598,61 @@ export default function AdminUtbildningPage() {
                 </select>
               </div>
 
-              <div>
-                <label
-                  className="mb-1.5 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
-                  style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-                >
-                  Antal deltagare *
-                </label>
-                <input
-                  type="number"
-                  required
-                  min={1}
-                  value={form.participants || ""}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      participants: parseInt(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-[0.875rem] outline-none focus:border-foreground"
-                />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label
+                    className="mb-1.5 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
+                    style={{
+                      fontFamily: "var(--font-geist-mono), monospace",
+                    }}
+                  >
+                    Antal deltagare *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min={0}
+                    value={form.participants || ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        participants: parseInt(e.target.value) || 0,
+                      })
+                    }
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-[0.875rem] outline-none focus:border-foreground"
+                  />
+                </div>
+                <div>
+                  <label
+                    className="mb-1.5 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
+                    style={{
+                      fontFamily: "var(--font-geist-mono), monospace",
+                    }}
+                  >
+                    Max deltagare *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min={1}
+                    value={form.max_participants || ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        max_participants: parseInt(e.target.value) || 30,
+                      })
+                    }
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-[0.875rem] outline-none focus:border-foreground"
+                  />
+                </div>
               </div>
 
               <div>
                 <label
                   className="mb-1.5 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
-                  style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                  style={{
+                    fontFamily: "var(--font-geist-mono), monospace",
+                  }}
                 >
                   Beskrivning
                 </label>
@@ -457,7 +662,7 @@ export default function AdminUtbildningPage() {
                     setForm({ ...form, description: e.target.value })
                   }
                   rows={3}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-[0.875rem] outline-none focus:border-foreground resize-none"
+                  className="w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-[0.875rem] outline-none focus:border-foreground"
                 />
               </div>
 
@@ -479,10 +684,146 @@ export default function AdminUtbildningPage() {
                       "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset",
                   }}
                 >
-                  {saving ? "Sparar..." : editingId ? "Uppdatera" : "Lagg till"}
+                  {saving
+                    ? "Sparar..."
+                    : editingId
+                      ? "Uppdatera"
+                      : "Lagg till"}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Registrations Modal */}
+      {regModalSessionId && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 p-4">
+          <div className="max-h-[80vh] w-full max-w-[600px] overflow-y-auto rounded-lg border border-border bg-card shadow-xl">
+            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+              <div>
+                <h2
+                  className="text-[1.125rem] tracking-[-0.02em]"
+                  style={{
+                    fontFamily: "var(--font-bodoni), serif",
+                    fontWeight: 400,
+                  }}
+                >
+                  Anmalningar
+                </h2>
+                <p className="mt-1 text-[0.75rem] text-muted-foreground">
+                  {(() => {
+                    const session = sessions.find(
+                      (s) => s.id === regModalSessionId
+                    );
+                    return session
+                      ? `${session.description || "Utbildningstillfalle"} — ${session.date}`
+                      : "";
+                  })()}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setRegModalSessionId(null);
+                  setRegistrations([]);
+                }}
+                className="rounded-md p-1 text-muted-foreground hover:text-foreground"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-6">
+              {loadingRegs ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2
+                    size={20}
+                    className="animate-spin text-muted-foreground"
+                  />
+                </div>
+              ) : registrations.length === 0 ? (
+                <div className="py-8 text-center text-[0.875rem] text-muted-foreground">
+                  Inga anmalningar for detta tillfalle
+                </div>
+              ) : (
+                <div className="space-y-0 rounded-lg border border-border">
+                  {registrations.map((reg, i) => (
+                    <div
+                      key={reg.id}
+                      className={`flex items-center justify-between px-4 py-3 ${
+                        i !== registrations.length - 1
+                          ? "border-b border-border"
+                          : ""
+                      }`}
+                    >
+                      <div>
+                        <p className="text-[0.875rem] font-medium">
+                          {reg.name}
+                        </p>
+                        <p className="text-[0.8125rem] text-muted-foreground">
+                          {reg.email}
+                        </p>
+                        <p
+                          className="mt-0.5 text-[0.6875rem] text-muted-foreground/70"
+                          style={{
+                            fontFamily: "var(--font-geist-mono), monospace",
+                          }}
+                        >
+                          {formatRegDate(reg.created_at)}
+                        </p>
+                      </div>
+                      <div>
+                        {deleteRegConfirm === reg.id ? (
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() =>
+                                handleDeleteRegistration(
+                                  reg.id,
+                                  regModalSessionId
+                                )
+                              }
+                              className="rounded-md p-1.5 text-destructive transition-colors hover:bg-destructive/10"
+                              title="Bekrafta"
+                            >
+                              <Check size={14} />
+                            </button>
+                            <button
+                              onClick={() => setDeleteRegConfirm(null)}
+                              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary"
+                              title="Avbryt"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setDeleteRegConfirm(reg.id)}
+                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                            title="Ta bort anmalan"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="mt-4 text-right">
+                <span
+                  className="text-[0.75rem] text-muted-foreground"
+                  style={{
+                    fontFamily: "var(--font-geist-mono), monospace",
+                  }}
+                >
+                  {registrations.length}/
+                  {sessions.find((s) => s.id === regModalSessionId)
+                    ?.max_participants ?? "?"}{" "}
+                  anmalda
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       )}

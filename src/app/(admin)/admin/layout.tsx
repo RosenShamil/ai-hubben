@@ -5,18 +5,27 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { isCurrentUserAdmin, signOut } from "@/lib/supabase-auth";
+import { useTheme } from "next-themes";
+import { BRAND_GRADIENT } from "@/lib/constants";
 import {
   LayoutDashboard,
   GraduationCap,
   Bot,
+  BookOpen,
+  FileText,
   LogOut,
   Menu,
   X,
+  Moon,
+  Sun,
+  ExternalLink,
 } from "lucide-react";
 
 const SIDEBAR_LINKS = [
   { label: "Oversikt", href: "/admin", icon: LayoutDashboard },
   { label: "Utbildning", href: "/admin/utbildning", icon: GraduationCap },
+  { label: "Resurser", href: "/admin/resurser", icon: BookOpen },
+  { label: "Dokument", href: "/admin/dokument", icon: FileText },
   { label: "Assistenter", href: "/admin/assistenter", icon: Bot },
 ];
 
@@ -30,6 +39,8 @@ export default function AdminLayout({
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     async function checkAuth() {
@@ -49,6 +60,7 @@ export default function AdminLayout({
       setLoading(false);
     }
     checkAuth();
+    setMounted(true);
   }, [router]);
 
   // Don't render admin layout for login page
@@ -66,11 +78,14 @@ export default function AdminLayout({
 
   async function handleLogout() {
     await signOut();
-    router.replace("/admin/login");
+    router.replace("/");
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
+      {/* Rainbow top bar */}
+      <div className="h-1 w-full" style={{ background: BRAND_GRADIENT }} />
+      <div className="flex flex-1">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -135,7 +150,14 @@ export default function AdminLayout({
           })}
         </nav>
 
-        <div className="border-t border-border p-3">
+        <div className="border-t border-border p-3 space-y-1">
+          <Link
+            href="/"
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-[0.8125rem] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            <ExternalLink size={16} />
+            AI-hubben
+          </Link>
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-[0.8125rem] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
@@ -158,6 +180,13 @@ export default function AdminLayout({
           </button>
           <div className="hidden lg:block" />
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-border transition-colors hover:bg-secondary"
+              aria-label="Byt tema"
+            >
+              {mounted && theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
+            </button>
             <span
               className="text-[0.75rem] text-muted-foreground"
               style={{ fontFamily: "var(--font-geist-mono), monospace" }}
@@ -169,6 +198,7 @@ export default function AdminLayout({
 
         {/* Content */}
         <main className="flex-1 overflow-auto p-4 lg:p-6">{children}</main>
+      </div>
       </div>
     </div>
   );
