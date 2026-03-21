@@ -30,9 +30,11 @@ import type {
   ModelUsage,
   FileUpload,
   YearComparison,
+  UserRoles,
+  PlatformOverview,
 } from "@/lib/stats-data";
 import type { TrainingStats } from "@/lib/training-data";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Users, Zap, Layers } from "lucide-react";
 
 /* ── Custom tooltip ── */
 
@@ -114,6 +116,8 @@ interface StatsDashboardProps {
   assistantSplit: Record<Period, ModelUsage[]>;
   fileUploads: Record<Period, FileUpload[]>;
   yearComparison: YearComparison[];
+  userRoles: Record<Period, UserRoles[]>;
+  platformOverview: PlatformOverview;
 }
 
 /* ── Main dashboard ── */
@@ -127,6 +131,8 @@ export function StatsDashboard({
   assistantSplit,
   fileUploads,
   yearComparison,
+  userRoles,
+  platformOverview,
 }: StatsDashboardProps) {
   const [period, setPeriod] = useState<Period>("2026");
   const [trainingView, setTrainingView] = useState<"department" | "role">("department");
@@ -136,6 +142,7 @@ export function StatsDashboard({
   const currentModelUsage = modelUsage[period];
   const currentAssistantSplit = assistantSplit[period];
   const currentFileUploads = fileUploads[period];
+  const currentUserRoles = userRoles[period];
 
   const periodOptions: { label: string; value: Period }[] = [
     { label: "2025", value: "2025" },
@@ -241,6 +248,41 @@ export function StatsDashboard({
               </SectionCard>
             </FadeIn>
           ))}
+        </div>
+
+        {/* Platform overview cards */}
+        <div className="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-4">
+          {[
+            { label: "Registrerade", value: platformOverview.registeredUsers, icon: Users },
+            { label: "Aktiva", value: platformOverview.activeUsers, icon: Zap },
+            { label: "Assistenter", value: platformOverview.totalAssistants, icon: Layers },
+            { label: "Spaces", value: platformOverview.spaces, icon: Layers },
+          ].map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <FadeIn key={item.label} delay={0.3 + i * 0.05}>
+                <SectionCard>
+                  <div className="flex items-center gap-2">
+                    <Icon size={14} className="text-muted-foreground" />
+                    <p
+                      className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+                      style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                    >
+                      {item.label}
+                    </p>
+                  </div>
+                  <CountUp
+                    target={String(item.value)}
+                    className="mt-2 block text-[1.75rem] tracking-[-0.04em]"
+                    style={{
+                      fontFamily: "var(--font-bodoni), serif",
+                      fontWeight: 400,
+                    }}
+                  />
+                </SectionCard>
+              </FadeIn>
+            );
+          })}
         </div>
       </section>
 
@@ -456,9 +498,65 @@ export function StatsDashboard({
         />
       </div>
 
-      {/* ─── Assistant split + File uploads ─── */}
+      {/* ─── User roles + Assistant split + File uploads ─── */}
       <section className="mx-auto max-w-[68.75rem] px-6 py-12 md:py-16">
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-3">
+          {/* User roles */}
+          <FadeIn>
+            <SectionCard className="h-full">
+              <p
+                className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+                style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+              >
+                Roller
+              </p>
+              <h2
+                className="mt-3 text-[1.5rem] tracking-[-0.04em] md:text-[2rem]"
+                style={{
+                  fontFamily: "var(--font-bodoni), serif",
+                  fontWeight: 400,
+                }}
+              >
+                Användarroller
+              </h2>
+              <div className="mt-8 h-[320px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={currentUserRoles}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius="50%"
+                      outerRadius="80%"
+                      paddingAngle={3}
+                      dataKey="value"
+                      nameKey="name"
+                      stroke="none"
+                    >
+                      {currentUserRoles.map((_, index) => (
+                        <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<PieTooltip />} />
+                    <Legend
+                      verticalAlign="bottom"
+                      iconType="circle"
+                      iconSize={8}
+                      formatter={(value: string) => (
+                        <span
+                          className="text-[0.75rem] text-muted-foreground"
+                          style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                        >
+                          {value}
+                        </span>
+                      )}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </SectionCard>
+          </FadeIn>
+
           {/* Personal vs custom */}
           <FadeIn>
             <SectionCard className="h-full">
@@ -514,9 +612,12 @@ export function StatsDashboard({
             </SectionCard>
           </FadeIn>
 
-          {/* File uploads */}
-          <FadeIn delay={0.1}>
-            <SectionCard className="h-full">
+        </div>
+
+        {/* File uploads — full width */}
+        <div className="mt-5">
+          <FadeIn delay={0.15}>
+            <SectionCard>
               <p
                 className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
                 style={{ fontFamily: "var(--font-geist-mono), monospace" }}

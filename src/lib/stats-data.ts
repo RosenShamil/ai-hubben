@@ -54,6 +54,18 @@ export interface RoleTraining {
   trained: number;
 }
 
+export interface UserRoles {
+  name: string;
+  value: number;
+}
+
+export interface PlatformOverview {
+  registeredUsers: number;
+  activeUsers: number;
+  spaces: number;
+  totalAssistants: number;
+}
+
 // ── All stats data interface ──
 
 export interface AllStatsData {
@@ -64,6 +76,8 @@ export interface AllStatsData {
   assistantSplit: Record<Period, ModelUsage[]>;
   fileUploads: Record<Period, FileUpload[]>;
   yearComparison: YearComparison[];
+  userRoles: Record<Period, UserRoles[]>;
+  platformOverview: PlatformOverview;
 }
 
 // ── Default / fallback data ──
@@ -191,6 +205,19 @@ export const ROLE_TRAINING: RoleTraining[] = [
   { name: "Administratörer", trained: 82 },
 ];
 
+const DEFAULT_USER_ROLES: UserRoles[] = [
+  { name: "Creator", value: 158 },
+  { name: "User", value: 186 },
+  { name: "Admin", value: 7 },
+];
+
+const DEFAULT_PLATFORM_OVERVIEW: PlatformOverview = {
+  registeredUsers: 351,
+  activeUsers: 332,
+  spaces: 257,
+  totalAssistants: 394,
+};
+
 // ── Chart colors (brand palette) ──
 
 export const CHART_COLORS = [
@@ -273,8 +300,16 @@ export async function fetchYearComparison(): Promise<YearComparison[]> {
   return fetchStatsValue("year_comparison", DEFAULT_YEAR_COMPARISON);
 }
 
+export async function fetchUserRoles(): Promise<Record<Period, UserRoles[]>> {
+  return fetchPerPeriod("user_roles", DEFAULT_USER_ROLES);
+}
+
+export async function fetchPlatformOverview(): Promise<PlatformOverview> {
+  return fetchStatsValue("platform_overview", DEFAULT_PLATFORM_OVERVIEW);
+}
+
 export async function fetchAllStats(): Promise<AllStatsData> {
-  const [keyMetrics, dailyInteractions, topAssistants, modelUsage, assistantSplit, fileUploads, yearComparison] =
+  const [keyMetrics, dailyInteractions, topAssistants, modelUsage, assistantSplit, fileUploads, yearComparison, userRoles, platformOverview] =
     await Promise.all([
       fetchKeyMetrics(),
       fetchDailyInteractions(),
@@ -283,6 +318,8 @@ export async function fetchAllStats(): Promise<AllStatsData> {
       fetchAssistantSplit(),
       fetchFileUploads(),
       fetchYearComparison(),
+      fetchUserRoles(),
+      fetchPlatformOverview(),
     ]);
 
   return {
@@ -293,5 +330,7 @@ export async function fetchAllStats(): Promise<AllStatsData> {
     assistantSplit,
     fileUploads,
     yearComparison,
+    userRoles,
+    platformOverview,
   };
 }

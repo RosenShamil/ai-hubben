@@ -27,6 +27,8 @@ export default async function StatistikPage() {
       assistantSplit={allStats.assistantSplit}
       fileUploads={allStats.fileUploads}
       yearComparison={allStats.yearComparison}
+      userRoles={allStats.userRoles}
+      platformOverview={allStats.platformOverview}
     />
   );
 }
