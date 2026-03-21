@@ -27,12 +27,10 @@ import {
   ASSISTANT_SPLIT,
   FILE_UPLOADS,
   YEAR_COMPARISON,
-  TRAINING_METRICS,
-  DEPARTMENT_TRAINING,
-  ROLE_TRAINING,
   CHART_COLORS,
 } from "@/lib/stats-data";
 import type { Period } from "@/lib/stats-data";
+import type { TrainingStats } from "@/lib/training-data";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
 /* ── Custom tooltip ── */
@@ -106,7 +104,7 @@ function SectionCard({ children, className = "" }: { children: React.ReactNode; 
 
 /* ── Main dashboard ── */
 
-export function StatsDashboard() {
+export function StatsDashboard({ trainingStats }: { trainingStats: TrainingStats }) {
   const [period, setPeriod] = useState<Period>("2026");
   const [trainingView, setTrainingView] = useState<"department" | "role">("department");
 
@@ -649,7 +647,11 @@ export function StatsDashboard() {
 
         {/* Training key metrics */}
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-3">
-          {TRAINING_METRICS.map((metric, i) => (
+          {[
+            { label: "Workshops", formatted: String(trainingStats.workshops) },
+            { label: "Individuella sessioner", formatted: String(trainingStats.individualSessions) },
+            { label: "Totalt utbildade", formatted: String(trainingStats.totalTrained) },
+          ].map((metric, i) => (
             <FadeIn key={metric.label} delay={i * 0.08}>
               <SectionCard>
                 <p
@@ -720,8 +722,8 @@ export function StatsDashboard() {
                   <BarChart
                     data={
                       trainingView === "department"
-                        ? [...DEPARTMENT_TRAINING].reverse()
-                        : [...ROLE_TRAINING].reverse()
+                        ? [...trainingStats.byDepartment].reverse()
+                        : [...trainingStats.byRole].reverse()
                     }
                     layout="vertical"
                     margin={{ top: 0, right: 10, left: 0, bottom: 0 }}
@@ -750,8 +752,8 @@ export function StatsDashboard() {
                     <Tooltip content={<ChartTooltip />} />
                     <Bar dataKey="trained" name="Utbildade" radius={[0, 4, 4, 0]}>
                       {(trainingView === "department"
-                        ? [...DEPARTMENT_TRAINING].reverse()
-                        : [...ROLE_TRAINING].reverse()
+                        ? [...trainingStats.byDepartment].reverse()
+                        : [...trainingStats.byRole].reverse()
                       ).map((_, index) => (
                         <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                       ))}
