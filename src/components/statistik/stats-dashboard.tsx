@@ -140,7 +140,7 @@ export function StatsDashboard({
   const periodOptions: { label: string; value: Period }[] = [
     { label: "2025", value: "2025" },
     { label: "2026", value: "2026" },
-    { label: "Allt", value: "all" },
+    { label: "Totalt", value: "all" },
   ];
 
   return (
