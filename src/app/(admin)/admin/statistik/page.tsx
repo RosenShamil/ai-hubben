@@ -142,7 +142,9 @@ export default function AdminStatistikPage() {
   const [metrics2025, setMetrics2025] = useState<KeyMetricRow[]>(defaultMetrics2025);
   const [metrics2026, setMetrics2026] = useState<KeyMetricRow[]>(defaultMetrics2026);
   const [metricsAll, setMetricsAll] = useState<KeyMetricRow[]>(defaultMetricsAll);
-  const [dailyInteractions, setDailyInteractions] = useState<DateInteractionRow[]>([]);
+  const [dailyInteractions2025, setDailyInteractions2025] = useState<DateInteractionRow[]>([]);
+  const [dailyInteractions2026, setDailyInteractions2026] = useState<DateInteractionRow[]>([]);
+  const [dailyInteractionsAll, setDailyInteractionsAll] = useState<DateInteractionRow[]>([]);
   const [topAssistants2025, setTopAssistants2025] = useState<NameMessagesRow[]>([]);
   const [topAssistants2026, setTopAssistants2026] = useState<NameMessagesRow[]>([]);
   const [topAssistantsAll, setTopAssistantsAll] = useState<NameMessagesRow[]>(defaultTopAssistants);
@@ -192,7 +194,9 @@ export default function AdminStatistikPage() {
       if (map.key_metrics_2025) setMetrics2025(map.key_metrics_2025 as KeyMetricRow[]);
       if (map.key_metrics_2026) setMetrics2026(map.key_metrics_2026 as KeyMetricRow[]);
       if (map.key_metrics_all) setMetricsAll(map.key_metrics_all as KeyMetricRow[]);
-      if (map.daily_interactions) setDailyInteractions(map.daily_interactions as DateInteractionRow[]);
+      if (map.daily_interactions_2025) setDailyInteractions2025(map.daily_interactions_2025 as DateInteractionRow[]);
+      if (map.daily_interactions_2026) setDailyInteractions2026(map.daily_interactions_2026 as DateInteractionRow[]);
+      if (map.daily_interactions_all) setDailyInteractionsAll(map.daily_interactions_all as DateInteractionRow[]);
       if (map.top_assistants_2025) setTopAssistants2025(map.top_assistants_2025 as NameMessagesRow[]);
       if (map.top_assistants_2026) setTopAssistants2026(map.top_assistants_2026 as NameMessagesRow[]);
       if (map.top_assistants_all) setTopAssistantsAll(map.top_assistants_all as NameMessagesRow[]);
@@ -324,19 +328,15 @@ export default function AdminStatistikPage() {
         </section>
 
         {/* ── Daily Interactions ── */}
-        <section className="rounded-lg border border-border bg-card p-6">
-          <SectionHeader label="Diagram" title="Dagliga interaktioner" />
-          <DateInteractionsEditor
-            rows={dailyInteractions}
-            onChange={setDailyInteractions}
-          />
-          <div className="mt-4 flex justify-end">
-            <SaveButton
-              saving={savingSection === "daily_interactions"}
-              onClick={() => saveSection("daily_interactions", dailyInteractions)}
-            />
-          </div>
-        </section>
+        {([["daily_interactions_2025", "Dagliga interaktioner 2025", dailyInteractions2025, setDailyInteractions2025], ["daily_interactions_2026", "Dagliga interaktioner 2026", dailyInteractions2026, setDailyInteractions2026], ["daily_interactions_all", "Dagliga interaktioner Totalt", dailyInteractionsAll, setDailyInteractionsAll]] as const).map(([key, title, data, setData]) => (
+          <section key={key} className="rounded-lg border border-border bg-card p-6">
+            <SectionHeader label="Diagram" title={title} />
+            <DateInteractionsEditor rows={data as DateInteractionRow[]} onChange={setData as (rows: DateInteractionRow[]) => void} />
+            <div className="mt-4 flex justify-end">
+              <SaveButton saving={savingSection === key} onClick={() => saveSection(key, data)} />
+            </div>
+          </section>
+        ))}
 
         {/* ── Platform Overview ── */}
         <section className="rounded-lg border border-border bg-card p-6">

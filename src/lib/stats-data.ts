@@ -70,7 +70,7 @@ export interface PlatformOverview {
 
 export interface AllStatsData {
   keyMetrics: Record<Period, KeyMetric[]>;
-  dailyInteractions: DailyInteraction[];
+  dailyInteractions: Record<Period, DailyInteraction[]>;
   topAssistants: Record<Period, AssistantUsage[]>;
   modelUsage: Record<Period, ModelUsage[]>;
   assistantSplit: Record<Period, ModelUsage[]>;
@@ -267,8 +267,8 @@ export async function fetchKeyMetrics(): Promise<Record<Period, KeyMetric[]>> {
   return { "2025": m2025, "2026": m2026, all: mAll };
 }
 
-export async function fetchDailyInteractions(): Promise<DailyInteraction[]> {
-  return fetchStatsValue("daily_interactions", DEFAULT_DAILY_INTERACTIONS);
+export async function fetchDailyInteractions(): Promise<Record<Period, DailyInteraction[]>> {
+  return fetchPerPeriod("daily_interactions", DEFAULT_DAILY_INTERACTIONS);
 }
 
 async function fetchPerPeriod<T>(base: string, fallback: T): Promise<Record<Period, T>> {

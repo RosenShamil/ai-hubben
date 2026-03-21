@@ -110,7 +110,7 @@ function SectionCard({ children, className = "" }: { children: React.ReactNode; 
 interface StatsDashboardProps {
   trainingStats: TrainingStats;
   keyMetrics: Record<Period, KeyMetric[]>;
-  dailyInteractions: DailyInteraction[];
+  dailyInteractions: Record<Period, DailyInteraction[]>;
   topAssistants: Record<Period, AssistantUsage[]>;
   modelUsage: Record<Period, ModelUsage[]>;
   assistantSplit: Record<Period, ModelUsage[]>;
@@ -143,6 +143,7 @@ export function StatsDashboard({
   const currentAssistantSplit = assistantSplit[period];
   const currentFileUploads = fileUploads[period];
   const currentUserRoles = userRoles[period];
+  const currentDailyInteractions = dailyInteractions[period];
 
   const periodOptions: { label: string; value: Period }[] = [
     { label: "2025", value: "2025" },
@@ -305,7 +306,7 @@ export function StatsDashboard({
             <div className="mt-8 h-[300px] md:h-[380px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                  data={dailyInteractions}
+                  data={currentDailyInteractions}
                   margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
                 >
                   <defs>
