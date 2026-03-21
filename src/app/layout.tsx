@@ -3,9 +3,6 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import localFont from "next/font/local";
 import { ThemeProvider } from "@/components/shared/theme-provider";
-import { Navbar } from "@/components/shared/navbar";
-import { Footer } from "@/components/shared/footer";
-import { BottomTabBar } from "@/components/shared/bottom-tab-bar";
 import "./globals.css";
 
 const bodoniModa = localFont({
@@ -49,10 +46,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground" suppressHydrationWarning>
         <ThemeProvider>
-          <Navbar />
-          <main className="flex-1 pb-20 md:pb-0">{children}</main>
-          <Footer />
-          <BottomTabBar />
+          {children}
         </ThemeProvider>
       </body>
     </html>

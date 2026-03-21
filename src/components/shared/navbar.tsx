@@ -107,7 +107,8 @@ export function Navbar() {
             </button>
 
             {/* CTA */}
-            <button
+            <Link
+              href="/admin/login"
               className="hidden md:block rounded-full px-5 py-2 text-[0.8125rem] font-medium uppercase tracking-[0.01em] transition-all duration-150 bg-primary text-primary-foreground"
               style={{
                 fontFamily: "var(--font-geist-mono), monospace",
@@ -116,7 +117,7 @@ export function Navbar() {
               }}
             >
               Logga in
-            </button>
+            </Link>
           </div>
         </div>
       </nav>
