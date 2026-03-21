@@ -61,34 +61,41 @@ export default function AdminLayout({
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    supabase
-      .from("contact_messages")
-      .select("id", { count: "exact", head: true })
-      .eq("read", false)
-      .then(({ count }) => {
-        setUnreadCount(count ?? 0);
-      });
-  }, []);
+    let cancelled = false;
 
-  useEffect(() => {
     async function checkAuth() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        router.replace("/admin/login");
-        return;
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (cancelled) return;
+        if (!user) {
+          router.replace("/admin/login");
+          return;
+        }
+        const admin = await isCurrentUserAdmin();
+        if (cancelled) return;
+        if (!admin) {
+          router.replace("/admin/login");
+          return;
+        }
+        setUserEmail(user.email ?? null);
+        setLoading(false);
+
+        // Fetch unread count after auth is confirmed
+        const { count } = await supabase
+          .from("contact_messages")
+          .select("id", { count: "exact", head: true })
+          .eq("read", false);
+        if (!cancelled) setUnreadCount(count ?? 0);
+      } catch {
+        if (!cancelled) router.replace("/admin/login");
       }
-      const admin = await isCurrentUserAdmin();
-      if (!admin) {
-        router.replace("/admin/login");
-        return;
-      }
-      setUserEmail(user.email ?? null);
-      setLoading(false);
     }
     checkAuth();
     setMounted(true);
+
+    return () => { cancelled = true; };
   }, [router]);
 
   // Don't render admin layout for login page
@@ -98,8 +105,9 @@ export default function AdminLayout({
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-[0.875rem] text-muted-foreground">Laddar...</div>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-background">
+        <div className="h-8 w-8 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+        <p className="text-[0.8125rem] text-muted-foreground">Laddar admin...</p>
       </div>
     );
   }
