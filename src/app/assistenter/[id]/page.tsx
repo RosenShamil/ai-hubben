@@ -1,27 +1,57 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink } from "lucide-react";
-import { ASSISTANTS } from "@/lib/mock-assistants";
+import { ArrowLeft } from "lucide-react";
+import { fetchAssistant } from "@/lib/intric";
 import { FadeIn } from "@/components/shared/fade-in";
+import { AssistantActions } from "@/components/assistenter/assistant-actions";
+import { CHAT_LINKS } from "@/lib/assistant-chat-links";
 import { BRAND_GRADIENT } from "@/lib/constants";
 
-export function generateStaticParams() {
-  return ASSISTANTS.map((a) => ({ slug: a.slug }));
+// Color palette for letter avatars
+const AVATAR_COLORS = [
+  "#e74c3c", "#e67e22", "#f1c40f", "#2ecc71",
+  "#1abc9c", "#3498db", "#9b59b6", "#e91e63",
+  "#00bcd4", "#ff9800", "#8bc34a", "#673ab7",
+];
+
+function getAvatarColor(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const assistant = ASSISTANTS.find((a) => a.slug === params.slug);
-  if (!assistant) return { title: "Assistent inte hittad" };
-  return { title: assistant.name };
-}
-
-export default function AssistantDetailPage({
+export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ id: string }>;
 }) {
-  const assistant = ASSISTANTS.find((a) => a.slug === params.slug);
-  if (!assistant) notFound();
+  try {
+    const { id } = await params;
+    const assistant = await fetchAssistant(id);
+    return {
+      title: `${assistant.name} — AI-hubben`,
+      description: assistant.description,
+    };
+  } catch {
+    return { title: "Assistent inte hittad" };
+  }
+}
+
+export default async function AssistantDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  let assistant;
+  try {
+    assistant = await fetchAssistant(id);
+  } catch {
+    notFound();
+  }
 
   return (
     <>
@@ -41,12 +71,23 @@ export default function AssistantDetailPage({
       <section className="mx-auto max-w-[68.75rem] px-6 pt-12 pb-8 md:pt-16">
         <FadeIn>
           <div className="flex items-start gap-5">
-            <div
-              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-border bg-secondary text-[1.25rem] font-medium"
-              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-            >
-              {assistant.name[0]}
-            </div>
+            {assistant.icon_url ? (
+              <img
+                src={assistant.icon_url}
+                alt=""
+                className="h-14 w-14 shrink-0 rounded-lg border border-border object-cover"
+              />
+            ) : (
+              <div
+                className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg text-[1.25rem] font-semibold text-white"
+                style={{
+                  backgroundColor: getAvatarColor(assistant.name),
+                  fontFamily: "var(--font-geist-mono), monospace",
+                }}
+              >
+                {assistant.name[0]}
+              </div>
+            )}
             <div>
               <h1
                 className="text-[2rem] leading-[1.2] tracking-[-0.04em] md:text-[2.75rem]"
@@ -61,22 +102,6 @@ export default function AssistantDetailPage({
                 {assistant.organization}
               </p>
             </div>
-          </div>
-
-          {/* Badges */}
-          <div className="mt-6 flex flex-wrap gap-2">
-            <span
-              className="rounded-full border border-border px-3 py-1.5 text-[0.6875rem] font-medium uppercase tracking-[0.05em] text-muted-foreground"
-              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-            >
-              {assistant.model}
-            </span>
-            <span
-              className="rounded-full border border-border px-3 py-1.5 text-[0.6875rem] font-medium uppercase tracking-[0.05em] text-muted-foreground"
-              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-            >
-              {assistant.category}
-            </span>
           </div>
         </FadeIn>
       </section>
@@ -128,7 +153,7 @@ export default function AssistantDetailPage({
             )}
 
             {/* Setup Instructions */}
-            {assistant.setupInstructions && (
+            {assistant.setup_instructions && (
               <FadeIn delay={0.15}>
                 <div>
                   <p
@@ -140,7 +165,7 @@ export default function AssistantDetailPage({
                     Setup-instruktioner
                   </p>
                   <div className="mt-3 whitespace-pre-wrap rounded-lg border border-border bg-secondary p-5 text-[0.875rem] leading-[1.7]">
-                    {assistant.setupInstructions}
+                    {assistant.setup_instructions}
                   </div>
                 </div>
               </FadeIn>
@@ -150,64 +175,16 @@ export default function AssistantDetailPage({
           {/* Sidebar */}
           <FadeIn delay={0.1}>
             <div className="space-y-6">
-              {/* Open assistant button */}
-              {assistant.assistantLink && (
-                <a
-                  href={assistant.assistantLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-primary-foreground transition-all duration-150 active:scale-[0.98]"
-                  style={{
-                    fontFamily: "var(--font-geist-mono), monospace",
-                    boxShadow:
-                      "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset",
-                  }}
-                >
-                  Öppna assistent
-                  <ExternalLink size={14} />
-                </a>
+              {/* Assistant actions */}
+              {assistant.assistant_link && (
+                <AssistantActions
+                  shareLink={assistant.assistant_link}
+                  chatLink={CHAT_LINKS[assistant.id]}
+                />
               )}
 
               {/* Info card */}
               <div className="rounded-lg border border-border bg-card p-5 space-y-4">
-                <div>
-                  <p
-                    className="text-[0.6875rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
-                    style={{
-                      fontFamily: "var(--font-geist-mono), monospace",
-                    }}
-                  >
-                    Modell
-                  </p>
-                  <p className="mt-1 text-[0.9375rem]">{assistant.model}</p>
-                </div>
-                <div
-                  className="h-px"
-                  style={{
-                    background:
-                      "linear-gradient(to right, transparent, var(--border) 50%, transparent)",
-                  }}
-                />
-                <div>
-                  <p
-                    className="text-[0.6875rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
-                    style={{
-                      fontFamily: "var(--font-geist-mono), monospace",
-                    }}
-                  >
-                    Kategori
-                  </p>
-                  <p className="mt-1 text-[0.9375rem]">
-                    {assistant.category}
-                  </p>
-                </div>
-                <div
-                  className="h-px"
-                  style={{
-                    background:
-                      "linear-gradient(to right, transparent, var(--border) 50%, transparent)",
-                  }}
-                />
                 <div>
                   <p
                     className="text-[0.6875rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
@@ -221,7 +198,7 @@ export default function AssistantDetailPage({
                     {assistant.organization}
                   </p>
                 </div>
-                {assistant.submittedBy && (
+                {assistant.submitted_by && (
                   <>
                     <div
                       className="h-px"
@@ -240,8 +217,43 @@ export default function AssistantDetailPage({
                         Inskickad av
                       </p>
                       <p className="mt-1 text-[0.9375rem]">
-                        {assistant.submittedBy}
+                        {assistant.submitted_by}
                       </p>
+                    </div>
+                  </>
+                )}
+                {assistant.regions && assistant.regions.length > 0 && (
+                  <>
+                    <div
+                      className="h-px"
+                      style={{
+                        background:
+                          "linear-gradient(to right, transparent, var(--border) 50%, transparent)",
+                      }}
+                    />
+                    <div>
+                      <p
+                        className="text-[0.6875rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
+                        style={{
+                          fontFamily: "var(--font-geist-mono), monospace",
+                        }}
+                      >
+                        Regioner
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {assistant.regions.map((r) => (
+                          <span
+                            key={r}
+                            className="rounded-full border border-border px-2.5 py-1 text-[0.625rem] font-medium uppercase tracking-[0.05em] text-muted-foreground"
+                            style={{
+                              fontFamily:
+                                "var(--font-geist-mono), monospace",
+                            }}
+                          >
+                            {r}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </>
                 )}
