@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Search, X, Bot, Newspaper, HelpCircle, FileText, Loader2 } from "lucide-react";
+import { Search, X, Bot, Newspaper, HelpCircle, FileText, Loader2, Users, Phone, Layout } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
@@ -11,7 +11,7 @@ interface SearchResult {
   title: string;
   description: string;
   href: string;
-  type: "assistent" | "nyhet" | "faq" | "dokument";
+  type: "assistent" | "nyhet" | "faq" | "dokument" | "team" | "kontakt" | "sida";
 }
 
 const TYPE_CONFIG = {
@@ -19,7 +19,22 @@ const TYPE_CONFIG = {
   nyhet: { icon: Newspaper, label: "Nyhet" },
   faq: { icon: HelpCircle, label: "FAQ" },
   dokument: { icon: FileText, label: "Dokument" },
+  team: { icon: Users, label: "Team" },
+  kontakt: { icon: Phone, label: "Kontakt" },
+  sida: { icon: Layout, label: "Sida" },
 };
+
+const PAGES = [
+  { title: "Startsidan", description: "Hem — nyckeltal, utvalda assistenter, nyheter", href: "/", keywords: ["hem", "start", "startsida", "nyckeltal"] },
+  { title: "Assistenter", description: "Sök och utforska AI-assistenter", href: "/assistenter", keywords: ["assistent", "bibliotek", "ai", "intric", "chatt"] },
+  { title: "Statistik", description: "AI-användning, diagram och nyckeltal", href: "/statistik", keywords: ["statistik", "data", "graf", "diagram", "användning"] },
+  { title: "Utbildning", description: "Kalender, anmälan och utbildningsmaterial", href: "/utbildning", keywords: ["utbildning", "workshop", "kurs", "kalender", "anmälan"] },
+  { title: "Dokumentation", description: "Riktlinjer, policyer, guider och resurser", href: "/dokumentation", keywords: ["dokumentation", "dokument", "riktlinje", "policy", "guide"] },
+  { title: "Nyheter", description: "Senaste nytt om kommunens AI-arbete", href: "/nyheter", keywords: ["nyheter", "blogg", "artikel", "nyhet"] },
+  { title: "FAQ", description: "Vanliga frågor och svar", href: "/faq", keywords: ["faq", "frågor", "svar", "hjälp", "vanliga"] },
+  { title: "Om oss", description: "Digitaliseringsavdelningen — team, uppdrag och vision", href: "/om", keywords: ["om", "om oss", "team", "avdelning", "digitaliseringsavdelningen", "vision", "uppdrag"] },
+  { title: "Kontakt", description: "Kontakta Digitaliseringsavdelningen", href: "/kontakt", keywords: ["kontakt", "mejl", "mail", "e-post", "telefon", "servicedesk"] },
+];
 
 export function SearchModal({
   open,
@@ -76,7 +91,27 @@ export function SearchModal({
 
     setLoading(true);
 
-    const [assistants, posts, faqs, docs] = await Promise.allSettled([
+    const lq = q.toLowerCase();
+
+    // Static pages matching
+    const items: SearchResult[] = [];
+    for (const page of PAGES) {
+      if (
+        page.title.toLowerCase().includes(lq) ||
+        page.description.toLowerCase().includes(lq) ||
+        page.keywords.some((k) => k.includes(lq) || lq.includes(k))
+      ) {
+        items.push({
+          id: `page-${page.href}`,
+          title: page.title,
+          description: page.description,
+          href: page.href,
+          type: "sida",
+        });
+      }
+    }
+
+    const [assistants, posts, faqs, docs, team, contacts] = await Promise.allSettled([
       // Assistants from Supabase (community)
       supabase
         .from("assistants")
@@ -102,9 +137,19 @@ export function SearchModal({
         .select("id, title, description")
         .or(`title.ilike.%${q}%,description.ilike.%${q}%`)
         .limit(5),
+      // Team members
+      supabase
+        .from("team_members")
+        .select("id, name, role, email")
+        .or(`name.ilike.%${q}%,role.ilike.%${q}%,email.ilike.%${q}%`)
+        .limit(5),
+      // Contact entries
+      supabase
+        .from("contact_entries")
+        .select("id, label, title, description, email, phone")
+        .or(`title.ilike.%${q}%,label.ilike.%${q}%,description.ilike.%${q}%,email.ilike.%${q}%`)
+        .limit(5),
     ]);
-
-    const items: SearchResult[] = [];
 
     if (assistants.status === "fulfilled" && assistants.value.data) {
       for (const a of assistants.value.data) {
@@ -154,7 +199,31 @@ export function SearchModal({
       }
     }
 
-    // Also search marketplace assistants via a simple fetch
+    if (team.status === "fulfilled" && team.value.data) {
+      for (const t of team.value.data) {
+        items.push({
+          id: t.id,
+          title: t.name,
+          description: t.role + (t.email ? ` — ${t.email}` : ""),
+          href: "/om",
+          type: "team",
+        });
+      }
+    }
+
+    if (contacts.status === "fulfilled" && contacts.value.data) {
+      for (const c of contacts.value.data) {
+        items.push({
+          id: c.id,
+          title: `${c.label}: ${c.title}`,
+          description: [c.email, c.phone, c.description?.slice(0, 60)].filter(Boolean).join(" — "),
+          href: "/kontakt",
+          type: "kontakt",
+        });
+      }
+    }
+
+    // Also search marketplace assistants
     try {
       const res = await fetch("https://marketplace.intric.ai/api/assistants");
       if (res.ok) {
@@ -164,7 +233,6 @@ export function SearchModal({
           description: string;
           organization: string;
         }>;
-        const lq = q.toLowerCase();
         const matches = all
           .filter(
             (a) =>
@@ -175,7 +243,6 @@ export function SearchModal({
           .slice(0, 5);
 
         for (const a of matches) {
-          // Avoid duplicates
           if (!items.some((i) => i.id === a.id)) {
             items.push({
               id: a.id,
