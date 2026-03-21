@@ -212,76 +212,64 @@ export function StatsDashboard({
         <div className="h-px" style={{ background: BRAND_GRADIENT }} />
       </div>
 
-      {/* ─── Key Metrics ─── */}
+      {/* ─── Key Metrics 3+3 ─── */}
       <section className="mx-auto max-w-[68.75rem] px-6 py-12 md:py-16">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {metrics.map((metric, i) => (
-            <FadeIn key={metric.label} delay={i * 0.08}>
-              <SectionCard>
-                <p
-                  className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
-                  style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-                >
-                  {metric.label}
-                </p>
-                <CountUp
-                  target={metric.formatted}
-                  className="mt-3 block text-[2.25rem] tracking-[-0.04em] md:text-[2.75rem]"
-                  style={{
-                    fontFamily: "var(--font-bodoni), serif",
-                    fontWeight: 400,
-                  }}
-                />
-                {metric.change > 0 && (
-                  <div className="mt-3 flex items-center gap-1.5">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-green-500/10 px-2.5 py-1 text-[0.6875rem] font-medium text-green-600 dark:text-green-400">
-                      <TrendingUp size={12} />+{metric.change}%
-                    </span>
-                    <span
-                      className="text-[0.6875rem] text-muted-foreground"
-                      style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-                    >
-                      {metric.changeLabel}
-                    </span>
-                  </div>
-                )}
-              </SectionCard>
-            </FadeIn>
-          ))}
-        </div>
+        {(() => {
+          const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const findMetric = (label: string) => metrics.find((m) => normalize(m.label) === normalize(label));
+          const topRow = [
+            findMetric("Aktiva användare"),
+            findMetric("Skapade assistenter"),
+            findMetric("Interaktioner"),
+          ];
+          const bottomRow = [
+            { label: "Registrerade användare", formatted: String(platformOverview.registeredUsers), change: 0, changeLabel: "" },
+            { label: "Skapade spaces", formatted: String(platformOverview.spaces), change: 0, changeLabel: "" },
+            findMetric("Utbildade"),
+          ];
+          const allCards = [topRow, bottomRow];
 
-        {/* Platform overview cards */}
-        <div className="mt-5 grid grid-cols-2 gap-5">
-          {[
-            { label: "Registrerade användare", value: platformOverview.registeredUsers, icon: Users },
-            { label: "Skapade spaces", value: platformOverview.spaces, icon: Layers },
-          ].map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <FadeIn key={item.label} delay={0.3 + i * 0.05}>
-                <SectionCard>
-                  <div className="flex items-center gap-2">
-                    <Icon size={14} className="text-muted-foreground" />
-                    <p
-                      className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
-                      style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-                    >
-                      {item.label}
-                    </p>
-                  </div>
-                  <CountUp
-                    target={String(item.value)}
-                    className="mt-2 block text-[1.75rem] tracking-[-0.04em]"
-                    style={{
-                      fontFamily: "var(--font-bodoni), serif",
-                      fontWeight: 400,
-                    }}
-                  />
-                </SectionCard>
-              </FadeIn>
-            );
-          })}
-        </div>
+          return allCards.map((row, rowIdx) => (
+            <div key={rowIdx} className={`grid grid-cols-1 gap-5 sm:grid-cols-3 ${rowIdx > 0 ? "mt-5" : ""}`}>
+              {row.map((metric, i) => {
+                if (!metric) return null;
+                return (
+                  <FadeIn key={metric.label} delay={(rowIdx * 3 + i) * 0.06}>
+                    <SectionCard className="h-full">
+                      <p
+                        className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+                        style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                      >
+                        {metric.label}
+                      </p>
+                      <CountUp
+                        target={metric.formatted}
+                        className="mt-3 block text-[2.25rem] tracking-[-0.04em] md:text-[2.75rem]"
+                        style={{
+                          fontFamily: "var(--font-bodoni), serif",
+                          fontWeight: 400,
+                        }}
+                      />
+                      {metric.change > 0 && (
+                        <div className="mt-3 flex items-center gap-1.5">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-green-500/10 px-2.5 py-1 text-[0.6875rem] font-medium text-green-600 dark:text-green-400">
+                            <TrendingUp size={12} />+{metric.change}%
+                          </span>
+                          <span
+                            className="text-[0.6875rem] text-muted-foreground"
+                            style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                          >
+                            {metric.changeLabel}
+                          </span>
+                        </div>
+                      )}
+                    </SectionCard>
+                  </FadeIn>
+                );
+              })}
+            </div>
+          ));
+        })()}
       </section>
 
       {/* ─── Fading divider ─── */}

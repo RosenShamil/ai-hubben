@@ -143,11 +143,23 @@ export default function AdminStatistikPage() {
   const [metrics2026, setMetrics2026] = useState<KeyMetricRow[]>(defaultMetrics2026);
   const [metricsAll, setMetricsAll] = useState<KeyMetricRow[]>(defaultMetricsAll);
   const [dailyInteractions, setDailyInteractions] = useState<DateInteractionRow[]>([]);
-  const [topAssistants, setTopAssistants] = useState<NameMessagesRow[]>(defaultTopAssistants);
-  const [modelUsage, setModelUsage] = useState<NameValueRow[]>(defaultModelUsage);
-  const [assistantSplit, setAssistantSplit] = useState<NameValueRow[]>(defaultAssistantSplit);
-  const [fileUploads, setFileUploads] = useState<FileUploadRow[]>(defaultFileUploads);
+  const [topAssistants2025, setTopAssistants2025] = useState<NameMessagesRow[]>([]);
+  const [topAssistants2026, setTopAssistants2026] = useState<NameMessagesRow[]>([]);
+  const [topAssistantsAll, setTopAssistantsAll] = useState<NameMessagesRow[]>(defaultTopAssistants);
+  const [modelUsage2025, setModelUsage2025] = useState<NameValueRow[]>([]);
+  const [modelUsage2026, setModelUsage2026] = useState<NameValueRow[]>([]);
+  const [modelUsageAll, setModelUsageAll] = useState<NameValueRow[]>(defaultModelUsage);
+  const [assistantSplit2025, setAssistantSplit2025] = useState<NameValueRow[]>([]);
+  const [assistantSplit2026, setAssistantSplit2026] = useState<NameValueRow[]>([]);
+  const [assistantSplitAll, setAssistantSplitAll] = useState<NameValueRow[]>(defaultAssistantSplit);
+  const [fileUploads2025, setFileUploads2025] = useState<FileUploadRow[]>([]);
+  const [fileUploads2026, setFileUploads2026] = useState<FileUploadRow[]>([]);
+  const [fileUploadsAll, setFileUploadsAll] = useState<FileUploadRow[]>(defaultFileUploads);
   const [yearComparison, setYearComparison] = useState<YearComparisonRow[]>(defaultYearComparison);
+  const [userRoles2025, setUserRoles2025] = useState<NameValueRow[]>([]);
+  const [userRoles2026, setUserRoles2026] = useState<NameValueRow[]>([]);
+  const [userRolesAll, setUserRolesAll] = useState<NameValueRow[]>([]);
+  const [platformOverview, setPlatformOverview] = useState<{ registeredUsers: number; activeUsers: number; spaces: number; totalAssistants: number }>({ registeredUsers: 0, activeUsers: 0, spaces: 0, totalAssistants: 0 });
 
   // Saving state per section
   const [savingSection, setSavingSection] = useState<string | null>(null);
@@ -181,11 +193,23 @@ export default function AdminStatistikPage() {
       if (map.key_metrics_2026) setMetrics2026(map.key_metrics_2026 as KeyMetricRow[]);
       if (map.key_metrics_all) setMetricsAll(map.key_metrics_all as KeyMetricRow[]);
       if (map.daily_interactions) setDailyInteractions(map.daily_interactions as DateInteractionRow[]);
-      if (map.top_assistants) setTopAssistants(map.top_assistants as NameMessagesRow[]);
-      if (map.model_usage) setModelUsage(map.model_usage as NameValueRow[]);
-      if (map.assistant_split) setAssistantSplit(map.assistant_split as NameValueRow[]);
-      if (map.file_uploads) setFileUploads(map.file_uploads as FileUploadRow[]);
+      if (map.top_assistants_2025) setTopAssistants2025(map.top_assistants_2025 as NameMessagesRow[]);
+      if (map.top_assistants_2026) setTopAssistants2026(map.top_assistants_2026 as NameMessagesRow[]);
+      if (map.top_assistants_all) setTopAssistantsAll(map.top_assistants_all as NameMessagesRow[]);
+      if (map.model_usage_2025) setModelUsage2025(map.model_usage_2025 as NameValueRow[]);
+      if (map.model_usage_2026) setModelUsage2026(map.model_usage_2026 as NameValueRow[]);
+      if (map.model_usage_all) setModelUsageAll(map.model_usage_all as NameValueRow[]);
+      if (map.assistant_split_2025) setAssistantSplit2025(map.assistant_split_2025 as NameValueRow[]);
+      if (map.assistant_split_2026) setAssistantSplit2026(map.assistant_split_2026 as NameValueRow[]);
+      if (map.assistant_split_all) setAssistantSplitAll(map.assistant_split_all as NameValueRow[]);
+      if (map.file_uploads_2025) setFileUploads2025(map.file_uploads_2025 as FileUploadRow[]);
+      if (map.file_uploads_2026) setFileUploads2026(map.file_uploads_2026 as FileUploadRow[]);
+      if (map.file_uploads_all) setFileUploadsAll(map.file_uploads_all as FileUploadRow[]);
       if (map.year_comparison) setYearComparison(map.year_comparison as YearComparisonRow[]);
+      if (map.user_roles_2025) setUserRoles2025(map.user_roles_2025 as NameValueRow[]);
+      if (map.user_roles_2026) setUserRoles2026(map.user_roles_2026 as NameValueRow[]);
+      if (map.user_roles_all) setUserRolesAll(map.user_roles_all as NameValueRow[]);
+      if (map.platform_overview) setPlatformOverview(map.platform_overview as typeof platformOverview);
 
       setLoading(false);
     }
@@ -314,73 +338,83 @@ export default function AdminStatistikPage() {
           </div>
         </section>
 
-        {/* ── Top Assistants ── */}
+        {/* ── Platform Overview ── */}
         <section className="rounded-lg border border-border bg-card p-6">
-          <SectionHeader label="Diagram" title="Topp assistenter" />
-          <NameMessagesEditor
-            rows={topAssistants}
-            onChange={setTopAssistants}
-          />
+          <SectionHeader label="Plattform" title="Plattformsöversikt" />
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {(["registeredUsers", "activeUsers", "spaces", "totalAssistants"] as const).map((key) => {
+              const labels = { registeredUsers: "Registrerade", activeUsers: "Aktiva", spaces: "Spaces", totalAssistants: "Assistenter" };
+              return (
+                <div key={key}>
+                  <label className={thClass} style={monoStyle}>{labels[key]}</label>
+                  <input className={inputClass} type="number" value={platformOverview[key]} onChange={(e) => setPlatformOverview({ ...platformOverview, [key]: Number(e.target.value) || 0 })} />
+                </div>
+              );
+            })}
+          </div>
           <div className="mt-4 flex justify-end">
-            <SaveButton
-              saving={savingSection === "top_assistants"}
-              onClick={() => saveSection("top_assistants", topAssistants)}
-            />
+            <SaveButton saving={savingSection === "platform_overview"} onClick={() => saveSection("platform_overview", platformOverview)} />
           </div>
         </section>
+
+        {/* ── User Roles ── */}
+        {([["user_roles_2025", "Användarroller 2025", userRoles2025, setUserRoles2025], ["user_roles_2026", "Användarroller 2026", userRoles2026, setUserRoles2026], ["user_roles_all", "Användarroller Totalt", userRolesAll, setUserRolesAll]] as const).map(([key, title, data, setData]) => (
+          <section key={key} className="rounded-lg border border-border bg-card p-6">
+            <SectionHeader label="Diagram" title={title} />
+            <NameValueEditor rows={data as NameValueRow[]} onChange={setData as (rows: NameValueRow[]) => void} nameLabel="Roll" valueLabel="Antal" />
+            <div className="mt-4 flex justify-end">
+              <SaveButton saving={savingSection === key} onClick={() => saveSection(key, data)} />
+            </div>
+          </section>
+        ))}
+
+        {/* ── Top Assistants ── */}
+        {([["top_assistants_2025", "Topp assistenter 2025", topAssistants2025, setTopAssistants2025], ["top_assistants_2026", "Topp assistenter 2026", topAssistants2026, setTopAssistants2026], ["top_assistants_all", "Topp assistenter Totalt", topAssistantsAll, setTopAssistantsAll]] as const).map(([key, title, data, setData]) => (
+          <section key={key} className="rounded-lg border border-border bg-card p-6">
+            <SectionHeader label="Diagram" title={title} />
+            <NameMessagesEditor rows={data as NameMessagesRow[]} onChange={setData as (rows: NameMessagesRow[]) => void} />
+            <div className="mt-4 flex justify-end">
+              <SaveButton saving={savingSection === key} onClick={() => saveSection(key, data)} />
+            </div>
+          </section>
+        ))}
 
         {/* ── Model Usage ── */}
-        <section className="rounded-lg border border-border bg-card p-6">
-          <SectionHeader label="Diagram" title="AI-modeller" />
-          <NameValueEditor
-            rows={modelUsage}
-            onChange={setModelUsage}
-            nameLabel="Modell"
-            valueLabel="Antal"
-          />
-          <div className="mt-4 flex justify-end">
-            <SaveButton
-              saving={savingSection === "model_usage"}
-              onClick={() => saveSection("model_usage", modelUsage)}
-            />
-          </div>
-        </section>
+        {([["model_usage_2025", "AI-modeller 2025", modelUsage2025, setModelUsage2025], ["model_usage_2026", "AI-modeller 2026", modelUsage2026, setModelUsage2026], ["model_usage_all", "AI-modeller Totalt", modelUsageAll, setModelUsageAll]] as const).map(([key, title, data, setData]) => (
+          <section key={key} className="rounded-lg border border-border bg-card p-6">
+            <SectionHeader label="Diagram" title={title} />
+            <NameValueEditor rows={data as NameValueRow[]} onChange={setData as (rows: NameValueRow[]) => void} nameLabel="Modell" valueLabel="Antal" />
+            <div className="mt-4 flex justify-end">
+              <SaveButton saving={savingSection === key} onClick={() => saveSection(key, data)} />
+            </div>
+          </section>
+        ))}
 
         {/* ── Assistant Split ── */}
-        <section className="rounded-lg border border-border bg-card p-6">
-          <SectionHeader label="Diagram" title="Personliga vs anpassade" />
-          <NameValueEditor
-            rows={assistantSplit}
-            onChange={setAssistantSplit}
-            nameLabel="Typ"
-            valueLabel="Antal"
-          />
-          <div className="mt-4 flex justify-end">
-            <SaveButton
-              saving={savingSection === "assistant_split"}
-              onClick={() => saveSection("assistant_split", assistantSplit)}
-            />
-          </div>
-        </section>
+        {([["assistant_split_2025", "Personliga vs anpassade 2025", assistantSplit2025, setAssistantSplit2025], ["assistant_split_2026", "Personliga vs anpassade 2026", assistantSplit2026, setAssistantSplit2026], ["assistant_split_all", "Personliga vs anpassade Totalt", assistantSplitAll, setAssistantSplitAll]] as const).map(([key, title, data, setData]) => (
+          <section key={key} className="rounded-lg border border-border bg-card p-6">
+            <SectionHeader label="Diagram" title={title} />
+            <NameValueEditor rows={data as NameValueRow[]} onChange={setData as (rows: NameValueRow[]) => void} nameLabel="Typ" valueLabel="Antal" />
+            <div className="mt-4 flex justify-end">
+              <SaveButton saving={savingSection === key} onClick={() => saveSection(key, data)} />
+            </div>
+          </section>
+        ))}
 
         {/* ── File Uploads ── */}
-        <section className="rounded-lg border border-border bg-card p-6">
-          <SectionHeader label="Diagram" title="Filuppladdningar" />
-          <FileUploadsEditor
-            rows={fileUploads}
-            onChange={setFileUploads}
-          />
-          <div className="mt-4 flex justify-end">
-            <SaveButton
-              saving={savingSection === "file_uploads"}
-              onClick={() => saveSection("file_uploads", fileUploads)}
-            />
-          </div>
-        </section>
+        {([["file_uploads_2025", "Filuppladdningar 2025", fileUploads2025, setFileUploads2025], ["file_uploads_2026", "Filuppladdningar 2026", fileUploads2026, setFileUploads2026], ["file_uploads_all", "Filuppladdningar Totalt", fileUploadsAll, setFileUploadsAll]] as const).map(([key, title, data, setData]) => (
+          <section key={key} className="rounded-lg border border-border bg-card p-6">
+            <SectionHeader label="Diagram" title={title} />
+            <FileUploadsEditor rows={data as FileUploadRow[]} onChange={setData as (rows: FileUploadRow[]) => void} />
+            <div className="mt-4 flex justify-end">
+              <SaveButton saving={savingSection === key} onClick={() => saveSection(key, data)} />
+            </div>
+          </section>
+        ))}
 
         {/* ── Year Comparison ── */}
         <section className="rounded-lg border border-border bg-card p-6">
-          <SectionHeader label="Diagram" title="Arsjamforelse" />
+          <SectionHeader label="Diagram" title="Årsjämförelse" />
           <YearComparisonEditor
             rows={yearComparison}
             onChange={setYearComparison}
