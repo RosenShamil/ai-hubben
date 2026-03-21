@@ -17,19 +17,43 @@ const generalSans = localFont({
   weight: "400",
 });
 
+const APP_NAME = "AI-hubben";
+const APP_DEFAULT_TITLE = "AI-hubben — Katrineholms kommun";
+const APP_TITLE_TEMPLATE = "%s — AI-hubben";
+const APP_DESCRIPTION =
+  "Katrineholms centrala plattform för AI-assistenter, statistik, utbildning och resurser.";
+
 export const metadata: Metadata = {
+  applicationName: APP_NAME,
   title: {
-    default: "AI-hubben — Katrineholms kommun",
-    template: "%s — AI-hubben",
+    default: APP_DEFAULT_TITLE,
+    template: APP_TITLE_TEMPLATE,
   },
-  description:
-    "Katrineholms centrala plattform för AI-assistenter, statistik, utbildning och resurser.",
+  description: APP_DESCRIPTION,
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: APP_DEFAULT_TITLE,
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    siteName: APP_NAME,
+    title: {
+      default: APP_DEFAULT_TITLE,
+      template: APP_TITLE_TEMPLATE,
+    },
+    description: APP_DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#333333",
+  themeColor: "#0a0a0a",
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
   viewportFit: "cover",
 };
 
