@@ -75,33 +75,32 @@ export function SearchModal({
     }
 
     setLoading(true);
-    const term = `%${q}%`;
 
     const [assistants, posts, faqs, docs] = await Promise.allSettled([
       // Assistants from Supabase (community)
       supabase
         .from("assistants")
         .select("id, name, description")
-        .or(`name.ilike.${term},description.ilike.${term}`)
+        .or(`name.ilike.%${q}%,description.ilike.%${q}%`)
         .limit(5),
       // Posts
       supabase
         .from("posts")
-        .select("id, title, excerpt, slug")
+        .select("id, title, excerpt, slug, content")
         .eq("published", true)
-        .or(`title.ilike.${term},excerpt.ilike.${term}`)
+        .or(`title.ilike.%${q}%,excerpt.ilike.%${q}%,content.ilike.%${q}%`)
         .limit(5),
       // FAQs
       supabase
         .from("faqs")
         .select("id, question, answer")
-        .or(`question.ilike.${term},answer.ilike.${term}`)
+        .or(`question.ilike.%${q}%,answer.ilike.%${q}%`)
         .limit(5),
       // Documents
       supabase
         .from("documents")
         .select("id, title, description")
-        .or(`title.ilike.${term},description.ilike.${term}`)
+        .or(`title.ilike.%${q}%,description.ilike.%${q}%`)
         .limit(5),
     ]);
 
