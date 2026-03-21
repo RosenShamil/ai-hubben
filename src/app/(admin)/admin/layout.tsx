@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { isCurrentUserAdmin, signOut } from "@/lib/supabase-auth";
+import { ChatWidget } from "@/components/shared/chat-widget";
 import { useTheme } from "next-themes";
 import { BRAND_GRADIENT } from "@/lib/constants";
 import {
@@ -226,6 +227,7 @@ export default function AdminLayout({
         <main className="flex-1 overflow-auto p-4 lg:p-6">{children}</main>
       </div>
       </div>
+      <ChatWidget />
     </div>
   );
 }
