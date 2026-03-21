@@ -283,7 +283,7 @@ export default function AdminUtbildningPage() {
               fontWeight: 400,
             }}
           >
-            Utbildning
+            Utbildningstillfällen
           </h1>
         </div>
         <button

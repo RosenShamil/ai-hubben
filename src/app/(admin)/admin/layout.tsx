@@ -19,14 +19,20 @@ import {
   Moon,
   Sun,
   ExternalLink,
+  Users,
+  Type,
+  MessageSquare,
 } from "lucide-react";
 
 const SIDEBAR_LINKS = [
   { label: "Oversikt", href: "/admin", icon: LayoutDashboard },
-  { label: "Utbildning", href: "/admin/utbildning", icon: GraduationCap },
-  { label: "Resurser", href: "/admin/resurser", icon: BookOpen },
+  { label: "Utbildningstillfällen", href: "/admin/utbildning", icon: GraduationCap },
+  { label: "Utbildningsmaterial", href: "/admin/resurser", icon: BookOpen },
   { label: "Dokument", href: "/admin/dokument", icon: FileText },
+  { label: "Team", href: "/admin/team", icon: Users },
+  { label: "Innehåll", href: "/admin/innehall", icon: Type },
   { label: "Assistenter", href: "/admin/assistenter", icon: Bot },
+  { label: "Meddelanden", href: "/admin/meddelanden", icon: MessageSquare },
 ];
 
 export default function AdminLayout({
@@ -41,6 +47,17 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    supabase
+      .from("contact_messages")
+      .select("id", { count: "exact", head: true })
+      .eq("read", false)
+      .then(({ count }) => {
+        setUnreadCount(count ?? 0);
+      });
+  }, []);
 
   useEffect(() => {
     async function checkAuth() {
@@ -144,7 +161,12 @@ export default function AdminLayout({
                 }`}
               >
                 <Icon size={16} />
-                {link.label}
+                <span className="flex-1">{link.label}</span>
+                {link.href === "/admin/meddelanden" && unreadCount > 0 && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-100 px-1.5 text-[0.625rem] font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                    {unreadCount}
+                  </span>
+                )}
               </Link>
             );
           })}

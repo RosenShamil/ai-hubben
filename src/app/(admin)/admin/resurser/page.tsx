@@ -182,7 +182,7 @@ export default function AdminResurserPage() {
               fontWeight: 400,
             }}
           >
-            Resurser
+            Utbildningsmaterial
           </h1>
         </div>
         <button
