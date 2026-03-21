@@ -22,6 +22,7 @@ import {
   Users,
   Type,
   MessageSquare,
+  Newspaper,
 } from "lucide-react";
 
 const SIDEBAR_LINKS = [
@@ -31,6 +32,7 @@ const SIDEBAR_LINKS = [
   { label: "Dokument", href: "/admin/dokument", icon: FileText },
   { label: "Team", href: "/admin/team", icon: Users },
   { label: "Innehåll", href: "/admin/innehall", icon: Type },
+  { label: "Nyheter", href: "/admin/nyheter", icon: Newspaper },
   { label: "Assistenter", href: "/admin/assistenter", icon: Bot },
   { label: "Meddelanden", href: "/admin/meddelanden", icon: MessageSquare },
 ];
