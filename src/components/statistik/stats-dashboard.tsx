@@ -251,12 +251,10 @@ export function StatsDashboard({
         </div>
 
         {/* Platform overview cards */}
-        <div className="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-4">
+        <div className="mt-5 grid grid-cols-2 gap-5">
           {[
-            { label: "Registrerade", value: platformOverview.registeredUsers, icon: Users },
-            { label: "Aktiva", value: platformOverview.activeUsers, icon: Zap },
-            { label: "Assistenter", value: platformOverview.totalAssistants, icon: Layers },
-            { label: "Spaces", value: platformOverview.spaces, icon: Layers },
+            { label: "Registrerade användare", value: platformOverview.registeredUsers, icon: Users },
+            { label: "Skapade spaces", value: platformOverview.spaces, icon: Layers },
           ].map((item, i) => {
             const Icon = item.icon;
             return (
