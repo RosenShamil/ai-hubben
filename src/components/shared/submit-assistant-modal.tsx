@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X, Check, HelpCircle } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 const REGIONS = [
   { value: "katrineholm", label: "Katrineholm" },
@@ -50,9 +51,30 @@ export function SubmitAssistantModal({
     );
   }
 
-  function handleSubmit() {
-    // TODO: POST to API
-    setStep("success");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit() {
+    setSubmitting(true);
+    setError("");
+    try {
+      const { error: dbError } = await supabase.from("assistants").insert({
+        name: form.name.trim(),
+        assistant_link: form.assistantLink.trim(),
+        organization: form.organization.trim(),
+        description: form.description.trim(),
+        regions: form.regions,
+        prompt: form.prompt.trim() || null,
+        setup_instructions: form.setupInstructions.trim() || null,
+        submitted_by: form.submittedBy.trim() || null,
+      });
+      if (dbError) throw new Error("Något gick fel. Försök igen.");
+      setStep("success");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Något gick fel.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function handleClose() {
@@ -90,8 +112,7 @@ export function SubmitAssistantModal({
             </h2>
             {step !== "success" && (
               <p className="mt-1 text-[0.8125rem] text-muted-foreground">
-                Dela din assistent med kommunen. Inskickade assistenter granskas
-                innan publicering.
+                Dela din assistent med kommunen.
               </p>
             )}
           </div>
@@ -264,8 +285,7 @@ export function SubmitAssistantModal({
               </div>
               <h3 className="mt-6 text-[1.25rem] font-semibold">Tack!</h3>
               <p className="mt-3 max-w-sm text-[0.9375rem] text-muted-foreground">
-                Din assistent har skickats in. Vårt team granskar den innan den
-                visas i biblioteket.
+                Din assistent har lagts till i biblioteket.
               </p>
             </div>
           )}
@@ -300,17 +320,23 @@ export function SubmitAssistantModal({
               >
                 Tillbaka
               </button>
-              <button
-                onClick={handleSubmit}
-                className="rounded-full bg-primary px-6 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-primary-foreground transition-all duration-150 active:scale-[0.98]"
-                style={{
-                  fontFamily: "var(--font-geist-mono), monospace",
-                  boxShadow:
-                    "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset",
-                }}
-              >
-                Skicka in för granskning
-              </button>
+              <div className="flex items-center gap-3">
+                {error && (
+                  <p className="text-[0.8125rem] text-destructive">{error}</p>
+                )}
+                <button
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="rounded-full bg-primary px-6 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-primary-foreground transition-all duration-150 active:scale-[0.98] disabled:opacity-50"
+                  style={{
+                    fontFamily: "var(--font-geist-mono), monospace",
+                    boxShadow:
+                      "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset",
+                  }}
+                >
+                  {submitting ? "Skickar..." : "Skicka in"}
+                </button>
+              </div>
             </>
           )}
           {step === "success" && (

@@ -1,4 +1,11 @@
+import { createClient } from "@supabase/supabase-js";
+
 const MARKETPLACE_URL = "https://marketplace.intric.ai/api";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export type IntricAssistant = {
   id: string;
@@ -9,38 +16,104 @@ export type IntricAssistant = {
   regions: string[];
   organization: string;
   created_at: string;
+  source: "marketplace" | "community";
 };
 
 export type IntricAssistantDetail = IntricAssistant & {
   prompt: string | null;
   setup_instructions: string | null;
   submitted_by: string | null;
-  status: string;
-  updated_at: string;
 };
 
-export async function fetchAssistants(
-  search?: string
-): Promise<IntricAssistant[]> {
-  const url = new URL(`${MARKETPLACE_URL}/assistants`);
-  if (search) url.searchParams.set("search", search);
+export async function fetchAssistants(): Promise<IntricAssistant[]> {
+  // Fetch from both sources in parallel
+  const [marketplaceResult, supabaseResult] = await Promise.allSettled([
+    fetchMarketplaceAssistants(),
+    fetchSupabaseAssistants(),
+  ]);
 
-  const res = await fetch(url.toString(), { next: { revalidate: 300 } });
-  if (!res.ok) throw new Error("Failed to fetch assistants");
+  const marketplace =
+    marketplaceResult.status === "fulfilled" ? marketplaceResult.value : [];
+  const community =
+    supabaseResult.status === "fulfilled" ? supabaseResult.value : [];
 
-  const data: IntricAssistant[] = await res.json();
+  return [...marketplace, ...community];
+}
 
-  return data.filter(
-    (a) => a.organization.toLowerCase() === "katrineholms kommun"
-  );
+async function fetchMarketplaceAssistants(): Promise<IntricAssistant[]> {
+  const res = await fetch(`${MARKETPLACE_URL}/assistants`, {
+    next: { revalidate: 300 },
+  });
+  if (!res.ok) throw new Error("Failed to fetch marketplace assistants");
+
+  const data = await res.json();
+
+  return data
+    .filter(
+      (a: { organization: string }) =>
+        a.organization.toLowerCase() === "katrineholms kommun"
+    )
+    .map((a: IntricAssistant) => ({ ...a, source: "marketplace" as const }));
+}
+
+async function fetchSupabaseAssistants(): Promise<IntricAssistant[]> {
+  const { data, error } = await supabase
+    .from("assistants")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  return (data || []).map((a) => ({
+    id: a.id,
+    name: a.name,
+    description: a.description || "",
+    assistant_link: a.assistant_link,
+    icon_url: null,
+    regions: a.regions || ["sweden"],
+    organization: a.organization,
+    created_at: a.created_at,
+    source: "community" as const,
+  }));
 }
 
 export async function fetchAssistant(
   id: string
 ): Promise<IntricAssistantDetail> {
-  const res = await fetch(`${MARKETPLACE_URL}/assistants/${id}`, {
-    next: { revalidate: 300 },
-  });
-  if (!res.ok) throw new Error("Failed to fetch assistant");
-  return res.json();
+  // Try marketplace first, then Supabase
+  try {
+    const res = await fetch(`${MARKETPLACE_URL}/assistants/${id}`, {
+      next: { revalidate: 300 },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return { ...data, source: "marketplace" };
+    }
+  } catch {
+    // Fall through to Supabase
+  }
+
+  // Try Supabase
+  const { data, error } = await supabase
+    .from("assistants")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) throw new Error("Assistant not found");
+
+  return {
+    id: data.id,
+    name: data.name,
+    description: data.description || "",
+    assistant_link: data.assistant_link,
+    icon_url: null,
+    regions: data.regions || ["sweden"],
+    organization: data.organization,
+    created_at: data.created_at,
+    source: "community",
+    prompt: data.prompt,
+    setup_instructions: data.setup_instructions,
+    submitted_by: data.submitted_by,
+  };
 }
