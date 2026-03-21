@@ -183,7 +183,7 @@ export function ChatWidget() {
           /* Mobile: bottom-right, above tab bar */
           --chat-bubble-left: auto;
           --chat-bubble-right: 1rem;
-          --chat-bubble-bottom: 5.5rem;
+          --chat-bubble-bottom: 6.5rem;
         }
 
         @media (min-width: 768px) {
