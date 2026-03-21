@@ -15,6 +15,7 @@ import {
   HelpCircle,
   Mail,
   Info,
+  LogIn,
 } from "lucide-react";
 
 const ICON_MAP = { Home, Bot, BarChart3, GraduationCap, Menu } as const;
@@ -33,6 +34,7 @@ const MORE_LINKS = [
   { label: "FAQ", href: "/faq", icon: HelpCircle },
   { label: "Kontakt", href: "/kontakt", icon: Mail },
   { label: "Om AI-hubben", href: "/om", icon: Info },
+  { label: "Logga in", href: "/admin/login", icon: LogIn },
 ];
 
 export function BottomTabBar() {

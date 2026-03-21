@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Moon, Sun, Search } from "lucide-react";
 import { useTheme } from "next-themes";
 import { NAV_LINKS, BRAND_GRADIENT } from "@/lib/constants";
+import { SearchModal } from "@/components/shared/search-modal";
 
 function NavLink({
   href,
@@ -43,9 +44,22 @@ export function Navbar() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Ctrl+K / Cmd+K to open search
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, []);
 
   return (
@@ -87,7 +101,8 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             {/* Search */}
             <button
-              className="hidden md:flex h-9 w-9 items-center justify-center rounded-full border border-border transition-colors hover:bg-secondary"
+              onClick={() => setSearchOpen(true)}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-border transition-colors hover:bg-secondary"
               aria-label="Sök"
             >
               <Search size={16} />
@@ -121,6 +136,9 @@ export function Navbar() {
           </div>
         </div>
       </nav>
+
+      {/* Search modal */}
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }

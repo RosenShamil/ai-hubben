@@ -115,7 +115,7 @@ export function HomeContent({ stats, assistants, posts, homeTexts = {} }: HomeCo
           </FadeIn>
           <FadeIn delay={0.15}>
             <h1
-              className="mt-8 max-w-[50rem] text-center text-[2.75rem] leading-[1.1] tracking-[-0.04em] md:text-[4.5rem] lg:text-[5.625rem]"
+              className="mt-8 max-w-[50rem] text-center text-[1.75rem] leading-[1.1] tracking-[-0.04em] sm:text-[2.75rem] md:text-[4.5rem] lg:text-[5.625rem]"
               style={{
                 fontFamily: "var(--font-bodoni), serif",
                 fontWeight: 400,

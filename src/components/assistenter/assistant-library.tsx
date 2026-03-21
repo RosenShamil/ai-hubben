@@ -56,7 +56,7 @@ export function AssistantLibrary({
                 Bibliotek
               </p>
               <h1
-                className="mt-4 text-[2.75rem] leading-[1.1] tracking-[-0.04em] md:text-[4.5rem]"
+                className="mt-4 text-[1.75rem] leading-[1.1] tracking-[-0.04em] sm:text-[2.75rem] md:text-[4.5rem]"
                 style={{
                   fontFamily: "var(--font-bodoni), serif",
                   fontWeight: 400,

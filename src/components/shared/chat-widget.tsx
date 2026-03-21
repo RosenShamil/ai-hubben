@@ -41,7 +41,7 @@ export function ChatWidget() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             onClick={handleOpen}
             aria-label="Öppna chatt med iKAI"
-            className="fixed z-[997] flex h-16 w-16 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary cursor-pointer"
+            className="fixed z-[997] flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary cursor-pointer"
             style={{
               background:
                 "linear-gradient(135deg, #c83228 0%, #e5651a 50%, #f5a623 100%)",
@@ -64,7 +64,7 @@ export function ChatWidget() {
                 />
               </>
             )}
-            <MessageCircle size={28} className="text-white relative z-10" />
+            <MessageCircle size={22} className="text-white relative z-10 md:!h-7 md:!w-7" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -78,7 +78,7 @@ export function ChatWidget() {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.85, opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed z-[998] flex flex-col overflow-hidden bg-card border border-border max-md:inset-0 max-md:!w-auto max-md:!h-auto md:bottom-8 md:right-8 md:rounded-2xl"
+            className="fixed z-[1000] flex flex-col overflow-hidden bg-card border border-border max-md:inset-0 max-md:!w-auto max-md:!h-auto md:bottom-8 md:right-8 md:rounded-2xl"
             style={{
               width: isFullscreen ? 800 : 400,
               height: isFullscreen ? 700 : 600,
@@ -180,10 +180,10 @@ export function ChatWidget() {
       {/* ── Responsive positioning via CSS custom properties ── */}
       <style jsx global>{`
         :root {
-          /* Mobile: bottom-left, above tab bar */
-          --chat-bubble-left: 1.5rem;
-          --chat-bubble-right: auto;
-          --chat-bubble-bottom: 6rem;
+          /* Mobile: bottom-right, above tab bar */
+          --chat-bubble-left: auto;
+          --chat-bubble-right: 1rem;
+          --chat-bubble-bottom: 5.5rem;
         }
 
         @media (min-width: 768px) {
