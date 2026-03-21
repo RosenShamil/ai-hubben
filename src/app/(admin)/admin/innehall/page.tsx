@@ -26,6 +26,11 @@ const OM_FIELDS = [
   { key: "om_vision", label: "Visionstext (Om-sidan)" },
 ];
 
+const KONTAKT_FIELDS = [
+  { key: "kontakt_heading", label: "Rubrik", placeholder: "Hör av dig", defaultValue: "Hör av dig" },
+  { key: "kontakt_description", label: "Beskrivning", placeholder: "Har du frågor, feedback eller förslag...", defaultValue: "Har du frågor, feedback eller förslag kring AI-hubben eller kommunens digitala utveckling? Vi finns här för att hjälpa." },
+];
+
 const HOME_FIELDS = [
   { key: "home_label", label: "Etikett ovanför rubrik", placeholder: "Katrineholms kommun", defaultValue: "Katrineholms kommun" },
   { key: "home_heading_1", label: "Rubrik rad 1", placeholder: "Kommunens", defaultValue: "Kommunens" },
@@ -43,6 +48,9 @@ export default function AdminInnehallPage() {
   );
   const [homeFields, setHomeFields] = useState<ContentField[]>(
     HOME_FIELDS.map((f) => ({ key: f.key, label: f.label, value: "", saving: false }))
+  );
+  const [kontaktFields, setKontaktFields] = useState<ContentField[]>(
+    KONTAKT_FIELDS.map((f) => ({ key: f.key, label: f.label, value: "", saving: false }))
   );
   const [chatLinks, setChatLinks] = useState<ChatLinkRow[]>([]);
   const [chatLinksSaving, setChatLinksSaving] = useState(false);
@@ -65,6 +73,7 @@ export default function AdminInnehallPage() {
       const allKeys = [
         ...OM_FIELDS.map((f) => f.key),
         ...HOME_FIELDS.map((f) => f.key),
+        ...KONTAKT_FIELDS.map((f) => f.key),
         "chat_links",
       ];
 
@@ -95,6 +104,13 @@ export default function AdminInnehallPage() {
         prev.map((field, i) => ({
           ...field,
           value: dataMap[field.key] || HOME_FIELDS[i]?.defaultValue || "",
+        }))
+      );
+
+      setKontaktFields((prev) =>
+        prev.map((field, i) => ({
+          ...field,
+          value: dataMap[field.key] || KONTAKT_FIELDS[i]?.defaultValue || "",
         }))
       );
 
@@ -143,12 +159,17 @@ export default function AdminInnehallPage() {
     fetchContent();
   }, [showToast]);
 
-  async function handleSave(index: number, isHome: boolean) {
-    const fieldsList = isHome ? homeFields : fields;
-    const setFn = isHome ? setHomeFields : setFields;
-    const field = fieldsList[index];
+  function getFieldSet(group: "om" | "home" | "kontakt") {
+    if (group === "home") return { list: homeFields, set: setHomeFields };
+    if (group === "kontakt") return { list: kontaktFields, set: setKontaktFields };
+    return { list: fields, set: setFields };
+  }
 
-    setFn((prev) =>
+  async function handleSave(index: number, group: "om" | "home" | "kontakt") {
+    const { list, set } = getFieldSet(group);
+    const field = list[index];
+
+    set((prev) =>
       prev.map((f, i) => (i === index ? { ...f, saving: true } : f))
     );
 
@@ -165,14 +186,14 @@ export default function AdminInnehallPage() {
       showToast("success", `"${field.label}" sparad`);
     }
 
-    setFn((prev) =>
+    set((prev) =>
       prev.map((f, i) => (i === index ? { ...f, saving: false } : f))
     );
   }
 
-  function updateValue(index: number, value: string, isHome: boolean) {
-    const setFn = isHome ? setHomeFields : setFields;
-    setFn((prev) =>
+  function updateValue(index: number, value: string, group: "om" | "home" | "kontakt") {
+    const { set } = getFieldSet(group);
+    set((prev) =>
       prev.map((f, i) => (i === index ? { ...f, value } : f))
     );
   }
@@ -270,7 +291,7 @@ export default function AdminInnehallPage() {
                   <input
                     type="text"
                     value={field.value}
-                    onChange={(e) => updateValue(index, e.target.value, true)}
+                    onChange={(e) => updateValue(index, e.target.value, "home")}
                     placeholder={HOME_FIELDS[index]?.placeholder ?? ""}
                     className="w-full rounded-md border border-border bg-background px-3 py-2 text-[0.875rem] outline-none focus:border-foreground"
                   />
@@ -279,7 +300,7 @@ export default function AdminInnehallPage() {
                   </p>
                   <div className="mt-3 flex justify-end">
                     <button
-                      onClick={() => handleSave(index, true)}
+                      onClick={() => handleSave(index, "home")}
                       disabled={field.saving}
                       className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-[0.8125rem] font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
                       style={{ ...monoStyle, boxShadow: btnShadow }}
@@ -319,7 +340,7 @@ export default function AdminInnehallPage() {
                   </label>
                   <textarea
                     value={field.value}
-                    onChange={(e) => updateValue(index, e.target.value, false)}
+                    onChange={(e) => updateValue(index, e.target.value, "om")}
                     rows={8}
                     placeholder="Skriv text har..."
                     className="w-full resize-y rounded-md border border-border bg-background px-3 py-2 text-[0.875rem] leading-[1.7] outline-none focus:border-foreground"
@@ -329,7 +350,57 @@ export default function AdminInnehallPage() {
                   </p>
                   <div className="mt-4 flex justify-end">
                     <button
-                      onClick={() => handleSave(index, false)}
+                      onClick={() => handleSave(index, "om")}
+                      disabled={field.saving}
+                      className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-[0.8125rem] font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
+                      style={{ ...monoStyle, boxShadow: btnShadow }}
+                    >
+                      {field.saving ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : (
+                        <Check size={14} />
+                      )}
+                      {field.saving ? "Sparar..." : "Spara"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Kontaktsidan ── */}
+          <div>
+            <h2
+              className="mb-6 text-[1.25rem] tracking-[-0.02em]"
+              style={bodoniStyle}
+            >
+              Kontaktsidan
+            </h2>
+            <div className="space-y-5">
+              {kontaktFields.map((field, index) => (
+                <div
+                  key={field.key}
+                  className="rounded-lg border border-border bg-card p-5"
+                >
+                  <label
+                    className="mb-2 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
+                    style={monoStyle}
+                  >
+                    {field.label}
+                  </label>
+                  <input
+                    type="text"
+                    value={field.value}
+                    onChange={(e) => updateValue(index, e.target.value, "kontakt")}
+                    placeholder={KONTAKT_FIELDS[index]?.placeholder ?? ""}
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-[0.875rem] outline-none focus:border-foreground"
+                  />
+                  <p className="mt-1.5 text-[0.75rem] text-muted-foreground">
+                    Tom = standardvärde ({KONTAKT_FIELDS[index]?.placeholder})
+                  </p>
+                  <div className="mt-3 flex justify-end">
+                    <button
+                      onClick={() => handleSave(index, "kontakt")}
                       disabled={field.saving}
                       className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-[0.8125rem] font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
                       style={{ ...monoStyle, boxShadow: btnShadow }}

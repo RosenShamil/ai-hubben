@@ -95,7 +95,7 @@ function TeamCard({ member, index }: { member: TeamMember; index: number }) {
   const initials = getInitials(member.name);
   return (
     <FadeIn key={member.id} delay={index * 0.05}>
-      <div className="group rounded-lg border border-border bg-card p-6 transition-all duration-300 hover:bg-secondary hover:shadow-lg">
+      <div className="group flex h-full flex-col rounded-lg border border-border bg-card p-6 transition-all duration-300 hover:bg-secondary hover:shadow-lg">
         <div className="flex items-center gap-4">
           {member.image_url ? (
             <img
@@ -126,8 +126,8 @@ function TeamCard({ member, index }: { member: TeamMember; index: number }) {
           </div>
         </div>
 
-        {member.email && (
-          <div className="mt-4">
+        <div className="mt-auto pt-4">
+          {member.email ? (
             <a
               href={`mailto:${member.email}`}
               className="flex items-center gap-1.5 text-[0.8125rem] text-muted-foreground transition-colors hover:text-foreground"
@@ -135,8 +135,10 @@ function TeamCard({ member, index }: { member: TeamMember; index: number }) {
               <Mail size={14} />
               {member.email}
             </a>
-          </div>
-        )}
+          ) : (
+            <div className="h-5" />
+          )}
+        </div>
       </div>
     </FadeIn>
   );

@@ -27,6 +27,7 @@ import {
   HelpCircle,
   Home,
   BarChart3,
+  Phone,
 } from "lucide-react";
 
 const SIDEBAR_LINKS = [
@@ -40,6 +41,7 @@ const SIDEBAR_LINKS = [
   { label: "Innehåll", href: "/admin/innehall", icon: Type },
   { label: "Nyheter", href: "/admin/nyheter", icon: Newspaper },
   { label: "FAQ", href: "/admin/faq", icon: HelpCircle },
+  { label: "Kontakt", href: "/admin/kontakt", icon: Phone },
   { label: "Assistenter", href: "/admin/assistenter", icon: Bot },
   { label: "Meddelanden", href: "/admin/meddelanden", icon: MessageSquare },
 ];

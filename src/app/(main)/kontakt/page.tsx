@@ -1,12 +1,83 @@
 import type { Metadata } from "next";
-import { Mail, Phone, Building2, Headset } from "lucide-react";
+import { Mail, Phone, Building2 } from "lucide-react";
 import { FadeIn } from "@/components/shared/fade-in";
 import { ContactForm } from "@/components/kontakt/contact-form";
 import { BRAND_GRADIENT } from "@/lib/constants";
+import { fetchSiteContent } from "@/lib/team";
+import { fetchContactEntries } from "@/lib/contact-entries";
+import type { ContactEntry } from "@/lib/contact-entries";
 
 export const metadata: Metadata = { title: "Kontakt" };
+export const revalidate = 60;
 
-export default function KontaktPage() {
+function ContactCard({ entry }: { entry: ContactEntry }) {
+  const phoneHref = entry.phone?.replace(/[^+\d]/g, "") ?? "";
+
+  const content = (
+    <>
+      <div className="flex items-center gap-2">
+        <Building2 size={18} className="text-muted-foreground" />
+        <p
+          className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+          style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+        >
+          {entry.label}
+        </p>
+      </div>
+      <h3 className="mt-3 text-[1.125rem] font-medium tracking-tight">
+        {entry.title}
+      </h3>
+      {entry.description && (
+        <p className="mt-1 text-[0.9375rem] text-muted-foreground">
+          {entry.description}
+        </p>
+      )}
+      <div className="mt-4 space-y-2">
+        {entry.phone && (
+          <a
+            href={`tel:${phoneHref}`}
+            className="flex items-center gap-2 text-[0.9375rem] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Phone size={14} />
+            {entry.phone}
+          </a>
+        )}
+        {entry.email && (
+          <a
+            href={`mailto:${entry.email}`}
+            className="flex items-center gap-2 text-[0.9375rem] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Mail size={14} />
+            {entry.email}
+          </a>
+        )}
+      </div>
+    </>
+  );
+
+  if (entry.is_highlighted) {
+    return (
+      <div className="rounded-lg border border-border bg-card p-6">
+        {content}
+      </div>
+    );
+  }
+
+  return <div>{content}</div>;
+}
+
+export default async function KontaktPage() {
+  const [heading, description, entries] = await Promise.all([
+    fetchSiteContent("kontakt_heading"),
+    fetchSiteContent("kontakt_description"),
+    fetchContactEntries(),
+  ]);
+
+  const h = heading || "Hör av dig";
+  const desc =
+    description ||
+    "Har du frågor, feedback eller förslag kring AI-hubben eller kommunens digitala utveckling? Vi finns här för att hjälpa.";
+
   return (
     <>
       {/* Hero */}
@@ -25,11 +96,10 @@ export default function KontaktPage() {
               fontWeight: 400,
             }}
           >
-            Hör av dig
+            {h}
           </h1>
           <p className="mt-6 max-w-[42rem] text-[1.0625rem] leading-[1.7] text-muted-foreground">
-            Har du frågor, feedback eller förslag kring AI-hubben eller
-            kommunens digitala utveckling? Vi finns här för att hjälpa.
+            {desc}
           </p>
         </FadeIn>
       </section>
@@ -46,81 +116,9 @@ export default function KontaktPage() {
           <div className="lg:col-span-2">
             <FadeIn>
               <div className="space-y-8">
-                {/* Department */}
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Building2 size={18} className="text-muted-foreground" />
-                    <p
-                      className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
-                      style={{
-                        fontFamily: "var(--font-geist-mono), monospace",
-                      }}
-                    >
-                      Avdelning
-                    </p>
-                  </div>
-                  <h3 className="mt-3 text-[1.125rem] font-medium tracking-tight">
-                    Digitaliseringsavdelningen
-                  </h3>
-                  <p className="mt-1 text-[0.9375rem] text-muted-foreground">
-                    Katrineholms kommun
-                  </p>
-                </div>
-
-                {/* Email */}
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Mail size={18} className="text-muted-foreground" />
-                    <p
-                      className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
-                      style={{
-                        fontFamily: "var(--font-geist-mono), monospace",
-                      }}
-                    >
-                      E-post
-                    </p>
-                  </div>
-                  <a
-                    href="mailto:digitaliseringsavdelningen@katrineholm.se"
-                    className="mt-3 block text-[0.9375rem] text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
-                  >
-                    digitaliseringsavdelningen@katrineholm.se
-                  </a>
-                </div>
-
-                {/* Servicedesk */}
-                <div className="rounded-lg border border-border bg-card p-6">
-                  <div className="flex items-center gap-2">
-                    <Headset size={18} className="text-muted-foreground" />
-                    <p
-                      className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
-                      style={{
-                        fontFamily: "var(--font-geist-mono), monospace",
-                      }}
-                    >
-                      IT-support
-                    </p>
-                  </div>
-                  <p className="mt-3 text-[0.9375rem] text-muted-foreground">
-                    För teknisk support och IT-ärenden, kontakta Servicedesk.
-                  </p>
-                  <div className="mt-4 space-y-2">
-                    <a
-                      href="tel:015056900"
-                      className="flex items-center gap-2 text-[0.9375rem] text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      <Phone size={14} />
-                      0150-569 00
-                    </a>
-                    <a
-                      href="mailto:6900@katrineholm.se"
-                      className="flex items-center gap-2 text-[0.9375rem] text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      <Mail size={14} />
-                      6900@katrineholm.se
-                    </a>
-                  </div>
-                </div>
+                {entries.map((entry) => (
+                  <ContactCard key={entry.id} entry={entry} />
+                ))}
               </div>
             </FadeIn>
           </div>
