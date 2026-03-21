@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { StatsDashboard } from "@/components/statistik/stats-dashboard";
 import { fetchTrainingStats } from "@/lib/training-data";
+import { fetchAllStats } from "@/lib/stats-data";
 
 export const metadata: Metadata = {
   title: "Statistik — AI-hubben",
@@ -11,7 +12,21 @@ export const metadata: Metadata = {
 export const revalidate = 300; // Refresh every 5 min
 
 export default async function StatistikPage() {
-  const trainingStats = await fetchTrainingStats();
+  const [trainingStats, allStats] = await Promise.all([
+    fetchTrainingStats(),
+    fetchAllStats(),
+  ]);
 
-  return <StatsDashboard trainingStats={trainingStats} />;
+  return (
+    <StatsDashboard
+      trainingStats={trainingStats}
+      keyMetrics={allStats.keyMetrics}
+      dailyInteractions={allStats.dailyInteractions}
+      topAssistants={allStats.topAssistants}
+      modelUsage={allStats.modelUsage}
+      assistantSplit={allStats.assistantSplit}
+      fileUploads={allStats.fileUploads}
+      yearComparison={allStats.yearComparison}
+    />
+  );
 }

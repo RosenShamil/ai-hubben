@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { supabase as supabaseClient } from "@/lib/supabase";
 
 const MARKETPLACE_URL = "https://marketplace.intric.ai/api";
 
@@ -75,6 +76,25 @@ async function fetchSupabaseAssistants(): Promise<IntricAssistant[]> {
     created_at: a.created_at,
     source: "community" as const,
   }));
+}
+
+export async function fetchFeaturedAssistants(): Promise<IntricAssistant[]> {
+  const { data: featuredRows, error } = await supabaseClient
+    .from("featured_assistants")
+    .select("assistant_id, sort_order")
+    .order("sort_order", { ascending: true });
+
+  if (error || !featuredRows || featuredRows.length === 0) return [];
+
+  const allAssistants = await fetchAssistants();
+
+  const featuredMap = new Map(
+    featuredRows.map((row) => [row.assistant_id, row.sort_order as number])
+  );
+
+  return allAssistants
+    .filter((a) => featuredMap.has(a.id))
+    .sort((a, b) => (featuredMap.get(a.id) ?? 0) - (featuredMap.get(b.id) ?? 0));
 }
 
 export async function fetchAssistant(

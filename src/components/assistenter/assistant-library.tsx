@@ -141,7 +141,7 @@ export function AssistantLibrary({
                       />
                     </div>
                     {/* Card */}
-                    <div className="relative flex flex-col gap-4 rounded-lg border border-border bg-card p-6 transition-all duration-300 group-hover:bg-secondary group-hover:shadow-lg">
+                    <div className="relative flex h-full flex-col gap-4 rounded-lg border border-border bg-card p-6 transition-all duration-300 group-hover:bg-secondary group-hover:shadow-lg">
                       <div className="flex items-center gap-3">
                         {a.icon_url ? (
                           <img
@@ -170,7 +170,7 @@ export function AssistantLibrary({
                           </p>
                         </div>
                       </div>
-                      <p className="line-clamp-2 text-[0.875rem] leading-[1.6] text-muted-foreground">
+                      <p className="flex-1 line-clamp-2 text-[0.875rem] leading-[1.6] text-muted-foreground">
                         {a.description}
                       </p>
                     </div>

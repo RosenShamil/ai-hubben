@@ -11,7 +11,6 @@ import {
   Menu,
   X,
   FileText,
-  FolderOpen,
   Newspaper,
   HelpCircle,
   Mail,
@@ -30,7 +29,6 @@ const TABS = [
 
 const MORE_LINKS = [
   { label: "Dokumentation", href: "/dokumentation", icon: FileText },
-  { label: "Projekt", href: "/projekt", icon: FolderOpen },
   { label: "Nyheter", href: "/nyheter", icon: Newspaper },
   { label: "FAQ", href: "/faq", icon: HelpCircle },
   { label: "Kontakt", href: "/kontakt", icon: Mail },

@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { fetchAssistant } from "@/lib/intric";
 import { FadeIn } from "@/components/shared/fade-in";
 import { AssistantActions } from "@/components/assistenter/assistant-actions";
-import { CHAT_LINKS } from "@/lib/assistant-chat-links";
+import { fetchChatLinks } from "@/lib/assistant-chat-links";
 import { BRAND_GRADIENT } from "@/lib/constants";
 
 // Color palette for letter avatars
@@ -47,8 +47,12 @@ export default async function AssistantDetailPage({
   const { id } = await params;
 
   let assistant;
+  let chatLinks: Record<string, string> = {};
   try {
-    assistant = await fetchAssistant(id);
+    [assistant, chatLinks] = await Promise.all([
+      fetchAssistant(id),
+      fetchChatLinks(),
+    ]);
   } catch {
     notFound();
   }
@@ -179,7 +183,7 @@ export default async function AssistantDetailPage({
               {assistant.assistant_link && (
                 <AssistantActions
                   shareLink={assistant.assistant_link}
-                  chatLink={CHAT_LINKS[assistant.id]}
+                  chatLink={chatLinks[assistant.id]}
                 />
               )}
 

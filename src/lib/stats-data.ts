@@ -1,5 +1,7 @@
 // ── Stats Data (placeholder + CSV-derived) ──
 
+import { supabase } from "@/lib/supabase";
+
 export type Period = "2025" | "2026" | "all";
 
 export interface KeyMetric {
@@ -52,9 +54,21 @@ export interface RoleTraining {
   trained: number;
 }
 
-// ── Key metrics ──
+// ── All stats data interface ──
 
-export const KEY_METRICS: Record<Period, KeyMetric[]> = {
+export interface AllStatsData {
+  keyMetrics: Record<Period, KeyMetric[]>;
+  dailyInteractions: DailyInteraction[];
+  topAssistants: AssistantUsage[];
+  modelUsage: ModelUsage[];
+  assistantSplit: ModelUsage[];
+  fileUploads: FileUpload[];
+  yearComparison: YearComparison[];
+}
+
+// ── Default / fallback data ──
+
+const DEFAULT_KEY_METRICS: Record<Period, KeyMetric[]> = {
   "2026": [
     { label: "Interaktioner", value: 6973, formatted: "6 973", change: 142, changeLabel: "vs 2025" },
     { label: "Aktiva användare", value: 257, formatted: "257", change: 85, changeLabel: "vs 2025" },
@@ -75,9 +89,7 @@ export const KEY_METRICS: Record<Period, KeyMetric[]> = {
   ],
 };
 
-// ── Daily interactions (Feb–Mar 2026) ──
-
-export const DAILY_INTERACTIONS: DailyInteraction[] = [
+const DEFAULT_DAILY_INTERACTIONS: DailyInteraction[] = [
   { date: "3 feb", interactions: 145 },
   { date: "4 feb", interactions: 189 },
   { date: "5 feb", interactions: 212 },
@@ -110,9 +122,7 @@ export const DAILY_INTERACTIONS: DailyInteraction[] = [
   { date: "14 mar", interactions: 345 },
 ];
 
-// ── Top assistants ──
-
-export const TOP_ASSISTANTS: AssistantUsage[] = [
+const DEFAULT_TOP_ASSISTANTS: AssistantUsage[] = [
   { name: "Intric", messages: 3759 },
   { name: "Promptexperten", messages: 460 },
   { name: "Konteringsassistenten", messages: 227 },
@@ -125,9 +135,7 @@ export const TOP_ASSISTANTS: AssistantUsage[] = [
   { name: "Kommunikatören", messages: 87 },
 ];
 
-// ── AI model usage ──
-
-export const MODEL_USAGE: ModelUsage[] = [
+const DEFAULT_MODEL_USAGE: ModelUsage[] = [
   { name: "GPT-5.3", value: 1745 },
   { name: "GPT-4.1", value: 1455 },
   { name: "GPT-oss-120b", value: 1433 },
@@ -136,16 +144,12 @@ export const MODEL_USAGE: ModelUsage[] = [
   { name: "Övriga", value: 575 },
 ];
 
-// ── Personal vs custom assistant split ──
-
-export const ASSISTANT_SPLIT: ModelUsage[] = [
+const DEFAULT_ASSISTANT_SPLIT: ModelUsage[] = [
   { name: "Personliga", value: 3759 },
   { name: "Anpassade", value: 3214 },
 ];
 
-// ── File uploads by type ──
-
-export const FILE_UPLOADS: FileUpload[] = [
+const DEFAULT_FILE_UPLOADS: FileUpload[] = [
   { type: "PDF", count: 1853 },
   { type: "Word", count: 498 },
   { type: "PNG", count: 154 },
@@ -155,16 +159,14 @@ export const FILE_UPLOADS: FileUpload[] = [
   { type: "Audio", count: 31 },
 ];
 
-// ── Year comparison ──
-
-export const YEAR_COMPARISON: YearComparison[] = [
+const DEFAULT_YEAR_COMPARISON: YearComparison[] = [
   { category: "Användare", "2025": 139, "2026": 257 },
   { category: "Interaktioner", "2025": 2881, "2026": 6973 },
   { category: "Assistenter", "2025": 120, "2026": 190 },
   { category: "Utbildade", "2025": 160, "2026": 340 },
 ];
 
-// ── Training data ──
+// ── Training data (kept for backward compat, handled by training-data.ts) ──
 
 export const TRAINING_METRICS: TrainingMetric[] = [
   { label: "Workshops", value: 12, formatted: "12" },
@@ -201,3 +203,86 @@ export const CHART_COLORS = [
   "#e74c3c", // light red
   "#1abc9c", // teal
 ];
+
+// ── Backwards-compatible static exports (for any legacy usage) ──
+
+export const KEY_METRICS = DEFAULT_KEY_METRICS;
+export const DAILY_INTERACTIONS = DEFAULT_DAILY_INTERACTIONS;
+export const TOP_ASSISTANTS = DEFAULT_TOP_ASSISTANTS;
+export const MODEL_USAGE = DEFAULT_MODEL_USAGE;
+export const ASSISTANT_SPLIT = DEFAULT_ASSISTANT_SPLIT;
+export const FILE_UPLOADS = DEFAULT_FILE_UPLOADS;
+export const YEAR_COMPARISON = DEFAULT_YEAR_COMPARISON;
+
+// ── Fetch helpers (DB with fallback) ──
+
+async function fetchStatsValue<T>(key: string, fallback: T): Promise<T> {
+  try {
+    const { data, error } = await supabase
+      .from("stats_data")
+      .select("value")
+      .eq("key", key)
+      .single();
+
+    if (error || !data) return fallback;
+    return data.value as T;
+  } catch {
+    return fallback;
+  }
+}
+
+export async function fetchKeyMetrics(): Promise<Record<Period, KeyMetric[]>> {
+  const [m2025, m2026, mAll] = await Promise.all([
+    fetchStatsValue<KeyMetric[]>("key_metrics_2025", DEFAULT_KEY_METRICS["2025"]),
+    fetchStatsValue<KeyMetric[]>("key_metrics_2026", DEFAULT_KEY_METRICS["2026"]),
+    fetchStatsValue<KeyMetric[]>("key_metrics_all", DEFAULT_KEY_METRICS["all"]),
+  ]);
+  return { "2025": m2025, "2026": m2026, all: mAll };
+}
+
+export async function fetchDailyInteractions(): Promise<DailyInteraction[]> {
+  return fetchStatsValue("daily_interactions", DEFAULT_DAILY_INTERACTIONS);
+}
+
+export async function fetchTopAssistants(): Promise<AssistantUsage[]> {
+  return fetchStatsValue("top_assistants", DEFAULT_TOP_ASSISTANTS);
+}
+
+export async function fetchModelUsage(): Promise<ModelUsage[]> {
+  return fetchStatsValue("model_usage", DEFAULT_MODEL_USAGE);
+}
+
+export async function fetchAssistantSplit(): Promise<ModelUsage[]> {
+  return fetchStatsValue("assistant_split", DEFAULT_ASSISTANT_SPLIT);
+}
+
+export async function fetchFileUploads(): Promise<FileUpload[]> {
+  return fetchStatsValue("file_uploads", DEFAULT_FILE_UPLOADS);
+}
+
+export async function fetchYearComparison(): Promise<YearComparison[]> {
+  return fetchStatsValue("year_comparison", DEFAULT_YEAR_COMPARISON);
+}
+
+export async function fetchAllStats(): Promise<AllStatsData> {
+  const [keyMetrics, dailyInteractions, topAssistants, modelUsage, assistantSplit, fileUploads, yearComparison] =
+    await Promise.all([
+      fetchKeyMetrics(),
+      fetchDailyInteractions(),
+      fetchTopAssistants(),
+      fetchModelUsage(),
+      fetchAssistantSplit(),
+      fetchFileUploads(),
+      fetchYearComparison(),
+    ]);
+
+  return {
+    keyMetrics,
+    dailyInteractions,
+    topAssistants,
+    modelUsage,
+    assistantSplit,
+    fileUploads,
+    yearComparison,
+  };
+}

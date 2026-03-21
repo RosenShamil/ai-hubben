@@ -30,7 +30,6 @@ export const FOOTER_LINKS = [
   {
     title: "Resurser",
     links: [
-      { label: "Projekt", href: "/projekt" },
       { label: "Nyheter", href: "/nyheter" },
       { label: "FAQ", href: "/faq" },
     ],

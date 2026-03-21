@@ -20,18 +20,19 @@ import { FadeIn } from "@/components/shared/fade-in";
 import { CountUp } from "@/components/shared/count-up";
 import { BRAND_GRADIENT } from "@/lib/constants";
 import {
-  KEY_METRICS,
-  DAILY_INTERACTIONS,
-  TOP_ASSISTANTS,
-  MODEL_USAGE,
-  ASSISTANT_SPLIT,
-  FILE_UPLOADS,
-  YEAR_COMPARISON,
   CHART_COLORS,
 } from "@/lib/stats-data";
-import type { Period } from "@/lib/stats-data";
+import type {
+  Period,
+  KeyMetric,
+  DailyInteraction,
+  AssistantUsage,
+  ModelUsage,
+  FileUpload,
+  YearComparison,
+} from "@/lib/stats-data";
 import type { TrainingStats } from "@/lib/training-data";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 /* ── Custom tooltip ── */
 
@@ -102,13 +103,35 @@ function SectionCard({ children, className = "" }: { children: React.ReactNode; 
   );
 }
 
+/* ── Props ── */
+
+interface StatsDashboardProps {
+  trainingStats: TrainingStats;
+  keyMetrics: Record<Period, KeyMetric[]>;
+  dailyInteractions: DailyInteraction[];
+  topAssistants: AssistantUsage[];
+  modelUsage: ModelUsage[];
+  assistantSplit: ModelUsage[];
+  fileUploads: FileUpload[];
+  yearComparison: YearComparison[];
+}
+
 /* ── Main dashboard ── */
 
-export function StatsDashboard({ trainingStats }: { trainingStats: TrainingStats }) {
+export function StatsDashboard({
+  trainingStats,
+  keyMetrics,
+  dailyInteractions,
+  topAssistants,
+  modelUsage,
+  assistantSplit,
+  fileUploads,
+  yearComparison,
+}: StatsDashboardProps) {
   const [period, setPeriod] = useState<Period>("2026");
   const [trainingView, setTrainingView] = useState<"department" | "role">("department");
 
-  const metrics = KEY_METRICS[period];
+  const metrics = keyMetrics[period];
 
   const periodOptions: { label: string; value: Period }[] = [
     { label: "2025", value: "2025" },
@@ -250,7 +273,7 @@ export function StatsDashboard({ trainingStats }: { trainingStats: TrainingStats
             <div className="mt-8 h-[300px] md:h-[380px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                  data={DAILY_INTERACTIONS}
+                  data={dailyInteractions}
                   margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
                 >
                   <defs>
@@ -323,7 +346,7 @@ export function StatsDashboard({ trainingStats }: { trainingStats: TrainingStats
               <div className="mt-8 h-[380px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={[...TOP_ASSISTANTS].reverse()}
+                    data={[...topAssistants].reverse()}
                     layout="vertical"
                     margin={{ top: 0, right: 10, left: 0, bottom: 0 }}
                   >
@@ -350,7 +373,7 @@ export function StatsDashboard({ trainingStats }: { trainingStats: TrainingStats
                     />
                     <Tooltip content={<ChartTooltip />} />
                     <Bar dataKey="messages" name="Meddelanden" radius={[0, 4, 4, 0]}>
-                      {[...TOP_ASSISTANTS].reverse().map((_, index) => (
+                      {[...topAssistants].reverse().map((_, index) => (
                         <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                       ))}
                     </Bar>
@@ -382,7 +405,7 @@ export function StatsDashboard({ trainingStats }: { trainingStats: TrainingStats
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={MODEL_USAGE}
+                      data={modelUsage}
                       cx="50%"
                       cy="50%"
                       innerRadius="50%"
@@ -392,7 +415,7 @@ export function StatsDashboard({ trainingStats }: { trainingStats: TrainingStats
                       nameKey="name"
                       stroke="none"
                     >
-                      {MODEL_USAGE.map((_, index) => (
+                      {modelUsage.map((_, index) => (
                         <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                       ))}
                     </Pie>
@@ -454,7 +477,7 @@ export function StatsDashboard({ trainingStats }: { trainingStats: TrainingStats
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={ASSISTANT_SPLIT}
+                      data={assistantSplit}
                       cx="50%"
                       cy="50%"
                       innerRadius="50%"
@@ -508,7 +531,7 @@ export function StatsDashboard({ trainingStats }: { trainingStats: TrainingStats
               <div className="mt-8 h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={FILE_UPLOADS}
+                    data={fileUploads}
                     margin={{ top: 0, right: 10, left: -20, bottom: 0 }}
                   >
                     <CartesianGrid
@@ -531,7 +554,7 @@ export function StatsDashboard({ trainingStats }: { trainingStats: TrainingStats
                     />
                     <Tooltip content={<ChartTooltip />} />
                     <Bar dataKey="count" name="Filer" radius={[4, 4, 0, 0]}>
-                      {FILE_UPLOADS.map((_, index) => (
+                      {fileUploads.map((_, index) => (
                         <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                       ))}
                     </Bar>
@@ -570,7 +593,7 @@ export function StatsDashboard({ trainingStats }: { trainingStats: TrainingStats
             <div className="mt-8 h-[320px] md:h-[380px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={YEAR_COMPARISON}
+                  data={yearComparison}
                   margin={{ top: 5, right: 10, left: -20, bottom: 0 }}
                 >
                   <CartesianGrid

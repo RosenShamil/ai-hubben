@@ -1,6 +1,9 @@
 // Manual mapping: Marketplace assistant ID → Intric public chat URL
-// Add chat links as they become available
-export const CHAT_LINKS: Record<string, string> = {
+// Now fetches from DB (site_content key 'chat_links') with fallback to defaults
+
+import { supabase } from "@/lib/supabase";
+
+const DEFAULT_CHAT_LINKS: Record<string, string> = {
   // Katrineholm AI (iKAI)
   "1bf566df-5f69-439e-bdbd-13da06b5d947":
     "https://katrineholm.intric.ai/public/4fcece60-7310-489e-a003-9adb4d9c3e8b",
@@ -14,3 +17,26 @@ export const CHAT_LINKS: Record<string, string> = {
   "f139962a-12e1-4eeb-a170-4da2df2ffc55":
     "https://katrineholm.intric.ai/public/4a133c44-9d8e-46bc-bcbc-f3397a349577",
 };
+
+// Backwards-compatible static export
+export const CHAT_LINKS = DEFAULT_CHAT_LINKS;
+
+// Async fetch from DB with fallback
+export async function fetchChatLinks(): Promise<Record<string, string>> {
+  try {
+    const { data, error } = await supabase
+      .from("site_content")
+      .select("value")
+      .eq("key", "chat_links")
+      .single();
+
+    if (error || !data) return { ...DEFAULT_CHAT_LINKS };
+
+    // value is stored as text (JSON string)
+    const parsed = typeof data.value === "string" ? JSON.parse(data.value) : data.value;
+    // Merge: DB values override defaults
+    return { ...DEFAULT_CHAT_LINKS, ...parsed };
+  } catch {
+    return { ...DEFAULT_CHAT_LINKS };
+  }
+}
