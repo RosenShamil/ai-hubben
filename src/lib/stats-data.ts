@@ -59,10 +59,10 @@ export interface RoleTraining {
 export interface AllStatsData {
   keyMetrics: Record<Period, KeyMetric[]>;
   dailyInteractions: DailyInteraction[];
-  topAssistants: AssistantUsage[];
-  modelUsage: ModelUsage[];
-  assistantSplit: ModelUsage[];
-  fileUploads: FileUpload[];
+  topAssistants: Record<Period, AssistantUsage[]>;
+  modelUsage: Record<Period, ModelUsage[]>;
+  assistantSplit: Record<Period, ModelUsage[]>;
+  fileUploads: Record<Period, FileUpload[]>;
   yearComparison: YearComparison[];
 }
 
@@ -244,20 +244,29 @@ export async function fetchDailyInteractions(): Promise<DailyInteraction[]> {
   return fetchStatsValue("daily_interactions", DEFAULT_DAILY_INTERACTIONS);
 }
 
-export async function fetchTopAssistants(): Promise<AssistantUsage[]> {
-  return fetchStatsValue("top_assistants", DEFAULT_TOP_ASSISTANTS);
+async function fetchPerPeriod<T>(base: string, fallback: T): Promise<Record<Period, T>> {
+  const [d2025, d2026, dAll] = await Promise.all([
+    fetchStatsValue<T>(`${base}_2025`, fallback),
+    fetchStatsValue<T>(`${base}_2026`, fallback),
+    fetchStatsValue<T>(`${base}_all`, fallback),
+  ]);
+  return { "2025": d2025, "2026": d2026, all: dAll };
 }
 
-export async function fetchModelUsage(): Promise<ModelUsage[]> {
-  return fetchStatsValue("model_usage", DEFAULT_MODEL_USAGE);
+export async function fetchTopAssistants(): Promise<Record<Period, AssistantUsage[]>> {
+  return fetchPerPeriod("top_assistants", DEFAULT_TOP_ASSISTANTS);
 }
 
-export async function fetchAssistantSplit(): Promise<ModelUsage[]> {
-  return fetchStatsValue("assistant_split", DEFAULT_ASSISTANT_SPLIT);
+export async function fetchModelUsage(): Promise<Record<Period, ModelUsage[]>> {
+  return fetchPerPeriod("model_usage", DEFAULT_MODEL_USAGE);
 }
 
-export async function fetchFileUploads(): Promise<FileUpload[]> {
-  return fetchStatsValue("file_uploads", DEFAULT_FILE_UPLOADS);
+export async function fetchAssistantSplit(): Promise<Record<Period, ModelUsage[]>> {
+  return fetchPerPeriod("assistant_split", DEFAULT_ASSISTANT_SPLIT);
+}
+
+export async function fetchFileUploads(): Promise<Record<Period, FileUpload[]>> {
+  return fetchPerPeriod("file_uploads", DEFAULT_FILE_UPLOADS);
 }
 
 export async function fetchYearComparison(): Promise<YearComparison[]> {

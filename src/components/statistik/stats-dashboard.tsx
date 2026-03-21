@@ -109,10 +109,10 @@ interface StatsDashboardProps {
   trainingStats: TrainingStats;
   keyMetrics: Record<Period, KeyMetric[]>;
   dailyInteractions: DailyInteraction[];
-  topAssistants: AssistantUsage[];
-  modelUsage: ModelUsage[];
-  assistantSplit: ModelUsage[];
-  fileUploads: FileUpload[];
+  topAssistants: Record<Period, AssistantUsage[]>;
+  modelUsage: Record<Period, ModelUsage[]>;
+  assistantSplit: Record<Period, ModelUsage[]>;
+  fileUploads: Record<Period, FileUpload[]>;
   yearComparison: YearComparison[];
 }
 
@@ -132,6 +132,10 @@ export function StatsDashboard({
   const [trainingView, setTrainingView] = useState<"department" | "role">("department");
 
   const metrics = keyMetrics[period];
+  const currentTopAssistants = topAssistants[period];
+  const currentModelUsage = modelUsage[period];
+  const currentAssistantSplit = assistantSplit[period];
+  const currentFileUploads = fileUploads[period];
 
   const periodOptions: { label: string; value: Period }[] = [
     { label: "2025", value: "2025" },
@@ -346,7 +350,7 @@ export function StatsDashboard({
               <div className="mt-8 h-[380px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={[...topAssistants].reverse()}
+                    data={[...currentTopAssistants].reverse()}
                     layout="vertical"
                     margin={{ top: 0, right: 10, left: 0, bottom: 0 }}
                   >
@@ -373,7 +377,7 @@ export function StatsDashboard({
                     />
                     <Tooltip content={<ChartTooltip />} />
                     <Bar dataKey="messages" name="Meddelanden" radius={[0, 4, 4, 0]}>
-                      {[...topAssistants].reverse().map((_, index) => (
+                      {[...currentTopAssistants].reverse().map((_, index) => (
                         <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                       ))}
                     </Bar>
@@ -405,7 +409,7 @@ export function StatsDashboard({
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={modelUsage}
+                      data={currentModelUsage}
                       cx="50%"
                       cy="50%"
                       innerRadius="50%"
@@ -415,7 +419,7 @@ export function StatsDashboard({
                       nameKey="name"
                       stroke="none"
                     >
-                      {modelUsage.map((_, index) => (
+                      {currentModelUsage.map((_, index) => (
                         <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                       ))}
                     </Pie>
@@ -477,7 +481,7 @@ export function StatsDashboard({
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={assistantSplit}
+                      data={currentAssistantSplit}
                       cx="50%"
                       cy="50%"
                       innerRadius="50%"
@@ -531,7 +535,7 @@ export function StatsDashboard({
               <div className="mt-8 h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={fileUploads}
+                    data={currentFileUploads}
                     margin={{ top: 0, right: 10, left: -20, bottom: 0 }}
                   >
                     <CartesianGrid
@@ -554,7 +558,7 @@ export function StatsDashboard({
                     />
                     <Tooltip content={<ChartTooltip />} />
                     <Bar dataKey="count" name="Filer" radius={[4, 4, 0, 0]}>
-                      {fileUploads.map((_, index) => (
+                      {currentFileUploads.map((_, index) => (
                         <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                       ))}
                     </Bar>
