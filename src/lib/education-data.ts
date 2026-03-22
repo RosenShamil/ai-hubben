@@ -10,6 +10,7 @@ import type {
   AcademyQuizQuestion,
 } from "./education-system";
 import { LESSONS_NIVA_2, QUIZ_QUESTIONS_NIVA_2, FINAL_EXAM_POOL_NIVA_2 } from "./education-data-niva2";
+import { LESSONS_NIVA_3, QUIZ_QUESTIONS_NIVA_3, FINAL_EXAM_POOL_NIVA_3 } from "./education-data-niva3";
 
 // ---------------------------------------------------------------------------
 // Certification levels
@@ -160,6 +161,54 @@ export const COURSES: Course[] = [
     estimatedMinutes: 60,
     moduleIds: ["mod-2-4-1", "mod-2-4-2", "mod-2-4-3", "mod-2-4-4"],
   },
+
+  // =========================================================================
+  // NIVÅ 3 — KURSER
+  // =========================================================================
+  {
+    id: "kurs-3-1",
+    levelId: "niva-3",
+    title: "AI-strategi för din verksamhet",
+    description:
+      "Identifiera AI-möjligheter, driva piloter och mäta effekt — från idé till verksamhetsnytta.",
+    icon: "Target",
+    order: 1,
+    estimatedMinutes: 75,
+    moduleIds: ["mod-3-1-1", "mod-3-1-2", "mod-3-1-3", "mod-3-1-4"],
+  },
+  {
+    id: "kurs-3-2",
+    levelId: "niva-3",
+    title: "Avancerad AI-teknik",
+    description:
+      "Finetuning, AI-agenter, multimodal AI och AI-säkerhet — för dig som vill förstå framkanten.",
+    icon: "FlaskConical",
+    order: 2,
+    estimatedMinutes: 75,
+    moduleIds: ["mod-3-2-1", "mod-3-2-2", "mod-3-2-3", "mod-3-2-4"],
+  },
+  {
+    id: "kurs-3-3",
+    levelId: "niva-3",
+    title: "Leda AI-initiativ",
+    description:
+      "Bygg AI-policy, utbilda kollegor, skapa AI-team och driv förändring i din organisation.",
+    icon: "Users",
+    order: 3,
+    estimatedMinutes: 75,
+    moduleIds: ["mod-3-3-1", "mod-3-3-2", "mod-3-3-3", "mod-3-3-4"],
+  },
+  {
+    id: "kurs-3-4",
+    levelId: "niva-3",
+    title: "Verktygslandskapet",
+    description:
+      "Öppna vs. stängda modeller, AI för bild/ljud/video, low-code och framtidens arbetsplats.",
+    icon: "Wrench",
+    order: 4,
+    estimatedMinutes: 75,
+    moduleIds: ["mod-3-4-1", "mod-3-4-2", "mod-3-4-3", "mod-3-4-4"],
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -297,6 +346,34 @@ export const MODULES: Module[] = [
   { id: "mod-2-4-2", courseId: "kurs-2-4", title: "GDPR & konsekvensbedömning", description: "Dataskydd på djupet — DPIA, dataskyddsombud och privacy by design.", order: 2, estimatedMinutes: 15, lessonIds: ["les-2-4-2-1", "les-2-4-2-2"], quizQuestionIds: ["aq-2-4-6", "aq-2-4-7", "aq-2-4-8", "aq-2-4-9", "aq-2-4-10"], quizPassThreshold: 0.8 },
   { id: "mod-2-4-3", courseId: "kurs-2-4", title: "Etisk AI i offentlig sektor", description: "Ramverk, principer och praktisk tillämpning av AI-etik.", order: 3, estimatedMinutes: 15, lessonIds: ["les-2-4-3-1", "les-2-4-3-2"], quizQuestionIds: ["aq-2-4-11", "aq-2-4-12", "aq-2-4-13", "aq-2-4-14", "aq-2-4-15"], quizPassThreshold: 0.8 },
   { id: "mod-2-4-4", courseId: "kurs-2-4", title: "Upphandling & avtal för AI", description: "Hur kommunen köper AI-tjänster rätt — avtal, krav och fallgropar.", order: 4, estimatedMinutes: 15, lessonIds: ["les-2-4-4-1", "les-2-4-4-2"], quizQuestionIds: ["aq-2-4-16", "aq-2-4-17", "aq-2-4-18", "aq-2-4-19", "aq-2-4-20"], quizPassThreshold: 0.8 },
+
+  // =========================================================================
+  // NIVÅ 3 — MODULER
+  // =========================================================================
+
+  // --- Kurs 3.1: AI-strategi ---
+  { id: "mod-3-1-1", courseId: "kurs-3-1", title: "Identifiera AI-möjligheter", description: "Systematiskt hitta processer där AI kan skapa mest värde.", order: 1, estimatedMinutes: 18, lessonIds: ["les-3-1-1-1", "les-3-1-1-2"], quizQuestionIds: ["aq-3-1-1", "aq-3-1-2", "aq-3-1-3", "aq-3-1-4", "aq-3-1-5"], quizPassThreshold: 0.8 },
+  { id: "mod-3-1-2", courseId: "kurs-3-1", title: "Från idé till pilot", description: "Planera, genomföra och utvärdera AI-piloter i verksamheten.", order: 2, estimatedMinutes: 18, lessonIds: ["les-3-1-2-1", "les-3-1-2-2"], quizQuestionIds: ["aq-3-1-6", "aq-3-1-7", "aq-3-1-8", "aq-3-1-9", "aq-3-1-10"], quizPassThreshold: 0.8 },
+  { id: "mod-3-1-3", courseId: "kurs-3-1", title: "Förändringsledning & adoption", description: "Få kollegor att vilja använda AI — inte bara kunna.", order: 3, estimatedMinutes: 18, lessonIds: ["les-3-1-3-1", "les-3-1-3-2"], quizQuestionIds: ["aq-3-1-11", "aq-3-1-12", "aq-3-1-13", "aq-3-1-14", "aq-3-1-15"], quizPassThreshold: 0.8 },
+  { id: "mod-3-1-4", courseId: "kurs-3-1", title: "Mäta effekt & ROI", description: "Kvantifiera AI:s värde — tid, kvalitet, kostnad.", order: 4, estimatedMinutes: 18, lessonIds: ["les-3-1-4-1", "les-3-1-4-2"], quizQuestionIds: ["aq-3-1-16", "aq-3-1-17", "aq-3-1-18", "aq-3-1-19", "aq-3-1-20"], quizPassThreshold: 0.8 },
+
+  // --- Kurs 3.2: Avancerad AI-teknik ---
+  { id: "mod-3-2-1", courseId: "kurs-3-2", title: "Finetuning & specialisering", description: "Anpassa AI-modeller för specifika uppgifter och domäner.", order: 1, estimatedMinutes: 18, lessonIds: ["les-3-2-1-1", "les-3-2-1-2"], quizQuestionIds: ["aq-3-2-1", "aq-3-2-2", "aq-3-2-3", "aq-3-2-4", "aq-3-2-5"], quizPassThreshold: 0.8 },
+  { id: "mod-3-2-2", courseId: "kurs-3-2", title: "AI-agenter & automation", description: "Autonoma AI-system som kan planera, utföra och utvärdera uppgifter.", order: 2, estimatedMinutes: 18, lessonIds: ["les-3-2-2-1", "les-3-2-2-2"], quizQuestionIds: ["aq-3-2-6", "aq-3-2-7", "aq-3-2-8", "aq-3-2-9", "aq-3-2-10"], quizPassThreshold: 0.8 },
+  { id: "mod-3-2-3", courseId: "kurs-3-2", title: "Multimodal AI", description: "AI som förstår och genererar text, bild, ljud och video.", order: 3, estimatedMinutes: 18, lessonIds: ["les-3-2-3-1", "les-3-2-3-2"], quizQuestionIds: ["aq-3-2-11", "aq-3-2-12", "aq-3-2-13", "aq-3-2-14", "aq-3-2-15"], quizPassThreshold: 0.8 },
+  { id: "mod-3-2-4", courseId: "kurs-3-2", title: "AI-säkerhet på djupet", description: "Prompt injection, jailbreaks och hur man skyddar AI-system.", order: 4, estimatedMinutes: 18, lessonIds: ["les-3-2-4-1", "les-3-2-4-2"], quizQuestionIds: ["aq-3-2-16", "aq-3-2-17", "aq-3-2-18", "aq-3-2-19", "aq-3-2-20"], quizPassThreshold: 0.8 },
+
+  // --- Kurs 3.3: Leda AI-initiativ ---
+  { id: "mod-3-3-1", courseId: "kurs-3-3", title: "AI-policy & riktlinjer", description: "Utforma och implementera AI-policy för organisationen.", order: 1, estimatedMinutes: 18, lessonIds: ["les-3-3-1-1", "les-3-3-1-2"], quizQuestionIds: ["aq-3-3-1", "aq-3-3-2", "aq-3-3-3", "aq-3-3-4", "aq-3-3-5"], quizPassThreshold: 0.8 },
+  { id: "mod-3-3-2", courseId: "kurs-3-3", title: "Utbilda & inspirera kollegor", description: "Metoder för att sprida AI-kompetens i organisationen.", order: 2, estimatedMinutes: 18, lessonIds: ["les-3-3-2-1", "les-3-3-2-2"], quizQuestionIds: ["aq-3-3-6", "aq-3-3-7", "aq-3-3-8", "aq-3-3-9", "aq-3-3-10"], quizPassThreshold: 0.8 },
+  { id: "mod-3-3-3", courseId: "kurs-3-3", title: "Bygga AI-team & roller", description: "Rätt kompetens, rätt roller — organisera för AI-framgång.", order: 3, estimatedMinutes: 18, lessonIds: ["les-3-3-3-1", "les-3-3-3-2"], quizQuestionIds: ["aq-3-3-11", "aq-3-3-12", "aq-3-3-13", "aq-3-3-14", "aq-3-3-15"], quizPassThreshold: 0.8 },
+  { id: "mod-3-3-4", courseId: "kurs-3-3", title: "Framtidsspaning", description: "AI-trender, AGI-debatten och vad som väntar runt hörnet.", order: 4, estimatedMinutes: 18, lessonIds: ["les-3-3-4-1", "les-3-3-4-2"], quizQuestionIds: ["aq-3-3-16", "aq-3-3-17", "aq-3-3-18", "aq-3-3-19", "aq-3-3-20"], quizPassThreshold: 0.8 },
+
+  // --- Kurs 3.4: Verktygslandskapet ---
+  { id: "mod-3-4-1", courseId: "kurs-3-4", title: "Öppna vs. stängda modeller", description: "Open source AI vs. proprietära lösningar — för- och nackdelar.", order: 1, estimatedMinutes: 18, lessonIds: ["les-3-4-1-1", "les-3-4-1-2"], quizQuestionIds: ["aq-3-4-1", "aq-3-4-2", "aq-3-4-3", "aq-3-4-4", "aq-3-4-5"], quizPassThreshold: 0.8 },
+  { id: "mod-3-4-2", courseId: "kurs-3-4", title: "AI för bild, ljud & video", description: "Bildgenerering, talsyntes och videoproduktion med AI.", order: 2, estimatedMinutes: 18, lessonIds: ["les-3-4-2-1", "les-3-4-2-2"], quizQuestionIds: ["aq-3-4-6", "aq-3-4-7", "aq-3-4-8", "aq-3-4-9", "aq-3-4-10"], quizPassThreshold: 0.8 },
+  { id: "mod-3-4-3", courseId: "kurs-3-4", title: "Low-code/No-code AI", description: "Bygg AI-lösningar utan programmering — Power Automate, Make, Zapier.", order: 3, estimatedMinutes: 18, lessonIds: ["les-3-4-3-1", "les-3-4-3-2"], quizQuestionIds: ["aq-3-4-11", "aq-3-4-12", "aq-3-4-13", "aq-3-4-14", "aq-3-4-15"], quizPassThreshold: 0.8 },
+  { id: "mod-3-4-4", courseId: "kurs-3-4", title: "Framtidens arbetsplats", description: "AI och arbetsrätt, automatisering vs. augmentering, kompetensförflyttning.", order: 4, estimatedMinutes: 18, lessonIds: ["les-3-4-4-1", "les-3-4-4-2"], quizQuestionIds: ["aq-3-4-16", "aq-3-4-17", "aq-3-4-18", "aq-3-4-19", "aq-3-4-20"], quizPassThreshold: 0.8 },
 ];
 
 // ---------------------------------------------------------------------------
@@ -1154,8 +1231,9 @@ export const LESSONS: Lesson[] = [
       ],
     },
   },
-  // Nivå 2 lessons appended from separate file
+  // Nivå 2 & 3 lessons appended from separate files
   ...LESSONS_NIVA_2,
+  ...LESSONS_NIVA_3,
 ];
 
 // ---------------------------------------------------------------------------
@@ -1225,8 +1303,9 @@ export const ACADEMY_QUIZ_QUESTIONS: AcademyQuizQuestion[] = [
   { id: "aq-1-3-13", moduleId: "mod-1-3-3", question: "Vad innebär principen om mänsklig kontroll?", options: ["Att bara chefer får använda AI", "Att en människa alltid ska ha sista ordet", "Att AI måste godkännas av riksdagen", "Att man bara får använda AI varannan dag"], correctIndex: 1, explanation: "Mänsklig kontroll innebär att en människa alltid granskar och godkänner AI:s resultat." },
   { id: "aq-1-3-14", moduleId: "mod-1-3-3", question: "Hur bör du se på AI-genererad text?", options: ["Som en slutprodukt redo att skickas", "Som ett utkast som behöver din granskning", "Som helt opålitlig information", "Som juridiskt bindande"], correctIndex: 1, explanation: "AI-text är ett utkast — du granskar, justerar och tar ansvar för slutresultatet." },
   { id: "aq-1-3-15", moduleId: "mod-1-3-3", question: "Vilket av dessa ingår i ansvarsfull AI-användning?", options: ["Blint lita på AI-svar för att spara tid", "Granska, ifrågasätta och ta ansvar för resultatet", "Undvika AI helt för att minimera risk", "Använda AI bara för privata ärenden"], correctIndex: 1, explanation: "Ansvarsfull AI = granska alltid, ifrågasätta när det behövs, och ta ansvar för det du publicerar." },
-  // Nivå 2 quiz questions appended from separate file
+  // Nivå 2 & 3 quiz questions appended from separate files
   ...QUIZ_QUESTIONS_NIVA_2,
+  ...QUIZ_QUESTIONS_NIVA_3,
 ];
 
 // ---------------------------------------------------------------------------
@@ -1300,7 +1379,9 @@ export function getFinalExamQuestions(levelId: string, count: number): AcademyQu
       ? FINAL_EXAM_POOL_NIVA_1
       : levelId === "niva-2"
         ? FINAL_EXAM_POOL_NIVA_2
-        : []; // Nivå 3 added later
+        : levelId === "niva-3"
+          ? FINAL_EXAM_POOL_NIVA_3
+          : [];
   // Shuffle and pick
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
