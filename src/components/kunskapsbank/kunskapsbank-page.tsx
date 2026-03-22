@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { BookOpen, Route, Trophy, TreePine } from "lucide-react";
+import { MyJourney } from "./my-journey";
 import { FadeIn } from "@/components/shared/fade-in";
 import { BRAND_GRADIENT } from "@/lib/constants";
 import { CONCEPTS } from "@/lib/knowledge-bank";
@@ -161,23 +162,7 @@ export function KunskapsbankPage() {
 
           {activeTab === "testa" && <QuizSection />}
 
-          {activeTab === "resa" && (
-            <FadeIn>
-              <div className="rounded-lg border border-border bg-card p-8 text-center">
-                <TreePine
-                  size={32}
-                  className="mx-auto text-muted-foreground"
-                />
-                <p className="mt-4 text-[1rem] font-medium">
-                  Kunskapsträd kommer snart
-                </p>
-                <p className="mt-2 text-[0.875rem] text-muted-foreground">
-                  Se ditt kunskapsträd växa för varje begrepp du lär dig —
-                  under utveckling.
-                </p>
-              </div>
-            </FadeIn>
-          )}
+          {activeTab === "resa" && <MyJourney />}
         </div>
       </section>
 

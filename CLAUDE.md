@@ -34,7 +34,7 @@ No test framework is configured.
 
 Two layout groups under `src/app/`:
 
-- **`(main)/`** — Public pages: `/`, `/assistenter`, `/statistik`, `/utbildning`, `/kunskapsbank`, `/dokumentation`, `/nyheter`, `/faq`, `/om`, `/kontakt`, `/~offline`
+- **`(main)/`** — Public pages: `/`, `/assistenter`, `/statistik`, `/utbildning`, `/kunskapsbank`, `/akademin`, `/dokumentation`, `/nyheter`, `/faq`, `/om`, `/kontakt`, `/~offline`
 - **`(admin)/admin/`** — Protected admin CRUD: `/admin/nyheter`, `/admin/statistik`, `/admin/assistenter`, `/admin/utbildning`, `/admin/faq`, `/admin/team`, `/admin/innehall`, `/admin/meddelanden`, etc.
 
 ### Data Flow
@@ -56,6 +56,11 @@ Two layout groups under `src/app/`:
 - `src/lib/explainers-data.ts` — 225 animated step-by-step explainers for all concepts
 - `src/lib/fun-facts.ts` — 222 "Visste du att..." fun facts
 - `src/lib/daily-byte.ts` — Daily concept selection logic (date-based, prioritizes unseen)
+- `src/lib/education-system.ts` — AI-akademin types, XP rewards, badges, certification levels
+- `src/lib/education-data.ts` — All course/module/lesson/quiz data (Nivå 1 complete)
+- `src/lib/education-progress.ts` — localStorage progress for academy (lessons, quizzes, certs, XP)
+- `src/lib/certificate-generator.ts` — Canvas-based certificate rendering (PNG)
+- `src/lib/badge-checker.ts` — Auto-check and award badges
 - `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
 - `src/sw.ts` — Serwist service worker config
 - `src/app/manifest.ts` — PWA web app manifest
@@ -76,7 +81,8 @@ Client-side only. Admin layout checks `isCurrentUserAdmin()` on mount and redire
 - `src/components/shared/` — Navbar, Footer, BottomTabBar, ChatWidget, ThemeProvider, CountUp, FadeIn
 - `src/components/ui/` — shadcn + Aceternity animated components (spotlight, moving-border, etc.)
 - Feature components live alongside their pages in `src/components/{feature}/`
-- `src/components/kunskapsbank/` — Knowledge bank: concept cards, search, filters, storyboard lessons, quiz, scenarios, animated explainers, daily byte
+- `src/components/kunskapsbank/` — Knowledge bank: concept cards, search, filters, storyboard lessons, quiz, scenarios, animated explainers, daily byte, my-journey
+- `src/components/akademin/` — AI Academy: academy-page, course-overview, lesson-player, module-quiz, final-exam, certificate-viewer, xp-toast, badge-notification
 
 ## Conventions
 

@@ -407,8 +407,13 @@ Dessa MCP-servrar ska konfigureras INNAN kodning påbörjas. Claude Code diskute
    - 30 scenariokort med verkliga kommunala arbetsplatssituationer (bildning, omsorg, kommunledning, samhällsbyggnad, IT, HR)
    - Branching val med konsekvenser (bra/ok/dåligt)
 
-4. **Min resa** (framsteg)
-   - Kunskapsträd (planerat)
+4. **Min resa** (framsteg) ✅ IMPLEMENTERAD
+   - Kunskapsträd med 12 kategorier, cirkulära progress-ringar, expanderbara begreppslistor
+   - Nivå-system (10 nivåer: "Första steget" → "AI-mästare")
+   - 3 stat-kort: utforskade begrepp, bästa quiz, streak
+   - Lärvägar-progress med completion-badges
+   - Quiz-historik per kategori
+   - AI-akademin CTA, certifikat-rad, badge-galleri
    - Framstegsspårning via localStorage
 
 **Övriga funktioner:**
@@ -421,6 +426,56 @@ Dessa MCP-servrar ska konfigureras INNAN kodning påbörjas. Claude Code diskute
 **12 kategorier:** IT-grunderna, AI-grunderna, Språkmodeller & generativ AI, AI på jobbet, Intric-plattformen, Microsoft Copilot & 365, Teknik & infrastruktur, Data & sökning, Lagar & regler, Säkerhet & etik, Verktyg & plattformar, Avancerade AI-koncept
 
 **Datakällor för innehåll:** DIGG, IMY, AI Sweden, Intrics hjälpdokumentation (help.intric.ai), Microsoft Learn, OpenAI, EU AI Act
+
+---
+
+### 4.4c AI-akademin (`/akademin`) ✅ IMPLEMENTERAD (Nivå 1)
+
+**Syfte:** Komplett online-utbildning med tre certifieringsnivåer för kommunanställda. Inspirerad av Duolingo (gamification), Elements of AI (tillgänglighet) och Google AI Essentials (struktur).
+
+**Tre nivåer:**
+
+| Nivå | Titel | Tid | Kurser | Status |
+|------|-------|-----|--------|--------|
+| 1 | AI-redo medarbetare (brons) | ~2.5h | 3 kurser, 9 moduler, 13 lektioner | ✅ Klar |
+| 2 | AI-superanvändare (silver) | ~4h | 4 kurser | Planerad |
+| 3 | AI-ambassadör (guld) | ~5h | 4 kurser | Planerad |
+
+**Nivå 1 kurser:**
+1. "Vad är AI?" — AI-grunder, generativ AI, språkmodeller, prompts
+2. "AI på jobbet" — verktyg, användningsfall, Intric-introduktion
+3. "Använd AI säkert" — hallucinationer, bias, GDPR, ansvarsfull AI
+
+**Lektionsanatomi (5–8 min per lektion):**
+- Hook (överraskande fakt/fråga) → Förklaring med vardagsanalogi → Kommunexempel → Interaktiv övning → Sammanfattning
+
+**Interaktiva övningar:**
+- Sant/falskt, flerval, fyll-i-luckan, para-ihop
+
+**Modul-quiz:** 5 frågor per modul, 80%+ för godkänt
+
+**Slutprov:** 15 slumpmässiga frågor från pool med 20, 80%+ för certifikat. Omförsök efter 24h.
+
+**Certifikat:** Canvas-genererat med Speakeasy-design (mörk bakgrund, gradient-ram, Bodoni-text, nivå-badge). Nedladdningsbar som PNG.
+
+**Gamification:**
+- XP-system (10–500 XP per aktivitet)
+- 12 badges (common → legendary)
+- XP-toasts vid milstolpar
+- Badge-notifikationer
+
+**Tekniska filer:**
+- `src/lib/education-system.ts` — Typdefinitioner, XP, badges
+- `src/lib/education-data.ts` — All kursdata (Nivå 1)
+- `src/lib/education-progress.ts` — localStorage-progress
+- `src/lib/certificate-generator.ts` — Canvas-rendering
+- `src/lib/badge-checker.ts` — Auto-badge-checking
+- `src/components/akademin/` — academy-page, course-overview, lesson-player, module-quiz, final-exam, certificate-viewer, xp-toast, badge-notification
+
+**Planerat (framtida faser):**
+- Nivå 2 & 3 innehåll
+- Förvaltningsspecifika specialiseringar (Socialtjänsten, Bildning, Vård & omsorg, Samhällsbyggnad, Kommunledning, HR)
+- Supabase-sync för cross-device progress
 
 ---
 
