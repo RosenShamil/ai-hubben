@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { StatsDashboard } from "@/components/statistik/stats-dashboard";
+import { PullToRefresh } from "@/components/shared/pull-to-refresh";
 import { fetchTrainingStats } from "@/lib/training-data";
 import { fetchAllStats } from "@/lib/stats-data";
 
@@ -18,6 +19,7 @@ export default async function StatistikPage() {
   ]);
 
   return (
+    <PullToRefresh>
     <StatsDashboard
       trainingStats={trainingStats}
       keyMetrics={allStats.keyMetrics}
@@ -30,5 +32,6 @@ export default async function StatistikPage() {
       userRoles={allStats.userRoles}
       platformOverview={allStats.platformOverview}
     />
+    </PullToRefresh>
   );
 }

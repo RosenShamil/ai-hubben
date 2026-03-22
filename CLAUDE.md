@@ -10,12 +10,12 @@ Domain: aihubben.se | Repo: github.com/RosenShamil/ai-hubben
 ## Commands
 
 ```bash
-pnpm dev          # Start dev server (turbopack enabled)
-pnpm build        # Production build
+pnpm dev          # Start dev server (turbopack)
+pnpm build        # Production build (webpack — turbopack is dev-only)
 pnpm lint         # ESLint
 ```
 
-No test framework is configured.
+No test framework is configured. Build uses `next build --webpack` because Serwist service worker requires webpack.
 
 ## Tech Stack
 
@@ -26,6 +26,10 @@ No test framework is configured.
 - **Supabase** (PostgreSQL + Auth + Storage) — client-side only, no server actions
 - **Serwist** for PWA/service worker (disabled in dev, active in production)
 - **Recharts** for statistics charts
+- **GSAP** for scroll-triggered and timeline animations
+- **React Hook Form** + **Zod** for form validation (admin pages)
+- **Lucide React** for icons
+- **next-themes** for light/dark mode toggle
 - **pnpm** as package manager
 
 ## Architecture
@@ -97,6 +101,8 @@ Client-side only. Admin layout checks `isCurrentUserAdmin()` on mount and redire
 - WCAG 2.1 AA accessibility
 - Workflow: explain → approve → implement → test → push
 
-## Full Specification
+## Documentation
 
-See `docs/aihubben-masterplan.md` for detailed design brief, database schema overview, and feature roadmap.
+- `docs/aihubben-masterplan.md` — Detailed design brief, database schema overview, and feature roadmap
+- `docs/design-system.md` — Full design system: color tokens, typography scales, spacing, component patterns
+- `docs/ikai-kunskap-aihubben.md` — Knowledge bank content reference
