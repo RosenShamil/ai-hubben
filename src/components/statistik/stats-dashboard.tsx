@@ -401,7 +401,7 @@ export function StatsDashboard({
                       tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                       tickLine={false}
                       axisLine={false}
-                      width={130}
+                      width={180}
                       style={{ fontFamily: "var(--font-geist-mono), monospace" }}
                     />
                     <Tooltip content={<ChartTooltip />} />
