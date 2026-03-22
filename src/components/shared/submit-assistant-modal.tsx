@@ -103,11 +103,11 @@ export function SubmitAssistantModal({
       />
 
       {/* Modal */}
-      <div className="relative mx-4 flex max-h-[85vh] w-full max-w-2xl flex-col rounded-lg border border-border bg-card shadow-2xl">
+      <div role="dialog" aria-modal="true" aria-labelledby="submit-modal-title" className="relative mx-4 flex max-h-[85vh] w-full max-w-2xl flex-col rounded-lg border border-border bg-card shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div>
-            <h2 className="text-[1.125rem] font-semibold tracking-tight">
+            <h2 id="submit-modal-title" className="text-[1.125rem] font-semibold tracking-tight">
               {step === "success" ? "Inskickad!" : "Lägg till assistent"}
             </h2>
             {step !== "success" && (
@@ -118,6 +118,7 @@ export function SubmitAssistantModal({
           </div>
           <button
             onClick={handleClose}
+            aria-label="Stäng"
             className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-secondary"
           >
             <X size={16} />

@@ -61,7 +61,7 @@ export function BottomTabBar() {
               >
                 Mer
               </p>
-              <button onClick={() => setMoreOpen(false)}>
+              <button onClick={() => setMoreOpen(false)} aria-label="Stäng meny">
                 <X size={16} className="text-muted-foreground" />
               </button>
             </div>
@@ -104,6 +104,7 @@ export function BottomTabBar() {
                 <button
                   key="more"
                   onClick={() => setMoreOpen(!moreOpen)}
+                  aria-label="Fler sidor"
                   className="flex flex-1 flex-col items-center justify-center gap-1 transition-colors"
                   style={{
                     color: moreOpen

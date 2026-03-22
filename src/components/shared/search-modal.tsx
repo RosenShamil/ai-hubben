@@ -284,6 +284,9 @@ export function SearchModal({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: -10 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Sök"
             className="w-full max-w-[560px] overflow-hidden rounded-xl border border-border bg-card shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
@@ -296,6 +299,7 @@ export function SearchModal({
                 value={query}
                 onChange={(e) => handleInput(e.target.value)}
                 placeholder="Sök assistenter, nyheter, FAQ, dokument..."
+                aria-label="Sök på AI-hubben"
                 className="flex-1 bg-transparent text-[0.9375rem] outline-none placeholder:text-muted-foreground"
               />
               {query && (
@@ -305,6 +309,7 @@ export function SearchModal({
                     setResults([]);
                     inputRef.current?.focus();
                   }}
+                  aria-label="Rensa sökning"
                   className="shrink-0 rounded-md p-1 text-muted-foreground hover:text-foreground"
                 >
                   <X size={16} />

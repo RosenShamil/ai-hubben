@@ -243,7 +243,7 @@ export function HomeContent({ stats, assistants, posts, homeTexts = {} }: HomeCo
                   {a.icon_url ? (
                     <img
                       src={a.icon_url}
-                      alt=""
+                      alt={a.name}
                       className="h-10 w-10 rounded-md border border-border object-cover"
                     />
                   ) : (

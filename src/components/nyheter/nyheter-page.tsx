@@ -57,7 +57,7 @@ function FeaturedPost({ post }: { post: Post }) {
               <div className="relative h-[280px] w-full overflow-hidden md:h-[400px]">
                 <img
                   src={coverUrl}
-                  alt=""
+                  alt={post.title}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
@@ -168,7 +168,7 @@ function PostCard({ post, index }: { post: Post; index: number }) {
               <div className="relative h-[200px] w-full overflow-hidden">
                 <img
                   src={coverUrl}
-                  alt=""
+                  alt={post.title}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>

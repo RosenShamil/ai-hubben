@@ -78,7 +78,7 @@ export default async function AssistantDetailPage({
             {assistant.icon_url ? (
               <img
                 src={assistant.icon_url}
-                alt=""
+                alt={assistant.name}
                 className="h-14 w-14 shrink-0 rounded-lg border border-border object-cover"
               />
             ) : (

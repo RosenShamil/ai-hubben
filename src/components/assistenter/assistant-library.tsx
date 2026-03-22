@@ -98,6 +98,7 @@ export function AssistantLibrary({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Sök assistenter..."
+              aria-label="Sök assistenter"
               className="w-full rounded-lg border border-border bg-card py-3.5 pl-12 pr-5 text-[0.9375rem] outline-none transition-colors focus:border-foreground"
             />
           </div>
@@ -146,7 +147,7 @@ export function AssistantLibrary({
                         {a.icon_url ? (
                           <img
                             src={a.icon_url}
-                            alt=""
+                            alt={a.name}
                             className="h-10 w-10 rounded-md border border-border object-cover"
                           />
                         ) : (
