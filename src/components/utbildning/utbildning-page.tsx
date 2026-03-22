@@ -234,7 +234,7 @@ export function UtbildningPage({
                 const Icon = RESOURCE_ICONS[res.type] || BookOpen;
                 return (
                   <FadeIn key={res.id} delay={i * 0.05}>
-                    <div className="group relative rounded-lg border border-border bg-card p-6 transition-all duration-300 hover:bg-secondary hover:shadow-lg">
+                    <div className="group relative flex h-full flex-col rounded-lg border border-border bg-card p-6 transition-all duration-300 hover:bg-secondary hover:shadow-lg">
                       <div className="flex items-start gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-secondary">
                           <Icon size={18} className="text-foreground" />
@@ -253,22 +253,24 @@ export function UtbildningPage({
                           </h3>
                         </div>
                       </div>
-                      {res.description && (
-                        <p className="mt-3 line-clamp-2 text-[0.875rem] leading-[1.6] text-muted-foreground">
-                          {res.description}
-                        </p>
-                      )}
-                      {res.url && (
-                        <a
-                          href={res.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-4 inline-flex items-center gap-1.5 text-[0.8125rem] font-medium text-foreground transition-colors hover:text-muted-foreground"
-                        >
-                          Öppna
-                          <ExternalLink size={12} />
-                        </a>
-                      )}
+                      <p className="mt-3 line-clamp-2 text-[0.875rem] leading-[1.6] text-muted-foreground">
+                        {res.description || "\u00A0"}
+                      </p>
+                      <div className="mt-auto pt-4">
+                        {res.url ? (
+                          <a
+                            href={res.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-[0.8125rem] font-medium text-foreground transition-colors hover:text-muted-foreground"
+                          >
+                            Öppna
+                            <ExternalLink size={12} />
+                          </a>
+                        ) : (
+                          <div className="h-5" />
+                        )}
+                      </div>
                     </div>
                   </FadeIn>
                 );
