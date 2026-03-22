@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { Plus, Pencil, Trash2, X, Check, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, Loader2, ArrowUp, ArrowDown } from "lucide-react";
 import type { ContactEntry } from "@/lib/contact-entries";
 
 const emptyForm = {
@@ -109,6 +109,19 @@ export default function AdminKontaktPage() {
 
     setSaving(false);
     setModalOpen(false);
+    fetchEntries();
+  }
+
+  async function handleMove(index: number, direction: "up" | "down") {
+    if (direction === "up" && index === 0) return;
+    if (direction === "down" && index === entries.length - 1) return;
+    const swapIndex = direction === "up" ? index - 1 : index + 1;
+    const a = entries[index];
+    const b = entries[swapIndex];
+    await Promise.all([
+      supabase.from("contact_entries").update({ sort_order: b.sort_order }).eq("id", a.id),
+      supabase.from("contact_entries").update({ sort_order: a.sort_order }).eq("id", b.id),
+    ]);
     fetchEntries();
   }
 
@@ -239,6 +252,8 @@ export default function AdminKontaktPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
+                      <button onClick={() => handleMove(i, "up")} disabled={i === 0} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:pointer-events-none" title="Flytta upp"><ArrowUp size={14} /></button>
+                      <button onClick={() => handleMove(i, "down")} disabled={i === entries.length - 1} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:pointer-events-none" title="Flytta ner"><ArrowDown size={14} /></button>
                       <button
                         onClick={() => openEdit(entry)}
                         className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { Plus, Pencil, Trash2, X, Check, ExternalLink, Upload, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, ExternalLink, Upload, Loader2, ArrowUp, ArrowDown } from "lucide-react";
 
 interface TrainingResource {
   id: string;
@@ -10,6 +10,7 @@ interface TrainingResource {
   description: string | null;
   type: "guide" | "video" | "pdf" | "kurs";
   url: string | null;
+  sort_order: number;
   created_at: string;
 }
 
@@ -53,7 +54,7 @@ export default function AdminResurserPage() {
     const { data, error } = await supabase
       .from("training_resources")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("sort_order", { ascending: true });
 
     if (error) {
       showToast("error", "Kunde inte hämta resurser");
@@ -160,6 +161,28 @@ export default function AdminResurserPage() {
     setForm({ ...form, url: urlData.publicUrl });
     setUploading(false);
     showToast("success", "Filen uppladdad");
+  }
+
+  async function handleMove(index: number, direction: "up" | "down") {
+    if (direction === "up" && index === 0) return;
+    if (direction === "down" && index === resources.length - 1) return;
+
+    const swapIndex = direction === "up" ? index - 1 : index + 1;
+    const a = resources[index];
+    const b = resources[swapIndex];
+
+    // Swap sort_order values
+    const [{ error: e1 }, { error: e2 }] = await Promise.all([
+      supabase.from("training_resources").update({ sort_order: b.sort_order }).eq("id", a.id),
+      supabase.from("training_resources").update({ sort_order: a.sort_order }).eq("id", b.id),
+    ]);
+
+    if (e1 || e2) {
+      showToast("error", "Kunde inte flytta");
+      return;
+    }
+
+    fetchResources();
   }
 
   const typeLabel: Record<string, string> = {
@@ -305,6 +328,22 @@ export default function AdminResurserPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => handleMove(i, "up")}
+                        disabled={i === 0}
+                        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:pointer-events-none"
+                        title="Flytta upp"
+                      >
+                        <ArrowUp size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleMove(i, "down")}
+                        disabled={i === resources.length - 1}
+                        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:pointer-events-none"
+                        title="Flytta ner"
+                      >
+                        <ArrowDown size={14} />
+                      </button>
                       <button
                         onClick={() => openEdit(r)}
                         className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"

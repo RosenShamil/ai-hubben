@@ -71,7 +71,7 @@ export async function fetchResources(): Promise<TrainingResource[]> {
   const { data, error } = await supabase
     .from("training_resources")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("sort_order", { ascending: true });
 
   if (error) {
     console.error("Error fetching resources:", error);
