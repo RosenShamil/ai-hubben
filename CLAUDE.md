@@ -38,12 +38,13 @@ No test framework is configured. Build uses `next build --webpack` because Serwi
 
 Two layout groups under `src/app/`:
 
-- **`(main)/`** — Public pages: `/`, `/assistenter`, `/statistik`, `/utbildning`, `/kunskapsbank`, `/akademin`, `/dokumentation`, `/nyheter`, `/faq`, `/om`, `/kontakt`, `/~offline`
+- **`(main)/`** — Public pages: `/`, `/assistenter`, `/statistik`, `/utbildning`, `/kunskapsbank`, `/akademin`, `/akademin/certifikat`, `/dokumentation`, `/nyheter`, `/nyheter/rss.xml`, `/faq`, `/om`, `/kontakt`, `/~offline`
 - **`(admin)/admin/`** — Protected admin CRUD: `/admin/nyheter`, `/admin/statistik`, `/admin/akademin`, `/admin/assistenter`, `/admin/utbildning`, `/admin/faq`, `/admin/team`, `/admin/innehall`, `/admin/meddelanden`, etc.
 
 ### Data Flow
 
-- **No API routes.** All data access goes directly through the Supabase client SDK.
+- **One API route:** `/nyheter/rss.xml` generates an RSS 2.0 feed from published posts.
+- All other data access goes directly through the Supabase client SDK.
 - **No global state library.** Server components fetch on render; client components use `useState` + `useEffect` with direct Supabase calls.
 - **No React Query/SWR.** Manual fetch + refetch patterns.
 - Public pages use server components with `revalidate` for caching.
@@ -68,6 +69,8 @@ Two layout groups under `src/app/`:
 - `src/lib/education-analytics.ts` — Fire-and-forget event reporting to Supabase for admin analytics
 - `src/lib/certificate-generator.ts` — Canvas-based certificate rendering (PNG)
 - `src/lib/badge-checker.ts` — Auto-check and award badges
+- `src/lib/ai-guide-data.ts` — "Starta din AI-resa" quiz data: 7 departments, roles, ~30 use cases, rules
+- `src/lib/ai-guide-profile.ts` — localStorage persistence for AI guide profile
 - `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
 - `src/sw.ts` — Serwist service worker config
 - `src/app/manifest.ts` — PWA web app manifest
@@ -85,7 +88,8 @@ Client-side only. Admin layout checks `isCurrentUserAdmin()` on mount and redire
 
 ### Shared Components
 
-- `src/components/shared/` — Navbar, Footer, BottomTabBar, ChatWidget, ThemeProvider, CountUp, FadeIn
+- `src/components/shared/` — Navbar, Footer, BottomTabBar, ChatWidget, ThemeProvider, CountUp, FadeIn, PullToRefresh, SearchModal
+- `src/components/ai-guide/` — "Starta din AI-resa" interactive onboarding quiz on homepage
 - `src/components/ui/` — shadcn + Aceternity animated components (spotlight, moving-border, etc.)
 - Feature components live alongside their pages in `src/components/{feature}/`
 - `src/components/kunskapsbank/` — Knowledge bank: concept cards, search, filters, storyboard lessons, quiz, scenarios, animated explainers, daily byte, my-journey
@@ -98,7 +102,9 @@ Client-side only. Admin layout checks `isCurrentUserAdmin()` on mount and redire
 - Design goal: Speakeasy-inspired — premium, sophisticated, not generic AI/Tailwind-look
 - Mobile-first, PWA with app-like feel (bottom tab bar, smooth transitions)
 - Max 2-3 heavy animations per page
-- WCAG 2.1 AA accessibility
+- WCAG 2.1 AA accessibility (focus-visible, aria-labels, prefers-reduced-motion, skip link)
+- Umami Cloud analytics (privacy-friendly, cookie-free)
+- Pull-to-refresh on mobile (public + admin pages)
 - Workflow: explain → approve → implement → test → push
 
 ## Documentation

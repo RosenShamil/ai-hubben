@@ -15,10 +15,14 @@ AI-hubben samlar allt AI-relaterat för Katrineholms kommun på ett ställe:
 - **Utbildning** — Kalender med anmälan, utbildningsmaterial och kontaktformulär
 - **Dokumentation** — Riktlinjer, policyer, guider, video + Intric-dokumentation
 - **Nyheter** — Blogginlägg med rich content, bilder och YouTube-embed
+- **Kunskapsbank** — 222 AI/IT-begrepp, lärvägar, quiz, scenariokort, animerade explainers, daglig byte
+- **AI-akademin** — 3 certifieringsnivåer (brons/silver/guld), 96 lektioner, quiz, slutprov, certifikat, XP-system
+- **Starta din AI-resa** — Interaktiv onboarding-quiz som ger personlig AI-profil baserat på förvaltning och roll
 - **FAQ** — Sökbar accordion med frågor och svar
 - **Om oss** — Teamet, uppdrag och ansvarsområden
 - **Kontakt** — Formulär med admin-inbox
 - **AI-chatbot** — Flytande iKAI-assistent på alla sidor
+- **RSS-feed** — `/nyheter/rss.xml` för nyheter
 - **Admin-panel** — Fullständig hantering av allt innehåll
 
 ## Tech stack
@@ -36,6 +40,7 @@ AI-hubben samlar allt AI-relaterat för Katrineholms kommun på ett ställe:
 | Ikoner | Lucide React |
 | Charts | Recharts |
 | AI-plattform | Intric |
+| Analytics | Umami Cloud (cookie-free) |
 | Pakethanterare | pnpm |
 
 ## Komma igång
@@ -84,6 +89,8 @@ src/
 │   │   ├── utbildning/   # Kalender + material
 │   │   ├── dokumentation/# Dokument + Intric docs
 │   │   ├── nyheter/      # Blogg + enskilda inlägg
+│   │   ├── kunskapsbank/  # 222 begrepp, quiz, lärvägar
+│   │   ├── akademin/     # AI-akademin (3 nivåer, certifikat)
 │   │   ├── faq/          # Vanliga frågor
 │   │   ├── om/           # Om digitaliseringsavdelningen
 │   │   └── kontakt/      # Kontaktformulär
@@ -98,6 +105,7 @@ src/
 │       ├── nyheter/      # Bloggeditor
 │       ├── faq/          # FAQ-hantering
 │       ├── assistenter/  # Community-assistenter
+│       ├── akademin/     # AI-akademin analytics
 │       └── meddelanden/  # Kontaktmeddelanden
 ├── components/           # React-komponenter
 ├── lib/                  # Datalogik, API-klienter, hjälpfunktioner
@@ -110,6 +118,7 @@ src/
 - **Speakeasy-inspirerad** — Bodoni-typografi, brand gradient, subtila animationer
 - **Mobile-first** — PWA med app-känsla, installbar på mobil
 - **Mörkt/ljust tema** — toggle tillgänglig överallt
+- **WCAG 2.1 AA** — tillgänglig med tangentbord, skärmläsare och reducerad rörelse
 - **Svenska** för UI-text, **engelska** för kod
 
 ## Admin-panel
@@ -123,6 +132,7 @@ Inloggning via `/admin/login`. Full kontroll över:
 - Teammedlemmar med bilder
 - Blogginlägg med rich content
 - FAQ, chattlänkar och kontaktmeddelanden
+- AI-akademin analytics med CSV-export
 
 ## Integrationer
 
@@ -130,6 +140,7 @@ Inloggning via `/admin/login`. Full kontroll över:
 - **Intric Widget** — inbäddad AI-chatbot (iKAI)
 - **Supabase** — databas, auth, fillagring
 - **Serwist** — PWA med offline-stöd
+- **Umami Cloud** — integritetsvänlig analytics utan cookies
 
 ---
 
