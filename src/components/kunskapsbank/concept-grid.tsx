@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CONCEPTS,
@@ -22,6 +22,13 @@ export function ConceptGrid() {
     DifficultyLevel | "all"
   >("all");
   const [selectedConcept, setSelectedConcept] = useState<Concept | null>(null);
+
+  // Pre-fill search from URL query param (?sok=term)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sok = params.get("sok");
+    if (sok) setSearchTerm(sok);
+  }, []);
 
   const filtered = useMemo(() => {
     return CONCEPTS.filter((c) => {

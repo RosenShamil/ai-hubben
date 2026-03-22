@@ -620,17 +620,20 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                         Begrepp att lära dig
                       </p>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {result.conceptIds.map((id) => (
-                          <a
-                            key={id}
-                            href="/kunskapsbank"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-full border border-border px-3 py-1.5 text-[0.75rem] font-medium transition-all hover:bg-secondary"
-                          >
-                            {id.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-                          </a>
-                        ))}
+                        {result.conceptIds.map((id) => {
+                          const label = id.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+                          return (
+                            <a
+                              key={id}
+                              href={`/kunskapsbank?sok=${encodeURIComponent(label)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="rounded-full border border-border px-3 py-1.5 text-[0.75rem] font-medium transition-all hover:bg-secondary"
+                            >
+                              {label}
+                            </a>
+                          );
+                        })}
                       </div>
                     </motion.div>
                   )}
