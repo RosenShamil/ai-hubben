@@ -163,7 +163,7 @@ export function HomeContent({ stats, assistants, posts, homeTexts = {} }: HomeCo
       </div>
 
       {/* ─── AI Guide ─── */}
-      <GuideSectionHome />
+      <GuideSectionHome assistants={assistants} />
 
       {/* ─── Live Stats (CountUp) ─── */}
       <section className="mx-auto max-w-[68.75rem] px-6 py-24 md:py-32">

@@ -40,6 +40,7 @@ import {
   type ExperienceLevel,
   type GoalId,
 } from "@/lib/ai-guide-data";
+import type { IntricAssistant } from "@/lib/intric";
 import { saveGuideProfile } from "@/lib/ai-guide-profile";
 import Link from "next/link";
 
@@ -62,9 +63,10 @@ const slideVariants = {
 interface QuizProps {
   onComplete: () => void;
   onClose: () => void;
+  assistants?: IntricAssistant[];
 }
 
-export function GuideQuiz({ onComplete, onClose }: QuizProps) {
+export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [department, setDepartment] = useState<DepartmentId | null>(null);
@@ -140,7 +142,7 @@ export function GuideQuiz({ onComplete, onClose }: QuizProps) {
         className="relative mx-4 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-border bg-card shadow-2xl"
         role="dialog"
         aria-modal="true"
-        aria-label="Hitta din AI-väg"
+        aria-label="Starta din AI-resa"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
@@ -393,11 +395,11 @@ export function GuideQuiz({ onComplete, onClose }: QuizProps) {
                     </motion.div>
                   </div>
 
-                  {/* Recommended level */}
+                  {/* Intric info */}
                   <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.3 }}
+                    transition={{ delay: 0.25 }}
                     className="mt-6"
                   >
                     <div className="rounded-lg border border-border bg-secondary/50 p-4">
@@ -405,31 +407,89 @@ export function GuideQuiz({ onComplete, onClose }: QuizProps) {
                         className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
                         style={{ fontFamily: "var(--font-geist-mono), monospace" }}
                       >
-                        Rekommenderad utbildning
+                        Ditt AI-verktyg
                       </p>
-                      <p className="mt-1 text-[0.9375rem] font-medium">{result.levelDescription}</p>
-                      <Link
-                        href="/akademin"
-                        className="mt-2 inline-flex items-center gap-1 text-[0.8125rem] font-medium underline underline-offset-4"
-                        onClick={onComplete}
-                      >
-                        Gå till AI-akademin <ArrowRight size={14} />
-                      </Link>
+                      <p className="mt-1 text-[0.9375rem] font-medium">
+                        Intric — kommunens AI-plattform
+                      </p>
+                      <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-muted-foreground">
+                        Intric finns installerat på din arbetsdator. Du kan även nå det via{" "}
+                        <a href="https://katrineholm.intric.ai" target="_blank" rel="noopener noreferrer" className="font-medium text-foreground underline underline-offset-4">katrineholm.intric.ai</a>{" "}
+                        — logga in med ditt vanliga AD-konto. Där hittar du färdiga assistenter
+                        och en personlig chatt.
+                      </p>
                     </div>
                   </motion.div>
 
-                  {/* Use cases */}
+                  {/* Recommended assistants */}
+                  {assistants.length > 0 && (
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.4 }}
+                      className="mt-6"
+                    >
+                      <p
+                        className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+                        style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                      >
+                        Färdiga assistenter för dig
+                      </p>
+                      <p className="mt-1 text-[0.8125rem] text-muted-foreground">
+                        Dessa assistenter är redo att användas direkt — klicka för att öppna.
+                      </p>
+                      <div className="mt-3 space-y-2">
+                        {assistants.slice(0, 5).map((a) => (
+                          <a
+                            key={a.id}
+                            href={`/assistenter/${a.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 rounded-lg border border-border p-3 transition-all hover:bg-secondary"
+                          >
+                            <div
+                              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-[0.8125rem] font-semibold text-white"
+                              style={{
+                                backgroundColor: `hsl(${a.name.charCodeAt(0) * 7 % 360}, 50%, 45%)`,
+                                fontFamily: "var(--font-geist-mono), monospace",
+                              }}
+                            >
+                              {a.name[0]}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-[0.875rem] font-medium">{a.name}</p>
+                              <p className="truncate text-[0.75rem] text-muted-foreground">{a.description}</p>
+                            </div>
+                            <ArrowRight size={14} className="shrink-0 text-muted-foreground" />
+                          </a>
+                        ))}
+                      </div>
+                      <a
+                        href="/assistenter"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 inline-flex items-center gap-1 text-[0.8125rem] font-medium underline underline-offset-4"
+                      >
+                        Visa alla {assistants.length} assistenter <ArrowRight size={14} />
+                      </a>
+                    </motion.div>
+                  )}
+
+                  {/* Use cases with prompts */}
                   <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.45 }}
+                    transition={{ delay: 0.55 }}
                     className="mt-6"
                   >
                     <p
                       className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
                       style={{ fontFamily: "var(--font-geist-mono), monospace" }}
                     >
-                      Användningsfall för dig
+                      Så kan du använda AI
+                    </p>
+                    <p className="mt-1 text-[0.8125rem] text-muted-foreground">
+                      Kopiera en prompt och klistra in den i Intrics personliga chatt.
                     </p>
                     <div className="mt-3 space-y-3">
                       {result.useCases.map((uc) => (
@@ -465,11 +525,36 @@ export function GuideQuiz({ onComplete, onClose }: QuizProps) {
                     </div>
                   </motion.div>
 
+                  {/* Recommended training */}
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.65 }}
+                    className="mt-6"
+                  >
+                    <div className="rounded-lg border border-border p-4">
+                      <p
+                        className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+                        style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                      >
+                        Rekommenderad utbildning
+                      </p>
+                      <p className="mt-1 text-[0.9375rem] font-medium">{result.levelDescription}</p>
+                      <Link
+                        href="/akademin"
+                        className="mt-2 inline-flex items-center gap-1 text-[0.8125rem] font-medium underline underline-offset-4"
+                        onClick={onComplete}
+                      >
+                        Gå till AI-akademin <ArrowRight size={14} />
+                      </Link>
+                    </div>
+                  </motion.div>
+
                   {/* Rules */}
                   <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.6 }}
+                    transition={{ delay: 0.75 }}
                     className="mt-6"
                   >
                     <p
@@ -495,31 +580,6 @@ export function GuideQuiz({ onComplete, onClose }: QuizProps) {
                         </div>
                       ))}
                     </div>
-                  </motion.div>
-
-                  {/* Next steps */}
-                  <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.75 }}
-                    className="mt-8 flex flex-wrap gap-3"
-                  >
-                    <Link
-                      href="/assistenter"
-                      onClick={onComplete}
-                      className="rounded-full border border-border px-5 py-2.5 text-[0.8125rem] font-medium transition-all hover:bg-secondary"
-                      style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-                    >
-                      Utforska assistenter
-                    </Link>
-                    <Link
-                      href="/kunskapsbank"
-                      onClick={onComplete}
-                      className="rounded-full border border-border px-5 py-2.5 text-[0.8125rem] font-medium transition-all hover:bg-secondary"
-                      style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-                    >
-                      Kunskapsbanken
-                    </Link>
                   </motion.div>
                 </div>
               )}

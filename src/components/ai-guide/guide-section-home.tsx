@@ -6,10 +6,11 @@ import { BRAND_GRADIENT } from "@/lib/constants";
 import { FadeIn } from "@/components/shared/fade-in";
 import { getGuideProfile, clearGuideProfile, type AIGuideProfile } from "@/lib/ai-guide-profile";
 import { DEPARTMENTS_MAP, ROLE_CATEGORIES_MAP, generateGuideResult } from "@/lib/ai-guide-data";
+import type { IntricAssistant } from "@/lib/intric";
 import { GuideQuiz } from "./guide-quiz";
 import Link from "next/link";
 
-export function GuideSectionHome() {
+export function GuideSectionHome({ assistants = [] }: { assistants?: IntricAssistant[] }) {
   const [profile, setProfile] = useState<AIGuideProfile | null>(null);
   const [quizOpen, setQuizOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -118,7 +119,7 @@ export function GuideSectionHome() {
                 className="mt-5 text-[1.5rem] leading-tight tracking-[-0.03em] sm:text-[2rem]"
                 style={{ fontFamily: "var(--font-bodoni), serif", fontWeight: 400 }}
               >
-                Hitta din AI-väg
+                Starta din AI-resa
               </h2>
               <p className="mt-3 max-w-md text-[0.9375rem] leading-relaxed text-muted-foreground">
                 Svara på 4 snabba frågor och få en personlig guide med verktyg,
@@ -147,6 +148,7 @@ export function GuideSectionHome() {
         <GuideQuiz
           onComplete={handleComplete}
           onClose={() => setQuizOpen(false)}
+          assistants={assistants}
         />
       )}
     </>
