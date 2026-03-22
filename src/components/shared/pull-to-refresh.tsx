@@ -6,7 +6,7 @@ import { RefreshCw } from "lucide-react";
 
 const THRESHOLD = 60;
 
-export function PullToRefresh({ children }: { children: ReactNode }) {
+export function PullToRefresh({ children, hardReload = false }: { children: ReactNode; hardReload?: boolean }) {
   const router = useRouter();
   const [pullDistance, setPullDistance] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -19,7 +19,8 @@ export function PullToRefresh({ children }: { children: ReactNode }) {
     if (!el) return;
 
     function onTouchStart(e: TouchEvent) {
-      if (window.scrollY <= 1 && !refreshing) {
+      const scrollTop = el?.scrollTop ?? window.scrollY;
+      if (scrollTop <= 1 && !refreshing) {
         startY.current = e.touches[0].clientY;
         isPulling.current = true;
       }
@@ -45,6 +46,10 @@ export function PullToRefresh({ children }: { children: ReactNode }) {
       const dist = current ? parseFloat(current) : 0;
 
       if (dist >= THRESHOLD) {
+        if (hardReload) {
+          window.location.reload();
+          return;
+        }
         setRefreshing(true);
         setPullDistance(THRESHOLD * 0.5);
         router.refresh();

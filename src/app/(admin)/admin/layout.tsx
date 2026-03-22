@@ -6,6 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { isCurrentUserAdmin, signOut } from "@/lib/supabase-auth";
 import { ChatWidget } from "@/components/shared/chat-widget";
+import { PullToRefresh } from "@/components/shared/pull-to-refresh";
 import { useTheme } from "next-themes";
 import { BRAND_GRADIENT } from "@/lib/constants";
 import {
@@ -240,7 +241,9 @@ export default function AdminLayout({
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-auto p-4 lg:p-6">{children}</main>
+        <PullToRefresh hardReload>
+          <main className="flex-1 overflow-auto p-4 lg:p-6">{children}</main>
+        </PullToRefresh>
       </div>
       </div>
       <ChatWidget />
