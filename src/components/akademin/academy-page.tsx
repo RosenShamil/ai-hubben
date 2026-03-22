@@ -238,10 +238,13 @@ export function AcademyPage() {
             {continueTarget && (
               <Link
                 href={`/akademin/${continueTarget.courseId}?modul=${continueTarget.moduleId}&lektion=${continueTarget.lessonId}`}
-                className="ml-auto flex items-center gap-2 rounded-lg px-5 py-2.5 text-[0.875rem] font-medium text-background transition-all hover:opacity-90"
-                style={{ background: BRAND_GRADIENT }}
+                className="ml-auto flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-primary-foreground transition-all duration-150 active:scale-[0.98]"
+                style={{
+                  fontFamily: "var(--font-geist-mono), monospace",
+                  boxShadow: "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset",
+                }}
               >
-                <Play size={16} />
+                <Play size={14} />
                 Fortsätt
               </Link>
             )}
