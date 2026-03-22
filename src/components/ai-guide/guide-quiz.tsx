@@ -222,20 +222,32 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                         <button
                           key={dept.id}
                           onClick={() => selectDepartment(dept.id)}
-                          className="group relative flex items-start gap-3 rounded-lg border p-4 text-left transition-all duration-150 hover:bg-secondary"
-                          style={{
-                            borderColor: selected ? "var(--foreground)" : "var(--border)",
-                            backgroundColor: selected ? "var(--secondary)" : undefined,
-                          }}
+                          className="group relative flex items-start gap-3 rounded-lg text-left transition-all duration-300"
                         >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary">
-                            <Icon size={18} />
+                          {/* Gradient flash on hover */}
+                          <div className="absolute -inset-px rounded-lg overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div
+                              className="absolute inset-0 opacity-0 group-hover:animate-[travel-flash_1.125s_linear_forwards]"
+                              style={{ background: "conic-gradient(from 0deg, transparent 0%, transparent 70%, white 85%, white 95%, transparent 100%)" }}
+                            />
+                            <div className="absolute inset-0 opacity-40" style={{ background: BRAND_GRADIENT }} />
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-[0.875rem] font-medium">{dept.shortName}</p>
-                            <p className="mt-0.5 text-[0.75rem] leading-snug text-muted-foreground">
-                              {dept.description}
-                            </p>
+                          <div
+                            className="relative flex w-full items-start gap-3 rounded-lg border p-4 transition-all duration-300 group-hover:bg-secondary group-hover:shadow-lg"
+                            style={{
+                              borderColor: selected ? "var(--foreground)" : "var(--border)",
+                              backgroundColor: selected ? "var(--secondary)" : "var(--card)",
+                            }}
+                          >
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary">
+                              <Icon size={18} />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-[0.875rem] font-medium">{dept.shortName}</p>
+                              <p className="mt-0.5 text-[0.75rem] leading-snug text-muted-foreground">
+                                {dept.description}
+                              </p>
+                            </div>
                           </div>
                         </button>
                       );
@@ -371,29 +383,31 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
               {/* Step 4: Result */}
               {step === 4 && result && department && role && (
                 <div>
-                  <div className="text-center">
-                    <motion.div
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
-                    >
-                      <div
-                        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-                        style={{ background: BRAND_GRADIENT }}
-                      >
-                        <Sparkles size={28} className="text-white" />
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
+                  >
+                    <div className="relative rounded-xl p-px" style={{ background: BRAND_GRADIENT }}>
+                      <div className="rounded-xl bg-card p-6 text-center">
+                        <div
+                          className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full"
+                          style={{ background: BRAND_GRADIENT }}
+                        >
+                          <Sparkles size={28} className="text-white" />
+                        </div>
+                        <h2
+                          className="text-[1.5rem] leading-tight tracking-[-0.03em] sm:text-[1.75rem]"
+                          style={{ fontFamily: "var(--font-bodoni), serif", fontWeight: 400 }}
+                        >
+                          Din AI-profil
+                        </h2>
+                        <p className="mt-2 text-[0.875rem] text-muted-foreground">
+                          {DEPARTMENTS_MAP[department].shortName} · {ROLE_CATEGORIES_MAP[role].title}
+                        </p>
                       </div>
-                      <h2
-                        className="text-[1.5rem] leading-tight tracking-[-0.03em] sm:text-[1.75rem]"
-                        style={{ fontFamily: "var(--font-bodoni), serif", fontWeight: 400 }}
-                      >
-                        Din AI-profil
-                      </h2>
-                      <p className="mt-2 text-[0.875rem] text-muted-foreground">
-                        {DEPARTMENTS_MAP[department].shortName} · {ROLE_CATEGORIES_MAP[role].title}
-                      </p>
-                    </motion.div>
-                  </div>
+                    </div>
+                  </motion.div>
 
                   {/* Intric info */}
                   <motion.div
@@ -591,11 +605,41 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                     </div>
                   </motion.div>
 
+                  {/* Recommended concepts */}
+                  {result.conceptIds.length > 0 && (
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.85 }}
+                      className="mt-6"
+                    >
+                      <p
+                        className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+                        style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                      >
+                        Begrepp att lära dig
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {result.conceptIds.map((id) => (
+                          <a
+                            key={id}
+                            href="/kunskapsbank"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-full border border-border px-3 py-1.5 text-[0.75rem] font-medium transition-all hover:bg-secondary"
+                          >
+                            {id.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                          </a>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+
                   {/* Next steps */}
                   <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.85 }}
+                    transition={{ delay: 0.95 }}
                     className="mt-8"
                   >
                     <p

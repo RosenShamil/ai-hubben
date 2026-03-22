@@ -547,11 +547,24 @@ export const GUIDE_RULES: GuideRule[] = [
 
 // ─── Result Generator ───
 
+// ─── Recommended concepts per department (from knowledge-bank.ts) ───
+
+const DEPARTMENT_CONCEPTS: Record<DepartmentId, string[]> = {
+  kommunledning: ["ai-grunderna", "prompt-engineering", "gdpr", "ai-strategi", "digitalisering", "chatbot"],
+  bildning: ["ai-grunderna", "prompt-engineering", "generativ-ai", "chatbot", "hallucination", "gdpr"],
+  samhallsbyggnad: ["ai-grunderna", "prompt-engineering", "gdpr", "automatisering", "oppen-data", "digitalisering"],
+  "social-omsorg": ["ai-grunderna", "gdpr", "hallucination", "sekretess", "ai-etik", "prompt-engineering"],
+  "service-teknik": ["ai-grunderna", "chatbot", "automatisering", "digitalisering", "prompt-engineering"],
+  vuxenutbildning: ["ai-grunderna", "prompt-engineering", "generativ-ai", "chatbot", "hallucination", "gdpr"],
+  kultur: ["ai-grunderna", "generativ-ai", "chatbot", "prompt-engineering", "digitalisering"],
+};
+
 export interface GuideResult {
   recommendedLevel: "niva-1" | "niva-2" | "niva-3";
   useCases: UseCaseTemplate[];
   rules: GuideRule[];
   levelDescription: string;
+  conceptIds: string[];
 }
 
 export function generateGuideResult(
@@ -604,10 +617,14 @@ export function generateGuideResult(
   const dos = matchedRules.filter((r) => r.type === "do").slice(0, 2);
   const donts = matchedRules.filter((r) => r.type === "dont").slice(0, 2);
 
+  // Recommended concepts from knowledge bank
+  const conceptIds = DEPARTMENT_CONCEPTS[departmentId] || [];
+
   return {
     recommendedLevel,
     useCases: topUseCases,
     rules: [...dos, ...donts],
     levelDescription: levelDescriptions[recommendedLevel],
+    conceptIds,
   };
 }
