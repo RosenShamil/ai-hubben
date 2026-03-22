@@ -134,7 +134,7 @@ export function StatsDashboard({
   userRoles,
   platformOverview,
 }: StatsDashboardProps) {
-  const [period, setPeriod] = useState<Period>("2026");
+  const [period, setPeriod] = useState<Period>("all");
   const [trainingView, setTrainingView] = useState<"department" | "role">("department");
 
   const metrics = keyMetrics[period];
