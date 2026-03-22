@@ -9,6 +9,7 @@ import type {
   Lesson,
   AcademyQuizQuestion,
 } from "./education-system";
+import { LESSONS_NIVA_2, QUIZ_QUESTIONS_NIVA_2, FINAL_EXAM_POOL_NIVA_2 } from "./education-data-niva2";
 
 // ---------------------------------------------------------------------------
 // Certification levels
@@ -110,6 +111,54 @@ export const COURSES: Course[] = [
     order: 3,
     estimatedMinutes: 40,
     moduleIds: ["mod-1-3-1", "mod-1-3-2", "mod-1-3-3"],
+  },
+
+  // =========================================================================
+  // NIVÅ 2 — KURSER
+  // =========================================================================
+  {
+    id: "kurs-2-1",
+    levelId: "niva-2",
+    title: "Förstå tekniken",
+    description:
+      "Hur fungerar AI egentligen? Tokens, transformer, RAG och API:er — tekniken bakom verktygen.",
+    icon: "Cpu",
+    order: 1,
+    estimatedMinutes: 60,
+    moduleIds: ["mod-2-1-1", "mod-2-1-2", "mod-2-1-3", "mod-2-1-4"],
+  },
+  {
+    id: "kurs-2-2",
+    levelId: "niva-2",
+    title: "Intric — bygg din egen assistent",
+    description:
+      "Gå från användare till skapare. Bygg, anpassa och dela AI-assistenter i Intric.",
+    icon: "Boxes",
+    order: 2,
+    estimatedMinutes: 60,
+    moduleIds: ["mod-2-2-1", "mod-2-2-2", "mod-2-2-3", "mod-2-2-4"],
+  },
+  {
+    id: "kurs-2-3",
+    levelId: "niva-2",
+    title: "Copilot & Microsoft 365",
+    description:
+      "Använd AI direkt i Word, Excel, PowerPoint, Teams och Outlook — praktiskt och effektivt.",
+    icon: "Laptop",
+    order: 3,
+    estimatedMinutes: 60,
+    moduleIds: ["mod-2-3-1", "mod-2-3-2", "mod-2-3-3", "mod-2-3-4"],
+  },
+  {
+    id: "kurs-2-4",
+    levelId: "niva-2",
+    title: "Lagar, regler & etik på djupet",
+    description:
+      "AI Act, GDPR, konsekvensbedömning och upphandling — regelverket i detalj.",
+    icon: "Scale",
+    order: 4,
+    estimatedMinutes: 60,
+    moduleIds: ["mod-2-4-1", "mod-2-4-2", "mod-2-4-3", "mod-2-4-4"],
   },
 ];
 
@@ -220,6 +269,34 @@ export const MODULES: Module[] = [
     quizQuestionIds: ["aq-1-3-11", "aq-1-3-12", "aq-1-3-13", "aq-1-3-14", "aq-1-3-15"],
     quizPassThreshold: 0.8,
   },
+
+  // =========================================================================
+  // NIVÅ 2 — MODULER
+  // =========================================================================
+
+  // --- Kurs 2.1: Förstå tekniken ---
+  { id: "mod-2-1-1", courseId: "kurs-2-1", title: "Från text till tokens", description: "Hur AI bryter ner och förstår text — tokens, embeddings och kontextfönster.", order: 1, estimatedMinutes: 15, lessonIds: ["les-2-1-1-1", "les-2-1-1-2"], quizQuestionIds: ["aq-2-1-1", "aq-2-1-2", "aq-2-1-3", "aq-2-1-4", "aq-2-1-5"], quizPassThreshold: 0.8 },
+  { id: "mod-2-1-2", courseId: "kurs-2-1", title: "Transformer-revolutionen", description: "Arkitekturen som förändrade allt — hur attention och transformer fungerar.", order: 2, estimatedMinutes: 15, lessonIds: ["les-2-1-2-1", "les-2-1-2-2"], quizQuestionIds: ["aq-2-1-6", "aq-2-1-7", "aq-2-1-8", "aq-2-1-9", "aq-2-1-10"], quizPassThreshold: 0.8 },
+  { id: "mod-2-1-3", courseId: "kurs-2-1", title: "RAG — AI med dina dokument", description: "Retrieval-Augmented Generation: hur AI kan svara baserat på organisationens egen kunskap.", order: 3, estimatedMinutes: 15, lessonIds: ["les-2-1-3-1", "les-2-1-3-2"], quizQuestionIds: ["aq-2-1-11", "aq-2-1-12", "aq-2-1-13", "aq-2-1-14", "aq-2-1-15"], quizPassThreshold: 0.8 },
+  { id: "mod-2-1-4", courseId: "kurs-2-1", title: "API:er & integrationer", description: "Hur AI-tjänster kommunicerar med andra system — API:er, webhooks och MCP.", order: 4, estimatedMinutes: 15, lessonIds: ["les-2-1-4-1", "les-2-1-4-2"], quizQuestionIds: ["aq-2-1-16", "aq-2-1-17", "aq-2-1-18", "aq-2-1-19", "aq-2-1-20"], quizPassThreshold: 0.8 },
+
+  // --- Kurs 2.2: Intric — bygg din egen assistent ---
+  { id: "mod-2-2-1", courseId: "kurs-2-2", title: "Spaces & assistenter", description: "Skapa ditt eget space och konfigurera din första assistent i Intric.", order: 1, estimatedMinutes: 15, lessonIds: ["les-2-2-1-1", "les-2-2-1-2"], quizQuestionIds: ["aq-2-2-1", "aq-2-2-2", "aq-2-2-3", "aq-2-2-4", "aq-2-2-5"], quizPassThreshold: 0.8 },
+  { id: "mod-2-2-2", courseId: "kurs-2-2", title: "Kunskap & samlingar", description: "Koppla dokument, webbsidor och data till din assistent.", order: 2, estimatedMinutes: 15, lessonIds: ["les-2-2-2-1", "les-2-2-2-2"], quizQuestionIds: ["aq-2-2-6", "aq-2-2-7", "aq-2-2-8", "aq-2-2-9", "aq-2-2-10"], quizPassThreshold: 0.8 },
+  { id: "mod-2-2-3", courseId: "kurs-2-2", title: "Promptdesign för assistenter", description: "Skriv systemprompts som styr assistentens beteende och ton.", order: 3, estimatedMinutes: 15, lessonIds: ["les-2-2-3-1", "les-2-2-3-2"], quizQuestionIds: ["aq-2-2-11", "aq-2-2-12", "aq-2-2-13", "aq-2-2-14", "aq-2-2-15"], quizPassThreshold: 0.8 },
+  { id: "mod-2-2-4", courseId: "kurs-2-2", title: "Testa, iterera & dela", description: "Kvalitetssäkra och publicera din assistent för kollegor.", order: 4, estimatedMinutes: 15, lessonIds: ["les-2-2-4-1", "les-2-2-4-2"], quizQuestionIds: ["aq-2-2-16", "aq-2-2-17", "aq-2-2-18", "aq-2-2-19", "aq-2-2-20"], quizPassThreshold: 0.8 },
+
+  // --- Kurs 2.3: Copilot & Microsoft 365 ---
+  { id: "mod-2-3-1", courseId: "kurs-2-3", title: "Copilot förklarat", description: "Vad Copilot är, hur det fungerar och vad som krävs för att komma igång.", order: 1, estimatedMinutes: 15, lessonIds: ["les-2-3-1-1", "les-2-3-1-2"], quizQuestionIds: ["aq-2-3-1", "aq-2-3-2", "aq-2-3-3", "aq-2-3-4", "aq-2-3-5"], quizPassThreshold: 0.8 },
+  { id: "mod-2-3-2", courseId: "kurs-2-3", title: "Copilot i Word, Excel & PowerPoint", description: "Skriv, analysera och presentera med AI-stöd i Office.", order: 2, estimatedMinutes: 15, lessonIds: ["les-2-3-2-1", "les-2-3-2-2"], quizQuestionIds: ["aq-2-3-6", "aq-2-3-7", "aq-2-3-8", "aq-2-3-9", "aq-2-3-10"], quizPassThreshold: 0.8 },
+  { id: "mod-2-3-3", courseId: "kurs-2-3", title: "Copilot i Teams & Outlook", description: "Sammanfatta möten, hantera mejl och chatta med AI i Teams.", order: 3, estimatedMinutes: 15, lessonIds: ["les-2-3-3-1", "les-2-3-3-2"], quizQuestionIds: ["aq-2-3-11", "aq-2-3-12", "aq-2-3-13", "aq-2-3-14", "aq-2-3-15"], quizPassThreshold: 0.8 },
+  { id: "mod-2-3-4", courseId: "kurs-2-3", title: "Copilot Studio & anpassning", description: "Bygg egna Copilot-agenter och automatiseringar.", order: 4, estimatedMinutes: 15, lessonIds: ["les-2-3-4-1", "les-2-3-4-2"], quizQuestionIds: ["aq-2-3-16", "aq-2-3-17", "aq-2-3-18", "aq-2-3-19", "aq-2-3-20"], quizPassThreshold: 0.8 },
+
+  // --- Kurs 2.4: Lagar, regler & etik ---
+  { id: "mod-2-4-1", courseId: "kurs-2-4", title: "AI Act i detalj", description: "EU:s AI-förordning — riskkategorier, krav och vad det innebär för kommunen.", order: 1, estimatedMinutes: 15, lessonIds: ["les-2-4-1-1", "les-2-4-1-2"], quizQuestionIds: ["aq-2-4-1", "aq-2-4-2", "aq-2-4-3", "aq-2-4-4", "aq-2-4-5"], quizPassThreshold: 0.8 },
+  { id: "mod-2-4-2", courseId: "kurs-2-4", title: "GDPR & konsekvensbedömning", description: "Dataskydd på djupet — DPIA, dataskyddsombud och privacy by design.", order: 2, estimatedMinutes: 15, lessonIds: ["les-2-4-2-1", "les-2-4-2-2"], quizQuestionIds: ["aq-2-4-6", "aq-2-4-7", "aq-2-4-8", "aq-2-4-9", "aq-2-4-10"], quizPassThreshold: 0.8 },
+  { id: "mod-2-4-3", courseId: "kurs-2-4", title: "Etisk AI i offentlig sektor", description: "Ramverk, principer och praktisk tillämpning av AI-etik.", order: 3, estimatedMinutes: 15, lessonIds: ["les-2-4-3-1", "les-2-4-3-2"], quizQuestionIds: ["aq-2-4-11", "aq-2-4-12", "aq-2-4-13", "aq-2-4-14", "aq-2-4-15"], quizPassThreshold: 0.8 },
+  { id: "mod-2-4-4", courseId: "kurs-2-4", title: "Upphandling & avtal för AI", description: "Hur kommunen köper AI-tjänster rätt — avtal, krav och fallgropar.", order: 4, estimatedMinutes: 15, lessonIds: ["les-2-4-4-1", "les-2-4-4-2"], quizQuestionIds: ["aq-2-4-16", "aq-2-4-17", "aq-2-4-18", "aq-2-4-19", "aq-2-4-20"], quizPassThreshold: 0.8 },
 ];
 
 // ---------------------------------------------------------------------------
@@ -1077,6 +1154,8 @@ export const LESSONS: Lesson[] = [
       ],
     },
   },
+  // Nivå 2 lessons appended from separate file
+  ...LESSONS_NIVA_2,
 ];
 
 // ---------------------------------------------------------------------------
@@ -1146,6 +1225,8 @@ export const ACADEMY_QUIZ_QUESTIONS: AcademyQuizQuestion[] = [
   { id: "aq-1-3-13", moduleId: "mod-1-3-3", question: "Vad innebär principen om mänsklig kontroll?", options: ["Att bara chefer får använda AI", "Att en människa alltid ska ha sista ordet", "Att AI måste godkännas av riksdagen", "Att man bara får använda AI varannan dag"], correctIndex: 1, explanation: "Mänsklig kontroll innebär att en människa alltid granskar och godkänner AI:s resultat." },
   { id: "aq-1-3-14", moduleId: "mod-1-3-3", question: "Hur bör du se på AI-genererad text?", options: ["Som en slutprodukt redo att skickas", "Som ett utkast som behöver din granskning", "Som helt opålitlig information", "Som juridiskt bindande"], correctIndex: 1, explanation: "AI-text är ett utkast — du granskar, justerar och tar ansvar för slutresultatet." },
   { id: "aq-1-3-15", moduleId: "mod-1-3-3", question: "Vilket av dessa ingår i ansvarsfull AI-användning?", options: ["Blint lita på AI-svar för att spara tid", "Granska, ifrågasätta och ta ansvar för resultatet", "Undvika AI helt för att minimera risk", "Använda AI bara för privata ärenden"], correctIndex: 1, explanation: "Ansvarsfull AI = granska alltid, ifrågasätta när det behövs, och ta ansvar för det du publicerar." },
+  // Nivå 2 quiz questions appended from separate file
+  ...QUIZ_QUESTIONS_NIVA_2,
 ];
 
 // ---------------------------------------------------------------------------
@@ -1217,7 +1298,9 @@ export function getFinalExamQuestions(levelId: string, count: number): AcademyQu
   const pool =
     levelId === "niva-1"
       ? FINAL_EXAM_POOL_NIVA_1
-      : []; // Nivå 2 & 3 added later
+      : levelId === "niva-2"
+        ? FINAL_EXAM_POOL_NIVA_2
+        : []; // Nivå 3 added later
   // Shuffle and pick
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
