@@ -209,22 +209,14 @@ export function HomeContent({ stats, assistants, posts, homeTexts = {} }: HomeCo
         <FadeIn>
           <div className="flex items-end justify-between">
             <div>
-              <p
-                className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
-                style={{
-                  fontFamily: "var(--font-geist-mono), monospace",
-                }}
-              >
-                Populära assistenter
-              </p>
               <h2
-                className="mt-5 text-[2rem] tracking-[-0.04em] md:text-[2.75rem]"
+                className="text-[2rem] tracking-[-0.04em] md:text-[2.75rem]"
                 style={{
                   fontFamily: "var(--font-bodoni), serif",
                   fontWeight: 400,
                 }}
               >
-                Verktyg som förenklar vardagen
+                Populära assistenter
               </h2>
             </div>
             <Link
