@@ -34,7 +34,7 @@ No test framework is configured.
 
 Two layout groups under `src/app/`:
 
-- **`(main)/`** — Public pages: `/`, `/assistenter`, `/statistik`, `/utbildning`, `/dokumentation`, `/nyheter`, `/faq`, `/om`, `/kontakt`, `/~offline`
+- **`(main)/`** — Public pages: `/`, `/assistenter`, `/statistik`, `/utbildning`, `/kunskapsbank`, `/dokumentation`, `/nyheter`, `/faq`, `/om`, `/kontakt`, `/~offline`
 - **`(admin)/admin/`** — Protected admin CRUD: `/admin/nyheter`, `/admin/statistik`, `/admin/assistenter`, `/admin/utbildning`, `/admin/faq`, `/admin/team`, `/admin/innehall`, `/admin/meddelanden`, etc.
 
 ### Data Flow
@@ -51,6 +51,11 @@ Two layout groups under `src/app/`:
 - `src/lib/supabase-auth.ts` — Auth helpers: `signIn`, `signOut`, `isCurrentUserAdmin` (checks `admins` table)
 - `src/lib/intric.ts` — Fetches AI assistants from Intric Marketplace API + Supabase
 - `src/lib/constants.ts` — Navigation links, mobile tabs, footer links, brand gradient
+- `src/lib/knowledge-bank.ts` — Kunskapsbank types, categories, 222 concepts, learning paths, quiz & scenario data
+- `src/lib/knowledge-progress.ts` — localStorage-based progress tracking (read concepts, quiz scores, streaks)
+- `src/lib/explainers-data.ts` — 225 animated step-by-step explainers for all concepts
+- `src/lib/fun-facts.ts` — 222 "Visste du att..." fun facts
+- `src/lib/daily-byte.ts` — Daily concept selection logic (date-based, prioritizes unseen)
 - `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
 - `src/sw.ts` — Serwist service worker config
 - `src/app/manifest.ts` — PWA web app manifest
@@ -71,6 +76,7 @@ Client-side only. Admin layout checks `isCurrentUserAdmin()` on mount and redire
 - `src/components/shared/` — Navbar, Footer, BottomTabBar, ChatWidget, ThemeProvider, CountUp, FadeIn
 - `src/components/ui/` — shadcn + Aceternity animated components (spotlight, moving-border, etc.)
 - Feature components live alongside their pages in `src/components/{feature}/`
+- `src/components/kunskapsbank/` — Knowledge bank: concept cards, search, filters, storyboard lessons, quiz, scenarios, animated explainers, daily byte
 
 ## Conventions
 

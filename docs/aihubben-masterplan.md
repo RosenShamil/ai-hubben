@@ -385,6 +385,45 @@ Dessa MCP-servrar ska konfigureras INNAN kodning påbörjas. Claude Code diskute
    - "Så bygger du din första assistent"
    - "Prompttips för bättre resultat"
 
+### 4.4b Kunskapsbanken (`/kunskapsbank`) ✅ IMPLEMENTERAD
+
+**Syfte:** Alla AI- och IT-begrepp förklarade enkelt — från absolut nybörjare till avancerad nivå. Central kunskapsresurs för 3000+ kommunanställda.
+
+**Sektioner (4 flikar):**
+
+1. **Begrepp** (ordlista)
+   - 222 begrepp i 12 kategorier med sökfält och filtrering
+   - Flip-animerade begrepskort med förklaring och vardagsanalogi
+   - Detalj-modal med relaterade begrepp och "Se hur det fungerar"-animation
+   - Svårighetsnivåer: Grundläggande / Mellannivå / Fördjupning
+
+2. **Lärvägar** (storyboard-lektioner)
+   - 6 guidade lärvägar med visuella paneler (seriestrip-format)
+   - "Kom igång med AI", "AI på jobbet", "Förstå tekniken", "Säker AI", "Lagar & regler", "Intric från grunden"
+   - Framstegsspårning per lärväg
+
+3. **Testa dig** (quiz + scenariokort)
+   - 78 quizfrågor per kategori med direkt feedback och förklaringar
+   - 30 scenariokort med verkliga kommunala arbetsplatssituationer (bildning, omsorg, kommunledning, samhällsbyggnad, IT, HR)
+   - Branching val med konsekvenser (bra/ok/dåligt)
+
+4. **Min resa** (framsteg)
+   - Kunskapsträd (planerat)
+   - Framstegsspårning via localStorage
+
+**Övriga funktioner:**
+- 225 animerade steg-för-steg-förklaringar (Framer Motion) — en per begrepp
+- "Dagens AI-byte" — dagligt begrepp med fun fact, visas på kunskapsbanken och utbildningssidan
+- 222 "Visste du att..."-fakta
+- Streak-räknare för dagligt lärande
+- All data hårdkodad i fas 1; Supabase + admin-panel planerad som fas 8
+
+**12 kategorier:** IT-grunderna, AI-grunderna, Språkmodeller & generativ AI, AI på jobbet, Intric-plattformen, Microsoft Copilot & 365, Teknik & infrastruktur, Data & sökning, Lagar & regler, Säkerhet & etik, Verktyg & plattformar, Avancerade AI-koncept
+
+**Datakällor för innehåll:** DIGG, IMY, AI Sweden, Intrics hjälpdokumentation (help.intric.ai), Microsoft Learn, OpenAI, EU AI Act
+
+---
+
 ### 4.5 Dokumentation & Riktlinjer (`/dokumentation`)
 
 **Innehåll:**

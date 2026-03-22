@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import {
-  Calendar,
   BookOpen,
   Play,
   FileText,
@@ -15,6 +14,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { FadeIn } from "@/components/shared/fade-in";
+import { DailyByteTeaser } from "@/components/kunskapsbank/daily-byte";
 import { TrainingCalendar } from "@/components/utbildning/training-calendar";
 import { BRAND_GRADIENT } from "@/lib/constants";
 import type {
@@ -121,6 +121,13 @@ export function UtbildningPage({
             Katrineholms kommun. Här hittar du allt du behöver för att komma
             igång och utvecklas.
           </p>
+        </FadeIn>
+
+        {/* Daily byte teaser */}
+        <FadeIn delay={0.1}>
+          <div className="mt-6 max-w-md">
+            <DailyByteTeaser />
+          </div>
         </FadeIn>
       </section>
 

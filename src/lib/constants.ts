@@ -6,6 +6,7 @@ export const NAV_LINKS = [
   { label: "Assistenter", href: "/assistenter" },
   { label: "Statistik", href: "/statistik" },
   { label: "Utbildning", href: "/utbildning" },
+  { label: "Kunskapsbank", href: "/kunskapsbank" },
   { label: "Dokumentation", href: "/dokumentation" },
 ] as const;
 
@@ -24,6 +25,7 @@ export const FOOTER_LINKS = [
       { label: "Assistenter", href: "/assistenter" },
       { label: "Statistik", href: "/statistik" },
       { label: "Utbildning", href: "/utbildning" },
+      { label: "Kunskapsbank", href: "/kunskapsbank" },
       { label: "Dokumentation", href: "/dokumentation" },
     ],
   },
