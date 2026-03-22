@@ -11,6 +11,7 @@ import {
 import { BRAND_GRADIENT } from "@/lib/constants";
 import { FadeIn } from "@/components/shared/fade-in";
 import { CountUp } from "@/components/shared/count-up";
+import { GuideSectionHome } from "@/components/ai-guide/guide-section-home";
 import type { KeyMetric } from "@/lib/stats-data";
 import type { IntricAssistant } from "@/lib/intric";
 import type { Post } from "@/lib/posts";
@@ -160,6 +161,9 @@ export function HomeContent({ stats, assistants, posts, homeTexts = {} }: HomeCo
       <div className="mx-auto max-w-[68.75rem] px-6">
         <div className="h-px" style={{ background: BRAND_GRADIENT }} />
       </div>
+
+      {/* ─── AI Guide ─── */}
+      <GuideSectionHome />
 
       {/* ─── Live Stats (CountUp) ─── */}
       <section className="mx-auto max-w-[68.75rem] px-6 py-24 md:py-32">
