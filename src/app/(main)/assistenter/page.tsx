@@ -1,6 +1,5 @@
 import { fetchAssistants } from "@/lib/intric";
 import { AssistantLibrary } from "@/components/assistenter/assistant-library";
-import { PullToRefresh } from "@/components/shared/pull-to-refresh";
 
 export const metadata = {
   title: "Assistenter — AI-hubben",
@@ -11,9 +10,5 @@ export const metadata = {
 export default async function AssistenterPage() {
   const assistants = await fetchAssistants();
 
-  return (
-    <PullToRefresh>
-      <AssistantLibrary assistants={assistants} />
-    </PullToRefresh>
-  );
+  return <AssistantLibrary assistants={assistants} />;
 }
