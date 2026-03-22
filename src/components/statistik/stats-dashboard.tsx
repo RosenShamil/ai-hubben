@@ -34,7 +34,7 @@ import type {
   PlatformOverview,
 } from "@/lib/stats-data";
 import type { TrainingStats } from "@/lib/training-data";
-import { TrendingUp, Users, Zap, Layers } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 /* ── Custom tooltip ── */
 
