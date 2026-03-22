@@ -50,6 +50,8 @@ export interface UseCaseTemplate {
   roleCategories: RoleCategory[] | "all";
   goals: GoalId[];
   difficulty: "enkelt" | "medel" | "avancerat";
+  actionLabel?: string;
+  actionHref?: string;
 }
 
 export interface GuideRule {
@@ -347,6 +349,8 @@ export const USE_CASES: UseCaseTemplate[] = [
     roleCategories: "all",
     goals: ["lara-grunder"],
     difficulty: "enkelt",
+    actionLabel: "Gå till AI-akademin",
+    actionHref: "/akademin",
   },
   {
     id: "uc-prompt-teknik",
@@ -379,18 +383,22 @@ export const USE_CASES: UseCaseTemplate[] = [
     roleCategories: ["handlaggare", "vard-omsorg"],
     goals: ["regler"],
     difficulty: "medel",
+    actionLabel: "Läs dokumentation",
+    actionHref: "/dokumentation",
   },
 
   // ── Verktyg ──
   {
     id: "uc-intric-start",
     title: "Kom igång med Intric",
-    description: "Katrineholms AI-plattform — skapa och dela assistenter.",
+    description: "Katrineholms AI-plattform — skapa och dela assistenter. Logga in med ditt AD-konto.",
     examplePrompt: "",
     departments: "all",
     roleCategories: "all",
     goals: ["verktyg"],
     difficulty: "enkelt",
+    actionLabel: "Öppna Intric",
+    actionHref: "https://katrineholm.intric.ai",
   },
   {
     id: "uc-hitta-assistent",
@@ -401,6 +409,8 @@ export const USE_CASES: UseCaseTemplate[] = [
     roleCategories: "all",
     goals: ["verktyg"],
     difficulty: "enkelt",
+    actionLabel: "Utforska assistenter",
+    actionHref: "/assistenter",
   },
   {
     id: "uc-bygga-egen",

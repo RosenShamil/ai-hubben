@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowRight, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowRight, RotateCcw, Sparkles, Bot, BookOpen, GraduationCap } from "lucide-react";
 import { BRAND_GRADIENT } from "@/lib/constants";
 import { FadeIn } from "@/components/shared/fade-in";
 import { getGuideProfile, clearGuideProfile, type AIGuideProfile } from "@/lib/ai-guide-profile";
@@ -70,26 +70,36 @@ export function GuideSectionHome({ assistants = [] }: { assistants?: IntricAssis
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/akademin"
-                  className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-primary-foreground transition-all duration-150 active:scale-[0.98]"
-                  style={{
-                    fontFamily: "var(--font-geist-mono), monospace",
-                    boxShadow:
-                      "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset",
-                  }}
-                >
-                  Börja utbildning <ArrowRight size={14} />
-                </Link>
-                <button
-                  onClick={handleReset}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border transition-colors hover:bg-secondary"
-                  aria-label="Gör om quiz"
-                >
-                  <RotateCcw size={14} />
-                </button>
-              </div>
+              <button
+                onClick={handleReset}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border transition-colors hover:bg-secondary"
+                aria-label="Gör om quiz"
+              >
+                <RotateCcw size={14} />
+              </button>
+            </div>
+            <div className="mt-5 grid grid-cols-3 gap-3">
+              <Link
+                href="/akademin"
+                className="flex flex-col items-center gap-2 rounded-lg border border-border p-4 text-center transition-all hover:bg-secondary"
+              >
+                <GraduationCap size={20} className="text-muted-foreground" />
+                <span className="text-[0.75rem] font-medium">Utbildning</span>
+              </Link>
+              <Link
+                href="/assistenter"
+                className="flex flex-col items-center gap-2 rounded-lg border border-border p-4 text-center transition-all hover:bg-secondary"
+              >
+                <Bot size={20} className="text-muted-foreground" />
+                <span className="text-[0.75rem] font-medium">Assistenter</span>
+              </Link>
+              <Link
+                href="/kunskapsbank"
+                className="flex flex-col items-center gap-2 rounded-lg border border-border p-4 text-center transition-all hover:bg-secondary"
+              >
+                <BookOpen size={20} className="text-muted-foreground" />
+                <span className="text-[0.75rem] font-medium">Kunskapsbank</span>
+              </Link>
             </div>
           </div>
         </FadeIn>

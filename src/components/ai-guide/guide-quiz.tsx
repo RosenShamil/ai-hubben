@@ -496,7 +496,7 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                         <div key={uc.id} className="rounded-lg border border-border p-4">
                           <p className="text-[0.875rem] font-medium">{uc.title}</p>
                           <p className="mt-1 text-[0.8125rem] text-muted-foreground">{uc.description}</p>
-                          {uc.examplePrompt && (
+                          {uc.examplePrompt ? (
                             <div className="mt-3">
                               <div
                                 className="rounded-md bg-secondary p-3 text-[0.75rem] leading-relaxed"
@@ -519,6 +519,15 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                                 )}
                               </button>
                             </div>
+                          ) : uc.actionHref && (
+                            <a
+                              href={uc.actionHref}
+                              target={uc.actionHref.startsWith("http") ? "_blank" : undefined}
+                              rel={uc.actionHref.startsWith("http") ? "noopener noreferrer" : undefined}
+                              className="mt-3 inline-flex items-center gap-1 text-[0.8125rem] font-medium underline underline-offset-4"
+                            >
+                              {uc.actionLabel} <ArrowRight size={14} />
+                            </a>
                           )}
                         </div>
                       ))}
@@ -579,6 +588,52 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                           <p className="text-[0.8125rem] leading-snug">{rule.text}</p>
                         </div>
                       ))}
+                    </div>
+                  </motion.div>
+
+                  {/* Next steps */}
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.85 }}
+                    className="mt-8"
+                  >
+                    <p
+                      className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+                      style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                    >
+                      Nästa steg
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      <Link
+                        href="/akademin"
+                        onClick={onComplete}
+                        className="rounded-full bg-primary px-5 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-primary-foreground transition-all duration-150 active:scale-[0.98]"
+                        style={{
+                          fontFamily: "var(--font-geist-mono), monospace",
+                          boxShadow: "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset",
+                        }}
+                      >
+                        Börja utbildning
+                      </Link>
+                      <a
+                        href="/assistenter"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-full border border-border px-5 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.01em] transition-all hover:bg-secondary"
+                        style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                      >
+                        Utforska assistenter
+                      </a>
+                      <a
+                        href="/kunskapsbank"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-full border border-border px-5 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.01em] transition-all hover:bg-secondary"
+                        style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                      >
+                        Kunskapsbanken
+                      </a>
                     </div>
                   </motion.div>
                 </div>
