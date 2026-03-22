@@ -28,12 +28,14 @@ import {
   Home,
   BarChart3,
   Phone,
+  Award,
 } from "lucide-react";
 
 const SIDEBAR_LINKS = [
   { label: "Oversikt", href: "/admin", icon: LayoutDashboard },
   { label: "Startsida", href: "/admin/startsida", icon: Home },
   { label: "Statistik", href: "/admin/statistik", icon: BarChart3 },
+  { label: "AI-akademin", href: "/admin/akademin", icon: Award },
   { label: "Utbildningstillfällen", href: "/admin/utbildning", icon: GraduationCap },
   { label: "Utbildningsmaterial", href: "/admin/resurser", icon: BookOpen },
   { label: "Dokument", href: "/admin/dokument", icon: FileText },

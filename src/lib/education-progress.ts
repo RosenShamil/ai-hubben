@@ -5,6 +5,13 @@
 import type { CertificationLevel, XPSource } from "./education-system";
 import { XP_REWARDS } from "./education-system";
 import { markConceptRead } from "./knowledge-progress";
+import {
+  reportLessonComplete,
+  reportModuleQuiz,
+  reportFinalExam,
+  reportCertificateEarned,
+  reportEnrollment,
+} from "./education-analytics";
 
 const STORAGE_KEY = "ai-akademin-progress";
 
@@ -100,6 +107,7 @@ export function enroll(): void {
   if (!p.enrollmentDate) {
     p.enrollmentDate = new Date().toISOString().slice(0, 10);
     save(p);
+    reportEnrollment();
   }
 }
 
@@ -112,6 +120,11 @@ export function completeLesson(lessonId: string, conceptIds: string[]): void {
     p.xp += XP_REWARDS["lesson-complete"];
     p.lastActivityDate = new Date().toISOString().slice(0, 10);
     save(p);
+    // Report to server — derive level/course from lesson ID (les-X-Y-Z-W)
+    const parts = lessonId.split("-");
+    const levelId = `niva-${parts[1]}`;
+    const courseId = `course-${parts[1]}-${parts[2]}`;
+    reportLessonComplete(lessonId, levelId, courseId);
   }
   // Sync concepts to knowledge bank
   conceptIds.forEach((id) => markConceptRead(id));
@@ -167,6 +180,10 @@ export function saveModuleQuizScore(moduleId: string, score: number): void {
     p.xp += XP_REWARDS["quiz-perfect"];
   }
   save(p);
+  // Report to server
+  const parts = moduleId.split("-"); // mod-X-Y-Z
+  const levelId = `niva-${parts[1]}`;
+  reportModuleQuiz(moduleId, levelId, score, score >= 80);
 }
 
 export function getModuleQuizScore(moduleId: string): number {
@@ -181,6 +198,8 @@ export function saveFinalExamScore(levelId: CertificationLevel, score: number): 
   }
   p.finalExamLastAttempt[levelId] = new Date().toISOString();
   save(p);
+  // Report to server
+  reportFinalExam(levelId, score, score >= 80);
 }
 
 export function getFinalExamScore(levelId: CertificationLevel): number {
@@ -217,6 +236,8 @@ export function earnCertificate(
   p.certificates.push(entry);
   p.xp += XP_REWARDS["certificate-earned"];
   save(p);
+  // Report to server
+  reportCertificateEarned(levelId, name, entry.certificateId);
   return entry;
 }
 

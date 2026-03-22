@@ -1089,4 +1089,23 @@ Varje steg: förklara → godkänn → implementera → testa → pusha → näs
 
 ---
 
-*Masterplanen skapad 2026-03-20. Uppdaterad 2026-03-20 med beslut från planeringssession.*
+## ADMIN: AI-akademin Analytics
+
+✅ IMPLEMENTERAD (2026-03-22)
+
+**Supabase-tabell:** `education_events` — spårar alla utbildningshändelser (lektioner, quiz, slutprov, certifikat).
+
+**Admin-sida:** `/admin/akademin` — dashboard med:
+- Toppkort: unika användare, lektioner klara, certifikat utfärdade, aktivitet senaste 7 dagarna
+- Översikt per nivå (1–3): lektioner, quiz-resultat, snittpoäng, slutprov, certifikat, progress-bar
+- Certifikat-flik: tabell med namn, nivå, certifikat-ID, datum
+- Aktivitetslogg: senaste 50 händelser med typ, nivå, poäng, tidsstämpel
+- CSV-export av all data
+
+**Tracking:** Fire-and-forget från klienten via `education-analytics.ts`. Anonymt ID per webbläsare. Namn fångas vid certifikat.
+
+**RLS:** Anonym INSERT (public), SELECT begränsat till admins.
+
+---
+
+*Masterplanen skapad 2026-03-20. Uppdaterad 2026-03-22 med AI-akademin admin analytics.*

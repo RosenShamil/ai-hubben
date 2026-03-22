@@ -35,7 +35,7 @@ No test framework is configured.
 Two layout groups under `src/app/`:
 
 - **`(main)/`** — Public pages: `/`, `/assistenter`, `/statistik`, `/utbildning`, `/kunskapsbank`, `/akademin`, `/dokumentation`, `/nyheter`, `/faq`, `/om`, `/kontakt`, `/~offline`
-- **`(admin)/admin/`** — Protected admin CRUD: `/admin/nyheter`, `/admin/statistik`, `/admin/assistenter`, `/admin/utbildning`, `/admin/faq`, `/admin/team`, `/admin/innehall`, `/admin/meddelanden`, etc.
+- **`(admin)/admin/`** — Protected admin CRUD: `/admin/nyheter`, `/admin/statistik`, `/admin/akademin`, `/admin/assistenter`, `/admin/utbildning`, `/admin/faq`, `/admin/team`, `/admin/innehall`, `/admin/meddelanden`, etc.
 
 ### Data Flow
 
@@ -58,7 +58,10 @@ Two layout groups under `src/app/`:
 - `src/lib/daily-byte.ts` — Daily concept selection logic (date-based, prioritizes unseen)
 - `src/lib/education-system.ts` — AI-akademin types, XP rewards, badges, certification levels
 - `src/lib/education-data.ts` — All course/module/lesson/quiz data (Nivå 1 complete)
+- `src/lib/education-data-niva2.ts` — Nivå 2 lessons, quiz, and exam data (32 lessons)
+- `src/lib/education-data-niva3.ts` — Nivå 3 lessons, quiz, and exam data (32 lessons)
 - `src/lib/education-progress.ts` — localStorage progress for academy (lessons, quizzes, certs, XP)
+- `src/lib/education-analytics.ts` — Fire-and-forget event reporting to Supabase for admin analytics
 - `src/lib/certificate-generator.ts` — Canvas-based certificate rendering (PNG)
 - `src/lib/badge-checker.ts` — Auto-check and award badges
 - `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
