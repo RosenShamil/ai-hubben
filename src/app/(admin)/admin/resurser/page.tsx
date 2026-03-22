@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { Plus, Pencil, Trash2, X, Check, ExternalLink } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, ExternalLink, Upload, Loader2 } from "lucide-react";
 
 interface TrainingResource {
   id: string;
@@ -39,6 +39,7 @@ export default function AdminResurserPage() {
     message: string;
   } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const showToast = useCallback(
     (type: "success" | "error", message: string) => {
@@ -132,6 +133,33 @@ export default function AdminResurserPage() {
     }
     setDeleteConfirm(null);
     fetchResources();
+  }
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+
+    const ext = file.name.split(".").pop();
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from("training-resources")
+      .upload(path, file);
+
+    if (error) {
+      showToast("error", "Uppladdning misslyckades: " + error.message);
+      setUploading(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("training-resources")
+      .getPublicUrl(path);
+
+    setForm({ ...form, url: urlData.publicUrl });
+    setUploading(false);
+    showToast("success", "Filen uppladdad");
   }
 
   const typeLabel: Record<string, string> = {
@@ -414,7 +442,7 @@ export default function AdminResurserPage() {
                   className="mb-1.5 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
                   style={{ fontFamily: "var(--font-geist-mono), monospace" }}
                 >
-                  Länk (URL)
+                  Länk (URL) eller ladda upp fil
                 </label>
                 <input
                   type="url"
@@ -425,6 +453,26 @@ export default function AdminResurserPage() {
                   placeholder="https://..."
                   className="w-full rounded-md border border-border bg-background px-3 py-2 text-[0.875rem] outline-none focus:border-foreground"
                 />
+                <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-border bg-background px-3 py-3 text-[0.8125rem] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground">
+                  {uploading ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <Upload size={16} />
+                  )}
+                  {uploading ? "Laddar upp..." : "Ladda upp fil (PDF, Word, etc.)"}
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.mp4,.webm,.png,.jpg,.jpeg"
+                    onChange={handleFileUpload}
+                    disabled={uploading}
+                  />
+                </label>
+                {form.url && (
+                  <p className="mt-1.5 truncate text-[0.75rem] text-muted-foreground">
+                    {form.url}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-2">
