@@ -412,7 +412,7 @@ export const LESSONS: Lesson[] = [
       ],
       municipalExample: {
         title: "AI på kommunen idag",
-        description: "På Katrineholms kommun används AI redan — för att sammanfatta möten, hjälpa handläggare hitta rätt information snabbare och svara på medarbetares frågor via Intric. Du behöver inte vara teknisk expert för att dra nytta av det.",
+        description: "I Katrineholms kommun används AI redan — via Intric-plattformen med assistenter som iKAI, VårdKAI och Konteringsassistenten, och via Microsoft Copilot i Office 365. AI hjälper medarbetare att förenkla sin vardag, från sjukvårdsfrågor till kontering och dokumenthantering.",
         department: "Alla förvaltningar",
         icon: "Building2",
       },
@@ -444,8 +444,8 @@ export const LESSONS: Lesson[] = [
       funFact: "Deep learning-modeller kan ha miljarder 'neuroner' — fler kopplingar än det finns stjärnor i Vintergatan.",
       sections: [
         {
-          heading: "Smal AI vs. generell AI",
-          text: "Nästan all AI idag är 'smal AI' — den är bra på EN sak. Spam-filtret i din mejl är fantastiskt på att hitta skräppost, men kan inte hjälpa dig skriva ett mejl. ChatGPT kan skriva text men kan inte köra bil. Generell AI (AGI) som kan allt, finns ännu inte.",
+          heading: "Specialiserad AI vs. generell AI",
+          text: "Nästan all AI idag är specialiserad inom sitt område. Spam-filtret i din mejl kan hitta skräppost men inte sammanfatta ett dokument. ChatGPT kan hantera text och resonera men kan inte styra en robot eller köra bil. Varje AI-system har sina styrkor och begränsningar. En AI som verkligen kan allt — AGI — finns ännu inte.",
           icon: "Target",
         },
         {
@@ -456,10 +456,10 @@ export const LESSONS: Lesson[] = [
         },
       ],
       municipalExample: {
-        title: "Smal AI i praktiken",
-        description: "Kommunens Intric-plattform använder språkmodeller (en typ av deep learning) som är specialiserade på att förstå och generera text. De är fantastiska på det — men de kan inte göra kalkyler i Excel eller boka mötesrum.",
-        department: "IT-avdelningen",
-        icon: "Server",
+        title: "Deep learning bakom verktygen",
+        description: "Varje gång du chattar med en assistent i Intric eller ber Copilot sammanfatta ett möte, är det deep learning som driver svaren. Samma teknik gör att Teams kan transkribera tal till text och att Outlook kan föreslå svar på mejl.",
+        department: "IT & digitalisering",
+        icon: "Cpu",
       },
       interactiveElement: {
         type: "multi-choice",
@@ -467,16 +467,16 @@ export const LESSONS: Lesson[] = [
           question: "Vilken typ av AI är vanligast idag?",
           options: [
             "Generell AI som kan allt",
-            "Smal AI som är bra på en specifik uppgift",
+            "Specialiserad AI som är bra på specifika uppgifter",
             "Superintelligent AI",
             "Robotar med medvetande",
           ],
           correctIndex: 1,
-          explanation: "Rätt! All AI vi använder idag är smal AI — specialiserad på specifika uppgifter. Generell AI existerar inte ännu.",
+          explanation: "Rätt! All AI vi använder idag är specialiserad på specifika uppgifter. Generell AI existerar inte ännu.",
         },
       },
       summary: [
-        "Smal AI (som vi har idag) är bra på en sak, generell AI finns inte ännu",
+        "AI idag är specialiserad — bra inom sitt område, men ingen AI kan allt (AGI finns inte ännu)",
         "Deep learning använder lager av beräkningar inspirerade av hjärnan",
         "Det är deep learning som gjort AI så bra på språk och bild de senaste åren",
       ],
@@ -1244,7 +1244,7 @@ export const ACADEMY_QUIZ_QUESTIONS: AcademyQuizQuestion[] = [
   // --- Modul 1.1.1: AI förklarat ---
   { id: "aq-1-1-1", moduleId: "mod-1-1-1", question: "Vad är AI i grunden?", options: ["En robot med medvetande", "Datorsystem som hittar mönster i data", "Ett program som alltid har rätt", "En ersättare för mänskligt tänkande"], correctIndex: 1, explanation: "AI är datorsystem som analyserar data och hittar mönster — det handlar om matematik, inte medvetande." },
   { id: "aq-1-1-2", moduleId: "mod-1-1-1", question: "Hur lär sig en AI genom maskininlärning?", options: ["Genom att följa exakta regler en programmerare skrivit", "Genom att analysera tusentals exempel och hitta mönster", "Genom att kopiera mänskligt beteende", "Genom att söka på internet i realtid"], correctIndex: 1, explanation: "Maskininlärning innebär att AI lär sig mönster från stora mängder data/exempel." },
-  { id: "aq-1-1-3", moduleId: "mod-1-1-1", question: "Vilken typ av AI är vanligast idag?", options: ["Generell AI (AGI)", "Superintelligent AI", "Smal AI som är bra på specifika uppgifter", "Medveten AI"], correctIndex: 2, explanation: "All AI vi använder idag är smal AI — specialiserad på specifika uppgifter." },
+  { id: "aq-1-1-3", moduleId: "mod-1-1-1", question: "Vilken typ av AI är vanligast idag?", options: ["Generell AI (AGI)", "Superintelligent AI", "Specialiserad AI som är bra på specifika uppgifter", "Medveten AI"], correctIndex: 2, explanation: "All AI vi använder idag är specialiserad på specifika uppgifter." },
   { id: "aq-1-1-4", moduleId: "mod-1-1-1", question: "Vad är deep learning?", options: ["AI som lär sig under jorden", "Avancerad maskininlärning med lager av beräkningar", "AI som kan tänka djupa tankar", "En ny programmeringsstil"], correctIndex: 1, explanation: "Deep learning använder 'djupa' nätverk med flera lager, inspirerade av hjärnans neuroner." },
   { id: "aq-1-1-5", moduleId: "mod-1-1-1", question: "Vilket av dessa är ett exempel på AI i vardagen?", options: ["En vanlig miniräknare", "Stavningskontroll i Word", "En papperskalender", "En enkel väckarklocka"], correctIndex: 1, explanation: "Stavningskontroll använder AI/maskininlärning för att förstå kontext och föreslå korrigeringar." },
 
@@ -1330,7 +1330,7 @@ export const FINAL_EXAM_POOL_NIVA_1: AcademyQuizQuestion[] = [
   { id: "fe-1-15", levelId: "niva-1", question: "Deep learning har gjort AI bättre på...", options: ["Enkel matematik", "Språk, bild och tal", "Att tänka som människor", "Att följa exakta regler"], correctIndex: 1, explanation: "Deep learning är anledningen till AI:s genombrott inom språk, bild- och taligenkänning." },
   { id: "fe-1-16", levelId: "niva-1", question: "Du hittar ett fel i AI:ns svar. Vad gör du?", options: ["Rapporterar buggen till AI-leverantören", "Korrigerar det själv och delar erfarenheten med kollegor", "Slutar använda AI", "Ber AI:n rätta sig själv"], correctIndex: 1, explanation: "Korrigera felet själv och dela insikten så att kollegor också lär sig." },
   { id: "fe-1-17", levelId: "niva-1", question: "Transkribering med AI omvandlar...", options: ["Text till tal", "Tal till sökbar text", "Bilder till text", "Kod till text"], correctIndex: 1, explanation: "AI-transkribering omvandlar inspelat tal till text." },
-  { id: "fe-1-18", levelId: "niva-1", question: "Smal AI betyder att...", options: ["AI:n är liten i storlek", "AI:n är bra på EN specifik uppgift", "AI:n har lite data", "AI:n bara funkar offline"], correctIndex: 1, explanation: "Smal AI = specialiserad på en uppgift. All AI vi använder idag är smal AI." },
+  { id: "fe-1-18", levelId: "niva-1", question: "Smal AI betyder att...", options: ["AI:n är liten i storlek", "AI:n är bra på EN specifik uppgift", "AI:n har lite data", "AI:n bara funkar offline"], correctIndex: 1, explanation: "All AI vi använder idag är specialiserad — bra på sitt område men med tydliga begränsningar." },
   { id: "fe-1-19", levelId: "niva-1", question: "När du använder AI som stöd i ett beslut, vem fattar beslutet?", options: ["AI:n", "Du (med mänskligt omdöme)", "IT-avdelningen", "Intric automatiskt"], correctIndex: 1, explanation: "Du fattar alltid beslutet — AI ger underlag och förslag." },
   { id: "fe-1-20", levelId: "niva-1", question: "Promptteknik handlar om att...", options: ["Programmera AI-modeller", "Strategiskt formulera instruktioner för bättre AI-svar", "Installera AI-programvara", "Bygga robotar"], correctIndex: 1, explanation: "Promptteknik = konsten att skriva bra instruktioner till AI." },
 ];
