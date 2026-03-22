@@ -76,7 +76,7 @@ Client-side only. Admin layout checks `isCurrentUserAdmin()` on mount and redire
 
 - **Swedish** for UI text and routes (`/assistenter`, `/statistik`, `/utbildning`)
 - **English** for code (variable names, component names, commit messages)
-- Design goal: "Stripe meets kommunal innovation" — professional, not generic AI-look
+- Design goal: Speakeasy-inspired — premium, sophisticated, not generic AI/Tailwind-look
 - Mobile-first, PWA with app-like feel (bottom tab bar, smooth transitions)
 - Max 2-3 heavy animations per page
 - WCAG 2.1 AA accessibility
