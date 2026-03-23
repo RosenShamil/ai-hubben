@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 import { Check, X, RotateCcw, ArrowRight } from "lucide-react";
 import { BRAND_GRADIENT } from "@/lib/constants";
 import type { QuizQuestion } from "@/lib/knowledge-bank";
@@ -67,6 +68,10 @@ export function QuizPlayer({
     setFinished(false);
   }
 
+  const { dragProps } = useSwipeNavigation({
+    onSwipeLeft: selected !== null ? handleNext : undefined,
+  });
+
   if (finished) {
     const pct = Math.round((score / total) * 100);
     return (
@@ -126,14 +131,16 @@ export function QuizPlayer({
         />
       </div>
 
-      {/* Question */}
+      {/* Question — swipe left after answering to go to next */}
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
+          {...dragProps}
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -30 }}
           transition={{ duration: 0.25 }}
+          style={{ touchAction: "pan-y" }}
         >
           <h3
             className="text-[1.0625rem] leading-[1.4] tracking-[-0.01em]"

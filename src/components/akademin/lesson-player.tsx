@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 import {
   X,
   ChevronRight,
@@ -518,6 +519,10 @@ export function LessonPlayer({
   const totalSteps = steps.length;
   const isLastStep = currentStep === totalSteps - 1;
 
+  const handleBack = useCallback(() => {
+    if (currentStep > 0) setCurrentStep((s) => s - 1);
+  }, [currentStep]);
+
   const handleNext = useCallback(() => {
     if (isLastStep) {
       // Complete lesson
@@ -541,9 +546,10 @@ export function LessonPlayer({
     }
   }, [isLastStep, lesson, mod, lessonId, onNext, onClose]);
 
-  const handleBack = () => {
-    if (currentStep > 0) setCurrentStep((s) => s - 1);
-  };
+  const { dragProps } = useSwipeNavigation({
+    onSwipeLeft: handleNext,
+    onSwipeRight: handleBack,
+  });
 
   if (!lesson || !mod) return null;
 
@@ -582,7 +588,7 @@ export function LessonPlayer({
         </span>
       </div>
 
-      {/* Content area */}
+      {/* Content area — swipe left/right to navigate */}
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-[42rem] px-6 py-8">
           {/* Lesson title (only on first step) */}
@@ -603,14 +609,16 @@ export function LessonPlayer({
             </div>
           )}
 
-          {/* Step content with animation */}
+          {/* Step content with animation + swipe */}
           <AnimatePresence mode="wait">
             <motion.div
               key={step.key}
+              {...dragProps}
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -30 }}
               transition={{ duration: 0.25 }}
+              style={{ touchAction: "pan-y" }}
             >
               {step.type === "hook" && (
                 <HookSection {...(step.data as { text: string; funFact?: string })} />
