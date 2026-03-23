@@ -172,7 +172,7 @@ export function AcademyPage() {
           >
             AI-akademin
           </h1>
-          <p className="mt-6 max-w-[42rem] text-[1.0625rem] leading-[1.7] text-muted-foreground">
+          <p className="mt-6 max-w-[42rem] text-[1.0625rem] leading-[1.7] text-foreground">
             Lär dig AI från grunden till avancerad nivå. Tre certifieringsnivåer med
             engagerande lektioner, quiz och verkliga exempel från kommunen.
           </p>
@@ -266,7 +266,7 @@ export function AcademyPage() {
           >
             Tre nivåer, ett mål
           </h2>
-          <p className="mt-2 text-[0.9375rem] text-muted-foreground">
+          <p className="mt-2 text-[0.9375rem] text-foreground">
             Varje nivå avslutas med ett certifikat. Börja från grunden och bygg din kompetens.
           </p>
         </FadeIn>
@@ -357,8 +357,8 @@ export function AcademyPage() {
                         <p
                           className={`mt-2 text-[0.9375rem] leading-[1.6] ${
                             unlocked
-                              ? "text-muted-foreground"
-                              : "text-muted-foreground/60"
+                              ? "text-foreground/85"
+                              : "text-foreground/60"
                           }`}
                         >
                           {level.description}
@@ -498,7 +498,7 @@ export function AcademyPage() {
                       className={`mt-4 flex items-center gap-4 border-t pt-4 text-[0.75rem] ${
                         unlocked
                           ? "border-border text-muted-foreground"
-                          : "border-border/50 text-muted-foreground/50"
+                          : "border-border/50 text-muted-foreground"
                       }`}
                     >
                       <span>{level.courseIds.length} kurser</span>

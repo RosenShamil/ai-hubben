@@ -107,7 +107,7 @@ export function FinalExam({
           >
             Vänta innan du försöker igen
           </h2>
-          <p className="mt-3 text-[0.9375rem] text-muted-foreground">
+          <p className="mt-3 text-[0.9375rem] text-foreground/85">
             Du kan göra om slutprovet efter 24 timmar. Använd tiden till att
             repetera lektionerna och modul-quizen.
           </p>
@@ -158,7 +158,7 @@ export function FinalExam({
             Slutprov: {level.title}
           </h2>
 
-          <p className="mt-3 text-[0.9375rem] text-muted-foreground">
+          <p className="mt-3 text-[0.9375rem] text-foreground/85">
             Visa att du behärskar allt du lärt dig. Klarar du provet får du ditt
             certifikat!
           </p>
@@ -239,7 +239,7 @@ export function FinalExam({
             {passed ? "Grattis!" : "Inte godkänt"}
           </h2>
 
-          <p className="mt-2 text-[0.9375rem] text-muted-foreground">
+          <p className="mt-2 text-[0.9375rem] text-foreground/85">
             {passed
               ? `Du klarade slutprovet med ${scorePercent}%! Du är nu certifierad ${level.title}.`
               : `Du fick ${scorePercent}% rätt. Du behöver minst ${passThreshold}%. Försök igen efter 24 timmar.`}
@@ -253,7 +253,7 @@ export function FinalExam({
           >
             {scorePercent}%
           </motion.div>
-          <p className="text-[0.875rem] text-muted-foreground">
+          <p className="text-[0.875rem] text-foreground/85">
             {correctCount} av {totalQuestions} rätt
           </p>
 
@@ -390,7 +390,7 @@ export function FinalExam({
                       : "bg-red-500/10"
                   }`}
                 >
-                  <p className="text-[0.875rem] leading-[1.6] text-muted-foreground">
+                  <p className="text-[0.875rem] leading-[1.6] text-foreground/85">
                     {question.explanation}
                   </p>
                 </motion.div>

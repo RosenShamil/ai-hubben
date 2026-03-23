@@ -191,7 +191,7 @@ function PostCard({ post, index }: { post: Post; index: number }) {
                 {post.title}
               </h3>
               {post.excerpt && (
-                <p className="line-clamp-2 text-[0.875rem] leading-[1.6] text-muted-foreground">
+                <p className="line-clamp-2 text-[0.875rem] leading-[1.6] text-foreground/85">
                   {post.excerpt}
                 </p>
               )}
@@ -248,7 +248,7 @@ export function NyheterPage({ posts }: { posts: Post[] }) {
             <p className="text-[1.125rem] font-medium">
               Inga nyheter publicerade
             </p>
-            <p className="mt-2 text-[0.875rem] text-muted-foreground">
+            <p className="mt-2 text-[0.875rem] text-foreground/85">
               Kom tillbaka snart for senaste uppdateringarna.
             </p>
           </div>

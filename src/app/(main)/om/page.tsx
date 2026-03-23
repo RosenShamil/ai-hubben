@@ -337,7 +337,7 @@ export default async function OmPage() {
                   <h3 className="mt-4 text-[1rem] font-medium tracking-tight">
                     {area.title}
                   </h3>
-                  <p className="mt-2 text-[0.875rem] leading-[1.6] text-muted-foreground">
+                  <p className="mt-2 text-[0.875rem] leading-[1.6] text-foreground/85">
                     {area.description}
                   </p>
                 </div>

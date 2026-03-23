@@ -126,7 +126,7 @@ export function ModuleQuiz({
             {passed ? "Godkänt!" : "Inte godkänt"}
           </h2>
 
-          <p className="mt-2 text-[0.9375rem] text-muted-foreground">
+          <p className="mt-2 text-[0.9375rem] text-foreground/85">
             {passed
               ? `Du klarade quizet med ${scorePercent}% rätt. Bra jobbat!`
               : `Du fick ${scorePercent}% rätt. Du behöver minst ${Math.round(mod.quizPassThreshold * 100)}% för att bli godkänd.`}
@@ -135,7 +135,7 @@ export function ModuleQuiz({
           <div className="mt-6 text-[2.5rem] font-bold tabular-nums">
             {scorePercent}%
           </div>
-          <p className="text-[0.8125rem] text-muted-foreground">
+          <p className="text-[0.8125rem] text-foreground/85">
             {correctCount} av {totalQuestions} rätt
           </p>
 
@@ -294,7 +294,7 @@ export function ModuleQuiz({
                       : "bg-red-500/10"
                   }`}
                 >
-                  <p className="text-[0.875rem] leading-[1.6] text-muted-foreground">
+                  <p className="text-[0.875rem] leading-[1.6] text-foreground/85">
                     {question.explanation}
                   </p>
                 </motion.div>

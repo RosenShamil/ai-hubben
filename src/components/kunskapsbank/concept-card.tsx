@@ -36,7 +36,7 @@ export function ConceptCard({
       style={{ perspective: "1000px" }}
     >
       <motion.div
-        className="relative h-[220px] w-full"
+        className="relative h-[230px] w-full"
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
         style={{ transformStyle: "preserve-3d" }}
@@ -75,33 +75,35 @@ export function ConceptCard({
             <DifficultyDots level={concept.difficulty} />
           </div>
 
-          <p className="absolute bottom-5 right-5 text-[0.6875rem] text-muted-foreground/60">
+          <p className="absolute bottom-5 right-5 text-[0.6875rem] text-muted-foreground">
             Tryck för att vända
           </p>
         </div>
 
         {/* Back */}
         <div
-          className="absolute inset-0 rounded-lg border border-border bg-card p-5"
+          className="absolute inset-0 flex flex-col overflow-hidden rounded-lg border border-border bg-card p-5"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
-          <p className="text-[0.8125rem] leading-[1.7] text-foreground">
+          <p className="line-clamp-5 text-[0.8125rem] leading-[1.7] text-foreground">
             {concept.shortExplanation}
           </p>
 
-          <p className="mt-3 text-[0.8125rem] italic leading-[1.6] text-muted-foreground">
+          <p className="mt-2 line-clamp-3 text-[0.8125rem] italic leading-[1.6] text-foreground/85">
             &ldquo;{concept.analogy}&rdquo;
           </p>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenDetail(concept);
-            }}
-            className="absolute bottom-5 right-5 text-[0.75rem] font-medium text-foreground underline underline-offset-2 hover:text-muted-foreground"
-          >
-            Läs mer →
-          </button>
+          <div className="mt-auto flex justify-end pt-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenDetail(concept);
+              }}
+              className="text-[0.75rem] font-medium text-foreground hover:text-muted-foreground"
+            >
+              Läs mer →
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>

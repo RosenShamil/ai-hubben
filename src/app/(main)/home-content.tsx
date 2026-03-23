@@ -212,7 +212,7 @@ export function HomeContent({ stats, assistants, posts, homeTexts = {} }: HomeCo
                     </p>
                   </div>
                 </div>
-                <p className="mt-4 flex-1 line-clamp-2 text-[0.875rem] leading-[1.6] text-muted-foreground">
+                <p className="mt-4 flex-1 line-clamp-2 text-[0.875rem] leading-[1.6] text-foreground/85">
                   {a.description}
                 </p>
               </FlashCard>
@@ -310,7 +310,7 @@ export function HomeContent({ stats, assistants, posts, homeTexts = {} }: HomeCo
           ) : (
             <FadeIn>
               <div className="col-span-full rounded-lg border border-border bg-card p-7">
-                <p className="text-[0.875rem] text-muted-foreground">
+                <p className="text-[0.875rem] text-foreground/85">
                   Inga nyheter publicerade ännu. Kom tillbaka snart!
                 </p>
               </div>
@@ -361,7 +361,7 @@ export function HomeContent({ stats, assistants, posts, homeTexts = {} }: HomeCo
                     <h3 className="mt-5 text-[1rem] font-medium tracking-tight">
                       {link.label}
                     </h3>
-                    <p className="mt-2 text-[0.8125rem] leading-[1.6] text-muted-foreground">
+                    <p className="mt-2 text-[0.8125rem] leading-[1.6] text-foreground/85">
                       {link.description}
                     </p>
                   </FlashCard>
@@ -396,7 +396,7 @@ export function HomeContent({ stats, assistants, posts, homeTexts = {} }: HomeCo
               >
                 {uploadHeading}
               </h2>
-              <p className="mt-4 text-[1.0625rem] leading-[1.7] text-muted-foreground">
+              <p className="mt-4 text-[1.0625rem] leading-[1.7] text-foreground/85">
                 {uploadText}
               </p>
               <Link

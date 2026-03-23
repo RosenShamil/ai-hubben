@@ -259,7 +259,7 @@ export function DokumentationPage({
             <p className="text-[1.125rem] font-medium">
               Inga dokument hittades
             </p>
-            <p className="mt-2 text-[0.875rem] text-muted-foreground">
+            <p className="mt-2 text-[0.875rem] text-foreground/85">
               {query || activeCategory !== "alla"
                 ? "Prova att ändra din sökning eller filter."
                 : "Inga dokument har publicerats ännu."}
@@ -344,7 +344,7 @@ export function DokumentationPage({
                       </div>
                     </div>
                     {doc.description && (
-                      <p className="line-clamp-2 text-[0.875rem] leading-[1.6] text-muted-foreground">
+                      <p className="line-clamp-2 text-[0.875rem] leading-[1.6] text-foreground/85">
                         {doc.description}
                       </p>
                     )}
@@ -460,7 +460,7 @@ export function DokumentationPage({
                           {section.title}
                         </h3>
                       </div>
-                      <p className="line-clamp-2 text-[0.875rem] leading-[1.6] text-muted-foreground">
+                      <p className="line-clamp-2 text-[0.875rem] leading-[1.6] text-foreground/85">
                         {section.description}
                       </p>
                       <div className="flex items-center gap-1 text-[0.75rem] text-muted-foreground transition-colors group-hover:text-foreground">

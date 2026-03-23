@@ -39,7 +39,7 @@ function AccordionItem({ faq }: { faq: FAQ }) {
             {paragraphs.map((p, i) => (
               <p
                 key={i}
-                className="text-[0.875rem] leading-[1.7] text-muted-foreground [&:not(:first-child)]:mt-3"
+                className="text-[0.875rem] leading-[1.7] text-foreground/85 [&:not(:first-child)]:mt-3"
               >
                 {p}
               </p>
@@ -107,7 +107,7 @@ export function FaqPage({ faqs }: { faqs: FAQ[] }) {
         {filtered.length === 0 ? (
           <FadeIn>
             <div className="rounded-lg border border-border bg-card px-6 py-12 text-center">
-              <p className="text-[0.9375rem] text-muted-foreground">
+              <p className="text-[0.9375rem] text-foreground/85">
                 {faqs.length === 0
                   ? "Inga vanliga frågor har publicerats ännu."
                   : "Inga frågor matchade din sökning."}
@@ -132,7 +132,7 @@ export function FaqPage({ faqs }: { faqs: FAQ[] }) {
           >
             Hittar du inte svaret?
           </p>
-          <p className="mt-2 text-[0.875rem] text-muted-foreground">
+          <p className="mt-2 text-[0.875rem] text-foreground/85">
             Kontakta oss så hjälper vi dig.
           </p>
           <Link

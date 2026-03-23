@@ -422,7 +422,7 @@ export function TrainingCalendar({
             {/* Session list if multiple */}
             {selectedDaySessions.length > 1 && !selectedSession && (
               <div className="space-y-3">
-                <p className="text-[0.8125rem] text-muted-foreground">
+                <p className="text-[0.8125rem] text-foreground/85">
                   {selectedDaySessions.length} utbildningstillfällen denna dag:
                 </p>
                 {selectedDaySessions.map((s) => {
@@ -517,7 +517,7 @@ export function TrainingCalendar({
                     </span>
                   </div>
 
-                  <div className="space-y-2.5 text-[0.875rem] text-muted-foreground">
+                  <div className="space-y-2.5 text-[0.875rem] text-foreground/85">
                     {selectedSession.time && (
                       <div className="flex items-center gap-2.5">
                         <Clock size={14} className="shrink-0" />

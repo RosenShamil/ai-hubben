@@ -62,7 +62,7 @@ export default function RegisterPage() {
           >
             Kolla din e-post
           </h1>
-          <p className="mt-3 text-[0.9375rem] text-muted-foreground">
+          <p className="mt-3 text-[0.9375rem] text-foreground/85">
             Vi har skickat en verifieringslänk till din e-post.
             Klicka på länken för att aktivera ditt konto.
           </p>

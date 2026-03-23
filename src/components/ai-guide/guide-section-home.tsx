@@ -131,7 +131,7 @@ export function GuideSectionHome({ assistants = [] }: { assistants?: IntricAssis
               >
                 Starta din AI-resa
               </h2>
-              <p className="mt-3 max-w-md text-[0.9375rem] leading-relaxed text-muted-foreground">
+              <p className="mt-3 max-w-md text-[0.9375rem] leading-relaxed text-foreground/85">
                 Svara på 4 snabba frågor och få en personlig guide med verktyg,
                 tips och utbildning anpassad till just din roll.
               </p>

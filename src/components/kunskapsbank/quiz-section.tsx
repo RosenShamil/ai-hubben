@@ -87,7 +87,7 @@ export function QuizSection() {
           >
             Quiz
           </h3>
-          <p className="mt-2 text-[0.875rem] text-muted-foreground">
+          <p className="mt-2 text-[0.875rem] text-foreground/85">
             Testa dina kunskaper med flervalsfrågor. Välj en kategori eller kör
             alla!
           </p>
@@ -138,7 +138,7 @@ export function QuizSection() {
           >
             Scenariokort
           </h3>
-          <p className="mt-2 text-[0.875rem] text-muted-foreground">
+          <p className="mt-2 text-[0.875rem] text-foreground/85">
             Verkliga arbetsplatssituationer där du fattar beslut och lär dig av
             konsekvenserna. {SCENARIOS.length} scenarion.
           </p>

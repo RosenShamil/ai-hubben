@@ -124,11 +124,11 @@ export function DailyByteCard({
         </div>
       </div>
 
-      <p className="mt-3 text-[0.875rem] leading-[1.7] text-muted-foreground">
+      <p className="mt-3 text-[0.875rem] leading-[1.7] text-foreground/85">
         {concept.shortExplanation}
       </p>
 
-      <p className="mt-2 text-[0.8125rem] italic leading-[1.6] text-muted-foreground/80">
+      <p className="mt-2 text-[0.8125rem] italic leading-[1.6] text-foreground/70">
         &ldquo;{concept.analogy}&rdquo;
       </p>
 
@@ -141,7 +141,7 @@ export function DailyByteCard({
           >
             Visste du att...
           </p>
-          <p className="mt-1.5 text-[0.8125rem] leading-[1.6] text-muted-foreground">
+          <p className="mt-1.5 text-[0.8125rem] leading-[1.6] text-foreground/85">
             {funFact}
           </p>
         </div>

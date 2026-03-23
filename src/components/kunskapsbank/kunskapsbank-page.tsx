@@ -62,7 +62,7 @@ export function KunskapsbankPage() {
           >
             Kunskapsbanken
           </h1>
-          <p className="mt-6 max-w-[42rem] text-[1.0625rem] leading-[1.7] text-muted-foreground">
+          <p className="mt-6 max-w-[42rem] text-[1.0625rem] leading-[1.7] text-foreground">
             Alla AI- och IT-begrepp förklarade enkelt — från absolut nybörjare
             till avancerad nivå. Sök, utforska och lär dig i din egen takt.
           </p>
@@ -72,7 +72,7 @@ export function KunskapsbankPage() {
         <FadeIn delay={0.1}>
           <div className="mt-8 rounded-lg border border-border bg-card p-4">
             <div className="flex items-center justify-between">
-              <p className="text-[0.875rem] text-muted-foreground">
+              <p className="text-[0.875rem] text-foreground/85">
                 Du har utforskat{" "}
                 <span className="font-medium text-foreground">
                   {readCount}

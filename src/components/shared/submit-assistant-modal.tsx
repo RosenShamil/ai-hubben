@@ -111,7 +111,7 @@ export function SubmitAssistantModal({
               {step === "success" ? "Inskickad!" : "Lägg till assistent"}
             </h2>
             {step !== "success" && (
-              <p className="mt-1 text-[0.8125rem] text-muted-foreground">
+              <p className="mt-1 text-[0.8125rem] text-foreground/85">
                 Dela din assistent med kommunen.
               </p>
             )}
@@ -285,7 +285,7 @@ export function SubmitAssistantModal({
                 <Check size={28} />
               </div>
               <h3 className="mt-6 text-[1.25rem] font-semibold">Tack!</h3>
-              <p className="mt-3 max-w-sm text-[0.9375rem] text-muted-foreground">
+              <p className="mt-3 max-w-sm text-[0.9375rem] text-foreground/85">
                 Din assistent har lagts till i biblioteket.
               </p>
             </div>

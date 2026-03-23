@@ -78,12 +78,12 @@ export function ConceptGrid() {
       </div>
 
       {/* Results count */}
-      <p className="mt-4 text-[0.8125rem] text-muted-foreground">
+      <p className="mt-4 text-[0.8125rem] text-foreground/70">
         Visar {filtered.length} av {CONCEPTS.length} begrepp
       </p>
 
       {/* Grid */}
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {filtered.map((concept) => (
             <motion.div
@@ -106,7 +106,7 @@ export function ConceptGrid() {
       {filtered.length === 0 && (
         <div className="rounded-lg border border-border bg-card p-8 text-center">
           <p className="text-[1rem] font-medium">Inga begrepp hittades</p>
-          <p className="mt-2 text-[0.875rem] text-muted-foreground">
+          <p className="mt-2 text-[0.875rem] text-foreground/85">
             Prova att ändra sökning eller filter
           </p>
         </div>

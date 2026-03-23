@@ -188,7 +188,7 @@ export default function ProfilePage() {
         >
           {profile.full_name || "Din profil"}
         </h1>
-        <p className="mt-1 text-[0.875rem] text-muted-foreground">
+        <p className="mt-1 text-[0.875rem] text-foreground/85">
           {profile.email}
         </p>
       </div>
@@ -575,7 +575,7 @@ export default function ProfilePage() {
           </h2>
 
           {favorites.length === 0 ? (
-            <p className="mt-4 text-[0.9375rem] text-muted-foreground">
+            <p className="mt-4 text-[0.9375rem] text-foreground/85">
               Du har inga sparade favoriter ännu. Favorisera assistenter och kurser
               för att se dem här.
             </p>

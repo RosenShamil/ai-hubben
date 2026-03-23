@@ -54,7 +54,7 @@ function HookSection({ text, funFact }: { text: string; funFact?: string }) {
       {funFact && (
         <div className="flex gap-3 rounded-xl bg-secondary/60 p-4">
           <Lightbulb size={18} className="mt-0.5 shrink-0 text-amber-500" />
-          <p className="text-[0.875rem] leading-[1.6] text-muted-foreground">
+          <p className="text-[0.875rem] leading-[1.6] text-foreground/85">
             <span className="font-medium text-foreground">Visste du att...</span>{" "}
             {funFact}
           </p>
@@ -84,7 +84,7 @@ function ContentSection({ section }: { section: LessonSection }) {
           </h3>
         </div>
       )}
-      <div className="text-[0.9375rem] leading-[1.8] text-foreground/90 whitespace-pre-line">
+      <div className="text-[0.9375rem] leading-[1.8] text-foreground whitespace-pre-line">
         {section.text.split("\n").map((line, i) => {
           // Bold markdown-style
           const parts = line.split(/(\*\*[^*]+\*\*)/g);
@@ -108,7 +108,7 @@ function ContentSection({ section }: { section: LessonSection }) {
           <p className="text-[0.8125rem] font-medium text-foreground">
             💡 Tänk dig att...
           </p>
-          <p className="mt-1 text-[0.875rem] leading-[1.7] text-muted-foreground">
+          <p className="mt-1 text-[0.875rem] leading-[1.7] text-foreground/85">
             {section.analogy}
           </p>
         </div>
@@ -135,7 +135,7 @@ function MunicipalExampleSection({ example }: { example: MunicipalExample }) {
           )}
         </div>
       </div>
-      <div className="mt-3 text-[0.875rem] leading-[1.7] text-muted-foreground whitespace-pre-line">
+      <div className="mt-3 text-[0.875rem] leading-[1.7] text-foreground/85 whitespace-pre-line">
         {example.description.split("\n").map((line, i) => {
           const parts = line.split(/(\*\*[^*]+\*\*)/g);
           return (
@@ -211,7 +211,7 @@ function InteractiveSection({ element }: { element: InteractiveElement }) {
                 {isCorrect ? "Rätt!" : "Inte riktigt!"}
               </p>
             </div>
-            <p className="mt-2 text-[0.8125rem] leading-[1.6] text-muted-foreground">
+            <p className="mt-2 text-[0.8125rem] leading-[1.6] text-foreground/85">
               {explanation}
             </p>
           </motion.div>
@@ -280,7 +280,7 @@ function InteractiveSection({ element }: { element: InteractiveElement }) {
             animate={{ opacity: 1, y: 0 }}
             className={`mt-4 rounded-lg p-4 ${isCorrect ? "bg-emerald-500/10" : "bg-red-500/10"}`}
           >
-            <p className="text-[0.8125rem] leading-[1.6] text-muted-foreground">
+            <p className="text-[0.8125rem] leading-[1.6] text-foreground/85">
               {explanation}
             </p>
           </motion.div>
@@ -362,7 +362,7 @@ function InteractiveSection({ element }: { element: InteractiveElement }) {
         <p className="text-[0.8125rem] font-medium uppercase tracking-wide text-muted-foreground">
           Para ihop
         </p>
-        <p className="mt-1 text-[0.8125rem] text-muted-foreground">
+        <p className="mt-1 text-[0.8125rem] text-foreground/85">
           Klicka på ett begrepp, sedan dess rätta beskrivning.
         </p>
 

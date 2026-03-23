@@ -154,7 +154,7 @@ export function UtbildningPage({
           >
             Kommande utbildningar
           </h2>
-          <p className="mt-4 max-w-[42rem] text-[0.9375rem] leading-[1.7] text-muted-foreground">
+          <p className="mt-4 max-w-[42rem] text-[0.9375rem] leading-[1.7] text-foreground">
             Klicka på en markerad dag för att se detaljer och anmäla dig.
           </p>
         </FadeIn>
@@ -229,7 +229,7 @@ export function UtbildningPage({
                 <p className="mt-4 text-[1rem] font-medium">
                   Material kommer snart
                 </p>
-                <p className="mt-2 text-[0.875rem] text-muted-foreground">
+                <p className="mt-2 text-[0.875rem] text-foreground/85">
                   Vi arbetar med att ta fram utbildningsmaterial. Kom tillbaka
                   snart!
                 </p>
@@ -260,7 +260,7 @@ export function UtbildningPage({
                           </h3>
                         </div>
                       </div>
-                      <p className="mt-3 line-clamp-2 text-[0.875rem] leading-[1.6] text-muted-foreground">
+                      <p className="mt-3 line-clamp-2 text-[0.875rem] leading-[1.6] text-foreground/85">
                         {res.description || "\u00A0"}
                       </p>
                       <div className="mt-auto pt-4">
@@ -341,7 +341,7 @@ export function UtbildningPage({
                 <h3 className="mt-5 text-[1.125rem] font-semibold">
                   Tack för ditt meddelande!
                 </h3>
-                <p className="mt-2 text-[0.875rem] text-muted-foreground">
+                <p className="mt-2 text-[0.875rem] text-foreground/85">
                   Vi återkommer till dig så snart som möjligt.
                 </p>
                 <button
@@ -474,7 +474,7 @@ export function UtbildningPage({
                 <p className="mt-4 text-[1rem] font-medium">
                   Inga genomförda utbildningar ännu
                 </p>
-                <p className="mt-2 text-[0.875rem] text-muted-foreground">
+                <p className="mt-2 text-[0.875rem] text-foreground/85">
                   Utbildningshistorik visas här efter genomförda tillfällen.
                 </p>
               </div>

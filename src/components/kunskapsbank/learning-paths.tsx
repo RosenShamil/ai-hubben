@@ -64,7 +64,7 @@ export function LearningPaths({
                   {path.title}
                 </h3>
 
-                <p className="mt-2 line-clamp-2 text-[0.8125rem] leading-[1.6] text-muted-foreground">
+                <p className="mt-2 line-clamp-2 text-[0.8125rem] leading-[1.6] text-foreground/85">
                   {path.description}
                 </p>
 

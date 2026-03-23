@@ -211,7 +211,7 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                   >
                     Vilken förvaltning jobbar du på?
                   </h2>
-                  <p className="mt-2 text-[0.9375rem] text-muted-foreground">
+                  <p className="mt-2 text-[0.9375rem] text-foreground/85">
                     Vi anpassar din guide baserat på din arbetsplats.
                   </p>
                   <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -265,7 +265,7 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                   >
                     Vad beskriver din roll bäst?
                   </h2>
-                  <p className="mt-2 text-[0.9375rem] text-muted-foreground">
+                  <p className="mt-2 text-[0.9375rem] text-foreground/85">
                     Välj den kategori som ligger närmast.
                   </p>
                   <div className="mt-6 grid gap-3">
@@ -305,7 +305,7 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                   >
                     Hur bekant är du med AI?
                   </h2>
-                  <p className="mt-2 text-[0.9375rem] text-muted-foreground">
+                  <p className="mt-2 text-[0.9375rem] text-foreground/85">
                     Det finns inga rätt eller fel — vi vill bara hitta rätt nivå.
                   </p>
                   <div className="mt-6 grid gap-3">
@@ -346,7 +346,7 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                   >
                     Vad vill du ha mest hjälp med?
                   </h2>
-                  <p className="mt-2 text-[0.9375rem] text-muted-foreground">
+                  <p className="mt-2 text-[0.9375rem] text-foreground/85">
                     Välj 1–3 områden som intresserar dig.
                   </p>
                   <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -402,7 +402,7 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                         >
                           Din AI-profil
                         </h2>
-                        <p className="mt-2 text-[0.875rem] text-muted-foreground">
+                        <p className="mt-2 text-[0.875rem] text-foreground/85">
                           {DEPARTMENTS_MAP[department].shortName} · {ROLE_CATEGORIES_MAP[role].title}
                         </p>
                       </div>
@@ -426,7 +426,7 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                       <p className="mt-1 text-[0.9375rem] font-medium">
                         Intric — kommunens AI-plattform
                       </p>
-                      <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-muted-foreground">
+                      <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-foreground/85">
                         Intric finns installerat på din arbetsdator. Du kan även nå det via{" "}
                         <a href="https://katrineholm.intric.ai" target="_blank" rel="noopener noreferrer" className="font-medium text-foreground underline underline-offset-4">katrineholm.intric.ai</a>{" "}
                         — logga in med ditt vanliga AD-konto. Där hittar du färdiga assistenter
@@ -449,7 +449,7 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                       >
                         Färdiga assistenter för dig
                       </p>
-                      <p className="mt-1 text-[0.8125rem] text-muted-foreground">
+                      <p className="mt-1 text-[0.8125rem] text-foreground/85">
                         Dessa assistenter är redo att användas direkt — klicka för att öppna.
                       </p>
                       <div className="mt-3 space-y-2">
@@ -502,14 +502,14 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                     >
                       Så kan du använda AI
                     </p>
-                    <p className="mt-1 text-[0.8125rem] text-muted-foreground">
+                    <p className="mt-1 text-[0.8125rem] text-foreground/85">
                       Kopiera en prompt och klistra in den i Intrics personliga chatt.
                     </p>
                     <div className="mt-3 space-y-3">
                       {result.useCases.map((uc) => (
                         <div key={uc.id} className="rounded-lg border border-border p-4">
                           <p className="text-[0.875rem] font-medium">{uc.title}</p>
-                          <p className="mt-1 text-[0.8125rem] text-muted-foreground">{uc.description}</p>
+                          <p className="mt-1 text-[0.8125rem] text-foreground/85">{uc.description}</p>
                           {uc.examplePrompt ? (
                             <div className="mt-3">
                               <div

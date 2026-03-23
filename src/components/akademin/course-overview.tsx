@@ -133,7 +133,7 @@ export function CourseOverview({ courseId }: { courseId: string }) {
               >
                 {course.title}
               </h1>
-              <p className="mt-2 max-w-[36rem] text-[0.9375rem] leading-[1.6] text-muted-foreground">
+              <p className="mt-2 max-w-[36rem] text-[0.9375rem] leading-[1.6] text-foreground">
                 {course.description}
               </p>
               <div className="mt-3 flex items-center gap-3 text-[0.8125rem] text-muted-foreground">
@@ -208,7 +208,7 @@ export function CourseOverview({ courseId }: { courseId: string }) {
                         <h3 className="text-[0.9375rem] font-medium leading-tight">
                           {mod.title}
                         </h3>
-                        <p className="mt-0.5 text-[0.8125rem] text-muted-foreground">
+                        <p className="mt-0.5 text-[0.8125rem] text-foreground/85">
                           {mod.description}
                         </p>
                       </div>
@@ -277,7 +277,7 @@ export function CourseOverview({ courseId }: { courseId: string }) {
                               </span>
                               <ChevronRight
                                 size={14}
-                                className="text-muted-foreground/50 transition-transform group-hover:translate-x-0.5"
+                                className="text-muted-foreground transition-transform group-hover:translate-x-0.5"
                               />
                             </motion.button>
                           );
@@ -316,7 +316,7 @@ export function CourseOverview({ courseId }: { courseId: string }) {
                                 {quizScore}%
                               </span>
                             )}
-                            <ChevronRight size={14} className="text-muted-foreground/50" />
+                            <ChevronRight size={14} className="text-muted-foreground" />
                           </motion.button>
                         )}
                       </div>

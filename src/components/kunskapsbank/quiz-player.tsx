@@ -85,7 +85,7 @@ export function QuizPlayer({
         >
           {score} av {total} rätt
         </p>
-        <p className="mt-2 text-[0.9375rem] text-muted-foreground">
+        <p className="mt-2 text-[0.9375rem] text-foreground/85">
           {getScoreMessage(pct)}
         </p>
         <div className="mt-6 flex justify-center gap-3">
@@ -188,7 +188,7 @@ export function QuizPlayer({
               animate={{ opacity: 1, y: 0 }}
               className="mt-4 rounded-lg bg-secondary/50 p-4"
             >
-              <p className="text-[0.8125rem] leading-[1.6] text-muted-foreground">
+              <p className="text-[0.8125rem] leading-[1.6] text-foreground/85">
                 {q.explanation}
               </p>
             </motion.div>

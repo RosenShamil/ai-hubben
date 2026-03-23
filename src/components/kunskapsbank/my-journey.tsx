@@ -301,7 +301,7 @@ export function MyJourney() {
               Kunskapsträd
             </h3>
           </div>
-          <p className="mt-2 text-[0.8125rem] text-muted-foreground">
+          <p className="mt-2 text-[0.8125rem] text-foreground/85">
             Varje gren representerar en kategori. Noder lyser upp när du lärt dig begreppen.
           </p>
 
@@ -559,7 +559,7 @@ export function MyJourney() {
           {Object.keys(progress.quizScores).length === 0 ? (
             <div className="mt-4 rounded-lg bg-secondary/50 p-6 text-center">
               <Trophy size={24} className="mx-auto text-muted-foreground/40" />
-              <p className="mt-3 text-[0.875rem] text-muted-foreground">
+              <p className="mt-3 text-[0.875rem] text-foreground/85">
                 Du har inte gjort något quiz ännu. Gå till{" "}
                 <span className="font-medium text-foreground">Testa dig</span>-fliken
                 och kör ditt första!
@@ -633,7 +633,7 @@ export function MyJourney() {
               >
                 AI-akademin
               </h3>
-              <p className="mt-2 text-[0.875rem] text-muted-foreground">
+              <p className="mt-2 text-[0.875rem] text-foreground/85">
                 {eduProgress.completedLessons.length === 0
                   ? "Vill du lära dig systematiskt? Ta AI-akademins kurser och få certifikat för dina kunskaper."
                   : `Du har klarat ${eduProgress.completedLessons.length} lektioner och ${eduProgress.certificates.length} certifikat. Fortsätt din resa!`}

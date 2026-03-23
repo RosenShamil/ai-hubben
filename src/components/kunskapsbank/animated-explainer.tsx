@@ -114,7 +114,7 @@ export function AnimatedExplainerView({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="mt-3 text-[0.9375rem] leading-[1.7] text-muted-foreground"
+              className="mt-3 text-[0.9375rem] leading-[1.7] text-foreground/85"
             >
               {step.description}
             </motion.p>

@@ -35,7 +35,7 @@ export function ScenarioCardComponent({
       </h3>
 
       {/* Situation */}
-      <p className="mt-3 text-[0.9375rem] leading-[1.7] text-muted-foreground">
+      <p className="mt-3 text-[0.9375rem] leading-[1.7] text-foreground/85">
         {scenario.situation}
       </p>
 
@@ -76,7 +76,7 @@ export function ScenarioCardComponent({
                   animate={{ opacity: 1, height: "auto" }}
                   className="mt-1 overflow-hidden rounded-lg bg-secondary/50 p-3"
                 >
-                  <p className="text-[0.8125rem] leading-[1.6] text-muted-foreground">
+                  <p className="text-[0.8125rem] leading-[1.6] text-foreground/85">
                     {opt.feedback}
                   </p>
                 </motion.div>

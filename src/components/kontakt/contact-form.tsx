@@ -41,7 +41,7 @@ export function ContactForm() {
         <h3 className="mt-4 text-[1.25rem] font-medium tracking-tight">
           Tack för ditt meddelande
         </h3>
-        <p className="mt-2 text-[0.9375rem] text-muted-foreground">
+        <p className="mt-2 text-[0.9375rem] text-foreground/85">
           Vi återkommer så snart vi kan.
         </p>
         <button

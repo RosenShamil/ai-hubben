@@ -120,7 +120,7 @@ export function CertificateEarnFlow({
             >
               Ditt certifikat väntar!
             </h2>
-            <p className="mt-3 text-[0.9375rem] text-muted-foreground">
+            <p className="mt-3 text-[0.9375rem] text-foreground/85">
               Skriv ditt namn som det ska stå på certifikatet.
             </p>
 
@@ -196,10 +196,10 @@ export function CertificateEarnFlow({
               <h3 className="mt-4 text-[1.125rem] font-medium">
                 {level.title}
               </h3>
-              <p className="mt-2 text-[0.875rem] text-muted-foreground">
+              <p className="mt-2 text-[0.875rem] text-foreground/85">
                 Certifikat-ID: {certificate.certificateId}
               </p>
-              <p className="text-[0.875rem] text-muted-foreground">
+              <p className="text-[0.875rem] text-foreground/85">
                 Utfärdat: {certificate.earnedDate}
               </p>
             </div>
@@ -252,7 +252,7 @@ export function CertificateGallery() {
           >
             Mina certifikat
           </h1>
-          <p className="mt-2 text-[0.9375rem] text-muted-foreground">
+          <p className="mt-2 text-[0.9375rem] text-foreground/85">
             Dina intjänade certifikat från AI-akademin.
           </p>
         </FadeIn>
@@ -268,7 +268,7 @@ export function CertificateGallery() {
             <div className="rounded-xl border border-border bg-card p-12 text-center">
               <Award size={40} className="mx-auto text-muted-foreground/40" />
               <p className="mt-4 text-[1rem] font-medium">Inga certifikat ännu</p>
-              <p className="mt-2 text-[0.875rem] text-muted-foreground">
+              <p className="mt-2 text-[0.875rem] text-foreground/85">
                 Genomför en nivå i AI-akademin och klara slutprovet för att få
                 ditt första certifikat.
               </p>
@@ -305,7 +305,7 @@ export function CertificateGallery() {
                       <h3 className="mt-4 text-[1.0625rem] font-medium">
                         {level?.title}
                       </h3>
-                      <p className="mt-1 text-[0.8125rem] text-muted-foreground">
+                      <p className="mt-1 text-[0.8125rem] text-foreground/85">
                         {cert.name}
                       </p>
                       <p className="text-[0.75rem] text-muted-foreground">

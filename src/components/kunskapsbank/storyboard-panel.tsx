@@ -52,7 +52,7 @@ export function StoryboardPanelCard({
       </h3>
 
       {/* Text */}
-      <p className="mt-3 max-w-[28rem] text-[0.9375rem] leading-[1.7] text-muted-foreground">
+      <p className="mt-3 max-w-[28rem] text-[0.9375rem] leading-[1.7] text-foreground/85">
         {panel.text}
       </p>
 

@@ -117,7 +117,7 @@ export function AssistantLibrary({
             <p className="text-[1.125rem] font-medium">
               Inga assistenter hittades
             </p>
-            <p className="mt-2 text-[0.875rem] text-muted-foreground">
+            <p className="mt-2 text-[0.875rem] text-foreground/85">
               Prova att ändra din sökning.
             </p>
           </div>
@@ -171,7 +171,7 @@ export function AssistantLibrary({
                           </p>
                         </div>
                       </div>
-                      <p className="flex-1 line-clamp-2 text-[0.875rem] leading-[1.6] text-muted-foreground">
+                      <p className="flex-1 line-clamp-2 text-[0.875rem] leading-[1.6] text-foreground/85">
                         {a.description}
                       </p>
                     </div>
