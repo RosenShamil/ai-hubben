@@ -593,16 +593,18 @@ export function generateGuideResult(
       uc.departments === "all" || uc.departments.includes(departmentId);
     const roleMatch =
       uc.roleCategories === "all" || uc.roleCategories.includes(roleCategory);
-    const goalMatch = uc.goals.some((g) => goals.includes(g));
+    const safeGoals = goals ?? [];
+    const goalMatch = safeGoals.length === 0 || uc.goals.some((g) => safeGoals.includes(g));
     return deptMatch && roleMatch && goalMatch;
   });
 
   // Sort: prefer department-specific over "all", then by goal relevance
+  const safeGoals = goals ?? [];
   const scored = matchedUseCases.map((uc) => {
     let score = 0;
     if (uc.departments !== "all") score += 3;
     if (uc.roleCategories !== "all") score += 2;
-    score += uc.goals.filter((g) => goals.includes(g)).length;
+    score += uc.goals.filter((g) => safeGoals.includes(g)).length;
     return { uc, score };
   });
   scored.sort((a, b) => b.score - a.score);

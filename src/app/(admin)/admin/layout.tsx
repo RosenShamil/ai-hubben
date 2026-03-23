@@ -73,13 +73,13 @@ export default function AdminLayout({
         } = await supabase.auth.getUser();
         if (cancelled) return;
         if (!user) {
-          router.replace("/admin/login");
+          router.replace("/logga-in");
           return;
         }
         const admin = await isCurrentUserAdmin();
         if (cancelled) return;
         if (!admin) {
-          router.replace("/admin/login");
+          router.replace("/logga-in");
           return;
         }
         setUserEmail(user.email ?? null);
@@ -92,7 +92,7 @@ export default function AdminLayout({
           .eq("read", false);
         if (!cancelled) setUnreadCount(count ?? 0);
       } catch {
-        if (!cancelled) router.replace("/admin/login");
+        if (!cancelled) router.replace("/logga-in");
       }
     }
     checkAuth();

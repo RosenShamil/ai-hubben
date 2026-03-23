@@ -3,6 +3,7 @@ import { Footer } from "@/components/shared/footer";
 import { BottomTabBar } from "@/components/shared/bottom-tab-bar";
 import { ChatWidget } from "@/components/shared/chat-widget";
 import { PullToRefresh } from "@/components/shared/pull-to-refresh";
+import { AuthProvider } from "@/components/shared/auth-provider";
 
 export default function MainLayout({
   children,
@@ -10,7 +11,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <AuthProvider>
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm"
@@ -24,6 +25,6 @@ export default function MainLayout({
       <Footer />
       <BottomTabBar />
       <ChatWidget />
-    </>
+    </AuthProvider>
   );
 }

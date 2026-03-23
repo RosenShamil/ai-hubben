@@ -16,7 +16,11 @@ import {
   Mail,
   Info,
   LogIn,
+  UserPlus,
+  User,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "@/components/shared/auth-provider";
 
 const ICON_MAP = { Home, Bot, BarChart3, GraduationCap, Menu } as const;
 
@@ -28,21 +32,31 @@ const TABS = [
   { label: "Mer", href: "#more", icon: "Menu" as const },
 ];
 
-const MORE_LINKS = [
+const BASE_MORE_LINKS = [
   { label: "Dokumentation", href: "/dokumentation", icon: FileText },
   { label: "Nyheter", href: "/nyheter", icon: Newspaper },
   { label: "FAQ", href: "/faq", icon: HelpCircle },
   { label: "Kontakt", href: "/kontakt", icon: Mail },
   { label: "Om AI-hubben", href: "/om", icon: Info },
-  { label: "Logga in", href: "/admin/login", icon: LogIn },
 ];
 
 export function BottomTabBar() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  const moreLinks = [
+    ...BASE_MORE_LINKS,
+    ...(user
+      ? [{ label: "Min profil", href: "/profil", icon: User }]
+      : [
+          { label: "Logga in", href: "/logga-in", icon: LogIn },
+          { label: "Skapa konto", href: "/registrera", icon: UserPlus },
+        ]),
+  ];
 
   return (
     <>
@@ -65,7 +79,7 @@ export function BottomTabBar() {
                 <X size={16} className="text-muted-foreground" />
               </button>
             </div>
-            {MORE_LINKS.map((link) => {
+            {moreLinks.map((link) => {
               const Icon = link.icon;
               return (
                 <Link
@@ -84,6 +98,18 @@ export function BottomTabBar() {
                 </Link>
               );
             })}
+            {user && (
+              <button
+                onClick={async () => {
+                  setMoreOpen(false);
+                  await signOut();
+                }}
+                className="flex w-full items-center gap-3 rounded-md px-3 py-3 text-[0.875rem] text-muted-foreground transition-colors hover:bg-secondary"
+              >
+                <LogOut size={18} />
+                Logga ut
+              </button>
+            )}
           </div>
         </div>
       )}

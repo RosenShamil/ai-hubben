@@ -32,8 +32,8 @@ export function GuideSectionHome({ assistants = [] }: { assistants?: IntricAssis
 
   if (!mounted) return null;
 
-  // ── Compact dashboard (profile exists) ──
-  if (profile) {
+  // ── Compact dashboard (profile exists and valid) ──
+  if (profile && profile.departmentId && profile.roleCategory) {
     const dept = DEPARTMENTS_MAP[profile.departmentId];
     const roleInfo = ROLE_CATEGORIES_MAP[profile.roleCategory];
     const result = generateGuideResult(

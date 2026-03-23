@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project
 
 AI-hubben is Katrineholm municipality's PWA platform for AI assistants, statistics, training, and resources.
-Domain: aihubben.se | Repo: github.com/RosenShamil/ai-hubben
+Domain: aihubben.se | Hosting: Vercel | Repo: github.com/RosenShamil/ai-hubben
 
 ## Commands
 
@@ -17,17 +17,19 @@ pnpm lint         # ESLint
 
 No test framework is configured. Build uses `next build --webpack` because Serwist service worker requires webpack.
 
+**Required env vars** (in `.env.local`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
 ## Tech Stack
 
 - **Next.js 16** (App Router) + TypeScript
 - **Tailwind CSS v4** (PostCSS plugin, no tailwind.config — all config in CSS)
 - **Aceternity UI** (copy-paste components in `src/components/ui/`) + **shadcn/ui**
 - **Framer Motion** for animations
-- **Supabase** (PostgreSQL + Auth + Storage) — client-side only, no server actions
+- **Supabase** (PostgreSQL + Auth + Storage) — client-side only, no server actions. Tables: `profiles`, `user_progress`, `user_favorites`, `admins`, etc.
 - **Serwist** for PWA/service worker (disabled in dev, active in production)
 - **Recharts** for statistics charts
 - **GSAP** for scroll-triggered and timeline animations
-- **React Hook Form** + **Zod** for form validation (admin pages)
+- **React Hook Form** + **Zod** for form validation (auth + admin pages)
 - **Lucide React** for icons
 - **next-themes** for light/dark mode toggle
 - **pnpm** as package manager
@@ -38,7 +40,7 @@ No test framework is configured. Build uses `next build --webpack` because Serwi
 
 Two layout groups under `src/app/`:
 
-- **`(main)/`** — Public pages: `/`, `/assistenter`, `/statistik`, `/utbildning`, `/kunskapsbank`, `/akademin`, `/akademin/certifikat`, `/dokumentation`, `/nyheter`, `/nyheter/rss.xml`, `/faq`, `/om`, `/kontakt`, `/~offline`
+- **`(main)/`** — Public pages: `/`, `/assistenter`, `/statistik`, `/utbildning`, `/kunskapsbank`, `/akademin`, `/akademin/certifikat`, `/dokumentation`, `/nyheter`, `/nyheter/rss.xml`, `/faq`, `/om`, `/kontakt`, `/logga-in`, `/registrera`, `/profil`, `/~offline`
 - **`(admin)/admin/`** — Protected admin CRUD: `/admin/nyheter`, `/admin/statistik`, `/admin/akademin`, `/admin/assistenter`, `/admin/utbildning`, `/admin/faq`, `/admin/team`, `/admin/innehall`, `/admin/meddelanden`, etc.
 
 ### Data Flow
@@ -53,7 +55,10 @@ Two layout groups under `src/app/`:
 ### Key Files
 
 - `src/lib/supabase.ts` — Supabase client init (public anon key)
-- `src/lib/supabase-auth.ts` — Auth helpers: `signIn`, `signOut`, `isCurrentUserAdmin` (checks `admins` table)
+- `src/lib/supabase-auth.ts` — Auth helpers: `signIn`, `signUp`, `signOut`, `isCurrentUserAdmin`, `getUserProfile`, `updateUserProfile`, `changePassword`, `resetPassword`
+- `src/lib/auth-validation.ts` — Zod schemas for login, register, profile, password change forms
+- `src/lib/progress-sync.ts` — Syncs localStorage progress (education, knowledge, AI guide) with Supabase `user_progress` table
+- `src/lib/favorites.ts` — CRUD for user favorites (assistants, courses, lessons) in Supabase `user_favorites` table
 - `src/lib/intric.ts` — Fetches AI assistants from Intric Marketplace API + Supabase
 - `src/lib/constants.ts` — Navigation links, mobile tabs, footer links, brand gradient
 - `src/lib/knowledge-bank.ts` — Kunskapsbank types, categories, 222 concepts, learning paths, quiz & scenario data
@@ -77,7 +82,13 @@ Two layout groups under `src/app/`:
 
 ### Auth Model
 
-Client-side only. Admin layout checks `isCurrentUserAdmin()` on mount and redirects to `/admin/login` if unauthenticated. No middleware — all auth is in layout components.
+Client-side only via `AuthProvider` context (`src/components/shared/auth-provider.tsx`):
+- **Public users** register at `/registrera` (email verification required) and log in at `/logga-in`
+- **Admin users** are determined by the `admins` table — no self-registration as admin
+- `AuthProvider` wraps the `(main)` layout, providing `useAuth()` hook with `{ user, profile, isAdmin, loading, signOut, refreshProfile }`
+- Admin layout checks `isCurrentUserAdmin()` on mount and redirects to `/logga-in` if unauthenticated
+- Progress (education, knowledge, AI guide) syncs between localStorage and Supabase `user_progress` table on login
+- No middleware — all auth is in layout components and the AuthProvider context
 
 ### Styling
 
@@ -88,7 +99,7 @@ Client-side only. Admin layout checks `isCurrentUserAdmin()` on mount and redire
 
 ### Shared Components
 
-- `src/components/shared/` — Navbar, Footer, BottomTabBar, ChatWidget, ThemeProvider, CountUp, FadeIn, PullToRefresh, SearchModal
+- `src/components/shared/` — Navbar, Footer, BottomTabBar, ChatWidget, ThemeProvider, AuthProvider, CountUp, FadeIn, PullToRefresh, SearchModal
 - `src/components/ai-guide/` — "Starta din AI-resa" interactive onboarding quiz on homepage
 - `src/components/ui/` — shadcn + Aceternity animated components (spotlight, moving-border, etc.)
 - Feature components live alongside their pages in `src/components/{feature}/`

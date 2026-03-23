@@ -132,28 +132,6 @@ export function HomeContent({ stats, assistants, posts, homeTexts = {} }: HomeCo
               {subtitle}
             </p>
           </FadeIn>
-          <FadeIn delay={0.45}>
-            <div className="mt-12 flex items-center gap-4">
-              <Link
-                href="/assistenter"
-                className="rounded-full bg-primary px-7 py-3 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-primary-foreground transition-all duration-150 active:scale-[0.98]"
-                style={{
-                  fontFamily: "var(--font-geist-mono), monospace",
-                  boxShadow:
-                    "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset",
-                }}
-              >
-                {ctaPrimary}
-              </Link>
-              <Link
-                href="/statistik"
-                className="rounded-full border border-border px-7 py-3 text-[0.8125rem] font-medium uppercase tracking-[0.01em] transition-all duration-150 hover:bg-secondary active:scale-[0.98]"
-                style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-              >
-                {ctaSecondary}
-              </Link>
-            </div>
-          </FadeIn>
         </div>
       </section>
 
@@ -164,34 +142,6 @@ export function HomeContent({ stats, assistants, posts, homeTexts = {} }: HomeCo
 
       {/* ─── AI Guide ─── */}
       <GuideSectionHome assistants={assistants} />
-
-      {/* ─── Live Stats (CountUp) ─── */}
-      <section className="mx-auto max-w-[68.75rem] px-6 py-24 md:py-32">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12">
-          {stats.map((stat, i) => (
-            <FadeIn key={stat.label} delay={i * 0.1}>
-              <div>
-                <p
-                  className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
-                  style={{
-                    fontFamily: "var(--font-geist-mono), monospace",
-                  }}
-                >
-                  {stat.label}
-                </p>
-                <CountUp
-                  target={stat.formatted}
-                  className="mt-3 block text-[2.75rem] tracking-[-0.04em] md:text-[3.5rem]"
-                  style={{
-                    fontFamily: "var(--font-bodoni), serif",
-                    fontWeight: 400,
-                  }}
-                />
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </section>
 
       {/* ─── Fading divider ─── */}
       <div className="mx-auto max-w-[68.75rem] px-6">
