@@ -181,8 +181,7 @@ export function FinalExam({
           <div className="mt-8 flex flex-col gap-3">
             <button
               onClick={() => setStarted(true)}
-              className="rounded-lg px-6 py-3 text-[0.875rem] font-medium text-background transition-all hover:opacity-90"
-              style={{ background: BRAND_GRADIENT }}
+              className="rounded-lg bg-primary px-6 py-3 text-[0.875rem] font-medium text-primary-foreground transition-all hover:bg-primary/90"
             >
               Starta slutprovet
             </button>
@@ -262,8 +261,7 @@ export function FinalExam({
             {passed ? (
               <button
                 onClick={onPass}
-                className="rounded-lg px-6 py-3 text-[0.875rem] font-medium text-background transition-all hover:opacity-90"
-                style={{ background: BRAND_GRADIENT }}
+                className="rounded-lg bg-primary px-6 py-3 text-[0.875rem] font-medium text-primary-foreground transition-all hover:bg-primary/90"
               >
                 Hämta ditt certifikat →
               </button>
@@ -412,8 +410,7 @@ export function FinalExam({
           <div className="mx-auto flex max-w-[42rem] justify-end">
             <button
               onClick={handleNext}
-              className="flex items-center gap-1 rounded-lg px-6 py-2.5 text-[0.875rem] font-medium text-background transition-all hover:opacity-90"
-              style={{ background: BRAND_GRADIENT }}
+              className="flex items-center gap-1 rounded-lg bg-primary px-6 py-2.5 text-[0.875rem] font-medium text-primary-foreground transition-all hover:bg-primary/90"
             >
               {isLastQuestion ? "Se resultat" : "Nästa fråga"}
               <ChevronRight size={16} />

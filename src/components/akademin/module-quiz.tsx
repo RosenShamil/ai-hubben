@@ -143,8 +143,7 @@ export function ModuleQuiz({
             {passed ? (
               <button
                 onClick={onClose}
-                className="rounded-lg px-6 py-3 text-[0.875rem] font-medium text-background transition-all hover:opacity-90"
-                style={{ background: BRAND_GRADIENT }}
+                className="rounded-lg bg-primary px-6 py-3 text-[0.875rem] font-medium text-primary-foreground transition-all hover:bg-primary/90"
               >
                 Fortsätt →
               </button>
@@ -315,8 +314,7 @@ export function ModuleQuiz({
           <div className="mx-auto flex max-w-[42rem] justify-end">
             <button
               onClick={handleNext}
-              className="flex items-center gap-1 rounded-lg px-6 py-2.5 text-[0.875rem] font-medium text-background transition-all hover:opacity-90"
-              style={{ background: BRAND_GRADIENT }}
+              className="flex items-center gap-1 rounded-lg bg-primary px-6 py-2.5 text-[0.875rem] font-medium text-primary-foreground transition-all hover:bg-primary/90"
             >
               {isLastQuestion ? "Se resultat" : "Nästa fråga"}
               <ChevronRight size={16} />

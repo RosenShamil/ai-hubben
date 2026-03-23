@@ -136,8 +136,7 @@ export function CertificateEarnFlow({
             <button
               onClick={handleGenerate}
               disabled={!name.trim() || generating}
-              className="mt-4 w-full rounded-lg px-6 py-3 text-[0.875rem] font-medium text-background transition-all hover:opacity-90 disabled:opacity-50"
-              style={{ background: BRAND_GRADIENT }}
+              className="mt-4 w-full rounded-lg bg-primary px-6 py-3 text-[0.875rem] font-medium text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-50"
             >
               {generating ? "Genererar..." : "Skapa certifikat"}
             </button>

@@ -654,8 +654,7 @@ export function LessonPlayer({
 
           <button
             onClick={handleNext}
-            className="flex items-center gap-1 rounded-lg px-6 py-2.5 text-[0.875rem] font-medium text-background transition-all hover:opacity-90"
-            style={{ background: BRAND_GRADIENT }}
+            className="flex items-center gap-1 rounded-lg bg-primary px-6 py-2.5 text-[0.875rem] font-medium text-primary-foreground transition-all hover:bg-primary/90"
           >
             {isLastStep ? "Slutför lektion" : "Nästa"}
             <ChevronRight size={16} />
