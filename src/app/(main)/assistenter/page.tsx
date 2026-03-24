@@ -1,6 +1,8 @@
 import { fetchAssistants } from "@/lib/intric";
 import { AssistantLibrary } from "@/components/assistenter/assistant-library";
 
+export const revalidate = 60;
+
 export const metadata = {
   title: "Assistenter — AI-hubben",
   description:

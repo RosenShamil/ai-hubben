@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "Användningsdata, trender och insikter kring Katrineholms kommuns AI-verktyg och utbildningsinsatser.",
 };
 
-export const revalidate = 300; // Refresh every 5 min
+export const revalidate = 60;
 
 export default async function StatistikPage() {
   const [trainingStats, allStats] = await Promise.all([

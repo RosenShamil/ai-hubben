@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: "Kommunens centrala plattform för AI-assistenter, statistik, utbildning och resurser.",
 };
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 export default async function Home() {
   const [assistants, posts, homeTexts] = await Promise.all([

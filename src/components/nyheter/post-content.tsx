@@ -24,46 +24,59 @@ function formatDate(dateStr: string): string {
 function renderContent(content: string) {
   const blocks = content.split("\n\n");
   const elements: React.ReactNode[] = [];
+  let isFirstParagraph = true;
 
   let listBuffer: string[] = [];
 
   function flushList(key: string) {
     if (listBuffer.length > 0) {
       elements.push(
-        <ul key={key} className="my-4 list-disc space-y-1.5 pl-6 text-[1.0625rem] leading-[1.8] text-foreground/90">
-          {listBuffer.map((item, i) => (
-            <li key={i}>{renderInline(item)}</li>
-          ))}
-        </ul>
+        <div key={key} className="my-6 border-l-2 border-border pl-6">
+          <ul className="space-y-2.5 text-[1.0625rem] leading-[1.8] text-foreground/85">
+            {listBuffer.map((item, i) => (
+              <li key={i}>{renderInline(item)}</li>
+            ))}
+          </ul>
+        </div>
       );
       listBuffer = [];
     }
   }
 
   function renderInline(text: string): React.ReactNode {
-    // Handle **bold** text
-    const parts = text.split(/\*\*(.*?)\*\*/g);
-    if (parts.length === 1) return text;
-    return parts.map((part, i) =>
-      i % 2 === 1 ? (
-        <strong key={i} className="font-semibold text-foreground">
-          {part}
-        </strong>
-      ) : (
-        <span key={i}>{part}</span>
-      )
-    );
+    // Split on markdown links, bold, raw URLs, and emails
+    const tokens = text.split(/(\*\*.*?\*\*|\[.*?\]\(.*?\)|https?:\/\/[^\s)]+|[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/g);
+    return tokens.map((token, i) => {
+      // Bold
+      if (token.startsWith("**") && token.endsWith("**")) {
+        return <strong key={i} className="font-semibold text-foreground">{token.slice(2, -2)}</strong>;
+      }
+      // Markdown link [text](url)
+      const linkMatch = token.match(/^\[(.*?)\]\((.*?)\)$/);
+      if (linkMatch) {
+        return <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 transition-colors hover:text-foreground">{linkMatch[1]}</a>;
+      }
+      // Raw URL
+      if (/^https?:\/\//.test(token)) {
+        return <a key={i} href={token} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 transition-colors hover:text-foreground">{token}</a>;
+      }
+      // Email
+      if (/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(token)) {
+        return <a key={i} href={`mailto:${token}`} className="underline underline-offset-4 transition-colors hover:text-foreground">{token}</a>;
+      }
+      return <span key={i}>{token}</span>;
+    });
   }
 
   blocks.forEach((block, i) => {
     const trimmed = block.trim();
     if (!trimmed) return;
 
-    // Check if this block contains list items
     const lines = trimmed.split("\n");
     const allListItems = lines.every((l) => l.trim().startsWith("- "));
 
     if (allListItems) {
+      isFirstParagraph = false;
       flushList(`list-pre-${i}`);
       lines.forEach((l) => listBuffer.push(l.trim().slice(2)));
       flushList(`list-${i}`);
@@ -73,6 +86,7 @@ function renderContent(content: string) {
     flushList(`list-pre-${i}`);
 
     if (trimmed.startsWith("### ")) {
+      isFirstParagraph = false;
       elements.push(
         <h3
           key={i}
@@ -82,32 +96,39 @@ function renderContent(content: string) {
         </h3>
       );
     } else if (trimmed.startsWith("## ")) {
+      isFirstParagraph = false;
       elements.push(
-        <h2
-          key={i}
-          className="mt-12 mb-4 text-[1.5rem] tracking-[-0.03em]"
-          style={{
-            fontFamily: "var(--font-bodoni), serif",
-            fontWeight: 400,
-          }}
-        >
-          {renderInline(trimmed.slice(3))}
-        </h2>
+        <div key={i} className="mt-14 mb-5">
+          <h2
+            className="text-[1.5rem] tracking-[-0.03em]"
+            style={{
+              fontFamily: "var(--font-bodoni), serif",
+              fontWeight: 400,
+            }}
+          >
+            {renderInline(trimmed.slice(3))}
+          </h2>
+          <div className="mt-3 h-px w-16 bg-border" />
+        </div>
       );
     } else {
-      // Handle blocks that mix list items and paragraphs
       const mixedLines = trimmed.split("\n");
       let currentParagraph: string[] = [];
 
       mixedLines.forEach((line, li) => {
         if (line.trim().startsWith("- ")) {
           if (currentParagraph.length > 0) {
+            const text = currentParagraph.join(" ");
+            const isFirst = isFirstParagraph;
+            isFirstParagraph = false;
             elements.push(
               <p
                 key={`${i}-p-${li}`}
-                className="my-4 text-[1.0625rem] leading-[1.8] text-foreground/90"
+                className={isFirst
+                  ? "my-5 text-[1.125rem] leading-[1.9] text-foreground/90"
+                  : "my-5 text-[1.0625rem] leading-[1.8] text-foreground/80"}
               >
-                {renderInline(currentParagraph.join(" "))}
+                {renderInline(text)}
               </p>
             );
             currentParagraph = [];
@@ -124,12 +145,17 @@ function renderContent(content: string) {
       flushList(`list-end-${i}`);
 
       if (currentParagraph.length > 0) {
+        const text = currentParagraph.join(" ");
+        const isFirst = isFirstParagraph;
+        isFirstParagraph = false;
         elements.push(
           <p
             key={`${i}-p-end`}
-            className="my-4 text-[1.0625rem] leading-[1.8] text-foreground/90"
+            className={isFirst
+              ? "my-5 text-[1.125rem] leading-[1.9] text-foreground/90"
+              : "my-5 text-[1.0625rem] leading-[1.8] text-foreground/80"}
           >
-            {renderInline(currentParagraph.join(" "))}
+            {renderInline(text)}
           </p>
         );
       }

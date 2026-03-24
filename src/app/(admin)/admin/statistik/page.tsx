@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { Check, Loader2, Plus, Trash2 } from "lucide-react";
+import { Check, Loader2, Plus, Trash2, ExternalLink } from "lucide-react";
 
 /* ── Types ── */
 
@@ -165,6 +165,7 @@ export default function AdminStatistikPage() {
 
   // Saving state per section
   const [savingSection, setSavingSection] = useState<string | null>(null);
+  const [unsavedKeys, setUnsavedKeys] = useState<string[]>([]);
 
   const showToast = useCallback(
     (type: "success" | "error", message: string) => {
@@ -215,6 +216,19 @@ export default function AdminStatistikPage() {
       if (map.user_roles_all) setUserRolesAll(map.user_roles_all as NameValueRow[]);
       if (map.platform_overview) setPlatformOverview(map.platform_overview as typeof platformOverview);
 
+      // Track which keys use defaults (not saved to DB)
+      const allExpectedKeys = [
+        "key_metrics_2025", "key_metrics_2026", "key_metrics_all",
+        "daily_interactions_2025", "daily_interactions_2026", "daily_interactions_all",
+        "top_assistants_2025", "top_assistants_2026", "top_assistants_all",
+        "model_usage_2025", "model_usage_2026", "model_usage_all",
+        "assistant_split_2025", "assistant_split_2026", "assistant_split_all",
+        "file_uploads_2025", "file_uploads_2026", "file_uploads_all",
+        "year_comparison", "user_roles_2025", "user_roles_2026", "user_roles_all",
+        "platform_overview",
+      ];
+      setUnsavedKeys(allExpectedKeys.filter((k) => !map[k]));
+
       setLoading(false);
     }
     load();
@@ -263,27 +277,78 @@ export default function AdminStatistikPage() {
       )}
 
       {/* Page Header */}
-      <div className="mb-8">
-        <p
-          className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <p
+            className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+            style={monoStyle}
+          >
+            Hantera
+          </p>
+          <h1
+            className="mt-2 text-[2rem] tracking-[-0.04em]"
+            style={bodoniStyle}
+          >
+            Statistik
+          </h1>
+          <p className="mt-2 text-[0.875rem] text-muted-foreground">
+            Redigera all statistikdata som visas pa statistiksidan. Spara per sektion.
+          </p>
+          {unsavedKeys.length > 0 && (
+            <p className="mt-2 text-[0.75rem] text-amber-600 dark:text-amber-400" style={monoStyle}>
+              {unsavedKeys.length} sektioner anvander standardvarden (ej sparade i databasen)
+            </p>
+          )}
+        </div>
+        <a
+          href="/statistik"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-[0.8125rem] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           style={monoStyle}
         >
-          Hantera
-        </p>
-        <h1
-          className="mt-2 text-[2rem] tracking-[-0.04em]"
-          style={bodoniStyle}
+          <ExternalLink size={14} />
+          Visa live
+        </a>
+      </div>
+
+      {/* Table of contents */}
+      <div className="mb-8 rounded-lg border border-border bg-card p-4">
+        <p
+          className="mb-3 text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
+          style={monoStyle}
         >
-          Statistik
-        </h1>
-        <p className="mt-2 text-[0.875rem] text-muted-foreground">
-          Redigera all statistikdata som visas pa statistiksidan. Spara per sektion.
+          Sektioner
         </p>
+        <div className="flex flex-wrap gap-2">
+          {[
+            ["sec-metrics-2025", "Nyckeltal 2025"],
+            ["sec-metrics-2026", "Nyckeltal 2026"],
+            ["sec-metrics-all", "Nyckeltal Totalt"],
+            ["sec-daily", "Dagliga interaktioner"],
+            ["sec-platform", "Plattform"],
+            ["sec-roles", "Anvandarroller"],
+            ["sec-top", "Topp assistenter"],
+            ["sec-models", "AI-modeller"],
+            ["sec-split", "Personliga vs anpassade"],
+            ["sec-files", "Filuppladdningar"],
+            ["sec-year", "Arsjamforelse"],
+          ].map(([id, label]) => (
+            <button
+              key={id}
+              onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              className="rounded-md border border-border px-2.5 py-1.5 text-[0.6875rem] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              style={monoStyle}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-10">
         {/* ── Key Metrics 2025 ── */}
-        <section className="rounded-lg border border-border bg-card p-6">
+        <section id="sec-metrics-2025" className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
           <SectionHeader label="Nyckeltal" title="2025" />
           <KeyMetricsEditor
             rows={metrics2025}
@@ -298,7 +363,7 @@ export default function AdminStatistikPage() {
         </section>
 
         {/* ── Key Metrics 2026 ── */}
-        <section className="rounded-lg border border-border bg-card p-6">
+        <section id="sec-metrics-2026" className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
           <SectionHeader label="Nyckeltal" title="2026" />
           <KeyMetricsEditor
             rows={metrics2026}
@@ -313,7 +378,7 @@ export default function AdminStatistikPage() {
         </section>
 
         {/* ── Key Metrics All ── */}
-        <section className="rounded-lg border border-border bg-card p-6">
+        <section id="sec-metrics-all" className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
           <SectionHeader label="Nyckeltal" title="Alla perioder" />
           <KeyMetricsEditor
             rows={metricsAll}
@@ -328,8 +393,8 @@ export default function AdminStatistikPage() {
         </section>
 
         {/* ── Daily Interactions ── */}
-        {([["daily_interactions_2025", "Dagliga interaktioner 2025", dailyInteractions2025, setDailyInteractions2025], ["daily_interactions_2026", "Dagliga interaktioner 2026", dailyInteractions2026, setDailyInteractions2026], ["daily_interactions_all", "Dagliga interaktioner Totalt", dailyInteractionsAll, setDailyInteractionsAll]] as const).map(([key, title, data, setData]) => (
-          <section key={key} className="rounded-lg border border-border bg-card p-6">
+        {([["daily_interactions_2025", "Dagliga interaktioner 2025", dailyInteractions2025, setDailyInteractions2025], ["daily_interactions_2026", "Dagliga interaktioner 2026", dailyInteractions2026, setDailyInteractions2026], ["daily_interactions_all", "Dagliga interaktioner Totalt", dailyInteractionsAll, setDailyInteractionsAll]] as const).map(([key, title, data, setData], i) => (
+          <section key={key} id={i === 0 ? "sec-daily" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
             <SectionHeader label="Diagram" title={title} />
             <DateInteractionsEditor rows={data as DateInteractionRow[]} onChange={setData as (rows: DateInteractionRow[]) => void} />
             <div className="mt-4 flex justify-end">
@@ -339,7 +404,7 @@ export default function AdminStatistikPage() {
         ))}
 
         {/* ── Platform Overview ── */}
-        <section className="rounded-lg border border-border bg-card p-6">
+        <section id="sec-platform" className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
           <SectionHeader label="Plattform" title="Plattformsöversikt" />
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {(["registeredUsers", "activeUsers", "spaces", "totalAssistants"] as const).map((key) => {
@@ -358,8 +423,8 @@ export default function AdminStatistikPage() {
         </section>
 
         {/* ── User Roles ── */}
-        {([["user_roles_2025", "Användarroller 2025", userRoles2025, setUserRoles2025], ["user_roles_2026", "Användarroller 2026", userRoles2026, setUserRoles2026], ["user_roles_all", "Användarroller Totalt", userRolesAll, setUserRolesAll]] as const).map(([key, title, data, setData]) => (
-          <section key={key} className="rounded-lg border border-border bg-card p-6">
+        {([["user_roles_2025", "Användarroller 2025", userRoles2025, setUserRoles2025], ["user_roles_2026", "Användarroller 2026", userRoles2026, setUserRoles2026], ["user_roles_all", "Användarroller Totalt", userRolesAll, setUserRolesAll]] as const).map(([key, title, data, setData], i) => (
+          <section key={key} id={i === 0 ? "sec-roles" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
             <SectionHeader label="Diagram" title={title} />
             <NameValueEditor rows={data as NameValueRow[]} onChange={setData as (rows: NameValueRow[]) => void} nameLabel="Roll" valueLabel="Antal" />
             <div className="mt-4 flex justify-end">
@@ -369,8 +434,8 @@ export default function AdminStatistikPage() {
         ))}
 
         {/* ── Top Assistants ── */}
-        {([["top_assistants_2025", "Topp assistenter 2025", topAssistants2025, setTopAssistants2025], ["top_assistants_2026", "Topp assistenter 2026", topAssistants2026, setTopAssistants2026], ["top_assistants_all", "Topp assistenter Totalt", topAssistantsAll, setTopAssistantsAll]] as const).map(([key, title, data, setData]) => (
-          <section key={key} className="rounded-lg border border-border bg-card p-6">
+        {([["top_assistants_2025", "Topp assistenter 2025", topAssistants2025, setTopAssistants2025], ["top_assistants_2026", "Topp assistenter 2026", topAssistants2026, setTopAssistants2026], ["top_assistants_all", "Topp assistenter Totalt", topAssistantsAll, setTopAssistantsAll]] as const).map(([key, title, data, setData], i) => (
+          <section key={key} id={i === 0 ? "sec-top" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
             <SectionHeader label="Diagram" title={title} />
             <NameMessagesEditor rows={data as NameMessagesRow[]} onChange={setData as (rows: NameMessagesRow[]) => void} />
             <div className="mt-4 flex justify-end">
@@ -380,8 +445,8 @@ export default function AdminStatistikPage() {
         ))}
 
         {/* ── Model Usage ── */}
-        {([["model_usage_2025", "AI-modeller 2025", modelUsage2025, setModelUsage2025], ["model_usage_2026", "AI-modeller 2026", modelUsage2026, setModelUsage2026], ["model_usage_all", "AI-modeller Totalt", modelUsageAll, setModelUsageAll]] as const).map(([key, title, data, setData]) => (
-          <section key={key} className="rounded-lg border border-border bg-card p-6">
+        {([["model_usage_2025", "AI-modeller 2025", modelUsage2025, setModelUsage2025], ["model_usage_2026", "AI-modeller 2026", modelUsage2026, setModelUsage2026], ["model_usage_all", "AI-modeller Totalt", modelUsageAll, setModelUsageAll]] as const).map(([key, title, data, setData], i) => (
+          <section key={key} id={i === 0 ? "sec-models" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
             <SectionHeader label="Diagram" title={title} />
             <NameValueEditor rows={data as NameValueRow[]} onChange={setData as (rows: NameValueRow[]) => void} nameLabel="Modell" valueLabel="Antal" />
             <div className="mt-4 flex justify-end">
@@ -391,8 +456,8 @@ export default function AdminStatistikPage() {
         ))}
 
         {/* ── Assistant Split ── */}
-        {([["assistant_split_2025", "Personliga vs anpassade 2025", assistantSplit2025, setAssistantSplit2025], ["assistant_split_2026", "Personliga vs anpassade 2026", assistantSplit2026, setAssistantSplit2026], ["assistant_split_all", "Personliga vs anpassade Totalt", assistantSplitAll, setAssistantSplitAll]] as const).map(([key, title, data, setData]) => (
-          <section key={key} className="rounded-lg border border-border bg-card p-6">
+        {([["assistant_split_2025", "Personliga vs anpassade 2025", assistantSplit2025, setAssistantSplit2025], ["assistant_split_2026", "Personliga vs anpassade 2026", assistantSplit2026, setAssistantSplit2026], ["assistant_split_all", "Personliga vs anpassade Totalt", assistantSplitAll, setAssistantSplitAll]] as const).map(([key, title, data, setData], i) => (
+          <section key={key} id={i === 0 ? "sec-split" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
             <SectionHeader label="Diagram" title={title} />
             <NameValueEditor rows={data as NameValueRow[]} onChange={setData as (rows: NameValueRow[]) => void} nameLabel="Typ" valueLabel="Antal" />
             <div className="mt-4 flex justify-end">
@@ -402,8 +467,8 @@ export default function AdminStatistikPage() {
         ))}
 
         {/* ── File Uploads ── */}
-        {([["file_uploads_2025", "Filuppladdningar 2025", fileUploads2025, setFileUploads2025], ["file_uploads_2026", "Filuppladdningar 2026", fileUploads2026, setFileUploads2026], ["file_uploads_all", "Filuppladdningar Totalt", fileUploadsAll, setFileUploadsAll]] as const).map(([key, title, data, setData]) => (
-          <section key={key} className="rounded-lg border border-border bg-card p-6">
+        {([["file_uploads_2025", "Filuppladdningar 2025", fileUploads2025, setFileUploads2025], ["file_uploads_2026", "Filuppladdningar 2026", fileUploads2026, setFileUploads2026], ["file_uploads_all", "Filuppladdningar Totalt", fileUploadsAll, setFileUploadsAll]] as const).map(([key, title, data, setData], i) => (
+          <section key={key} id={i === 0 ? "sec-files" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
             <SectionHeader label="Diagram" title={title} />
             <FileUploadsEditor rows={data as FileUploadRow[]} onChange={setData as (rows: FileUploadRow[]) => void} />
             <div className="mt-4 flex justify-end">
@@ -413,7 +478,7 @@ export default function AdminStatistikPage() {
         ))}
 
         {/* ── Year Comparison ── */}
-        <section className="rounded-lg border border-border bg-card p-6">
+        <section id="sec-year" className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
           <SectionHeader label="Diagram" title="Årsjämförelse" />
           <YearComparisonEditor
             rows={yearComparison}

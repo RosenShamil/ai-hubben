@@ -23,7 +23,20 @@ Uppdaterad: 2026-03-24
 - **Kritiskt:** DPA med Supabase/Vercel, integritetspolicy, tillganglighetsredogorelse, radera-konto-funktion, registerforteckning
 - **Fore 2026-08-02:** EU AI Act — riskklassificering, transparensmeddelanden, DPIA, AI-policy
 
-### 1.4 Smarre forbattringar
+### 1.4 Meddelandesystem (Niva 1 + 2)
+Nuvarande: enkel inkorg med lasa/ta bort + mailto-svar. Behover uppgradering.
+
+**Niva 1 — Svar direkt fran admin:**
+- [ ] Svarsfalt i modalen — skriv svar i admin, skickas som e-post (kraver Resend/SendGrid/SMTP)
+- [ ] Svarshistorik — spara svar i databasen (`message_replies`-tabell)
+- [ ] Status-system — Olast → Last → Besvarat → Arkiverad
+
+**Niva 2 — Fullstandigt meddelandehantering:**
+- [ ] Interna anteckningar pa meddelanden ("Skickade vidare till IT")
+- [ ] Tilldela meddelande till annan admin/person
+- [ ] Svarsmallar for vanliga fragor ("Tack for ditt meddelande, vi aterkommer inom 48h")
+
+### 1.5 Smarre forbattringar
 - [ ] Community assistant uploads — lagga till moderationsflode (status-falt, admin-godkannande)
 - [ ] Skeleton loading states (nuvarande: spinners)
 - [ ] Full-text search i Supabase (nuvarande: `ilike` substring)

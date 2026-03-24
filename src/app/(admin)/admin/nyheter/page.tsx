@@ -13,6 +13,12 @@ import {
   Loader2,
   Youtube,
   Eye,
+  Search,
+  ExternalLink,
+  Import,
+  Globe,
+  FileText,
+  ClipboardPaste,
 } from "lucide-react";
 import type { Post } from "@/lib/posts";
 
@@ -37,22 +43,29 @@ function formatDate(dateStr: string): string {
 }
 
 function renderPreviewInline(text: string): React.ReactNode {
-  const parts = text.split(/\*\*(.*?)\*\*/g);
-  if (parts.length === 1) return text;
-  return parts.map((part, i) =>
-    i % 2 === 1 ? (
-      <strong key={i} className="font-semibold">
-        {part}
-      </strong>
-    ) : (
-      <span key={i}>{part}</span>
-    )
-  );
+  const tokens = text.split(/(\*\*.*?\*\*|\[.*?\]\(.*?\)|https?:\/\/[^\s)]+|[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/g);
+  return tokens.map((token, i) => {
+    if (token.startsWith("**") && token.endsWith("**")) {
+      return <strong key={i} className="font-semibold">{token.slice(2, -2)}</strong>;
+    }
+    const linkMatch = token.match(/^\[(.*?)\]\((.*?)\)$/);
+    if (linkMatch) {
+      return <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-foreground">{linkMatch[1]}</a>;
+    }
+    if (/^https?:\/\//.test(token)) {
+      return <a key={i} href={token} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-foreground">{token}</a>;
+    }
+    if (/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(token)) {
+      return <a key={i} href={`mailto:${token}`} className="underline underline-offset-4 hover:text-foreground">{token}</a>;
+    }
+    return <span key={i}>{token}</span>;
+  });
 }
 
 function renderPreview(content: string): React.ReactNode[] {
   const blocks = content.split("\n\n");
   const elements: React.ReactNode[] = [];
+  let isFirstParagraph = true;
 
   blocks.forEach((block, i) => {
     const trimmed = block.trim();
@@ -62,35 +75,54 @@ function renderPreview(content: string): React.ReactNode[] {
     const allListItems = lines.every((l) => l.trim().startsWith("- "));
 
     if (allListItems) {
+      isFirstParagraph = false;
       elements.push(
-        <ul key={i} className="my-3 list-disc space-y-1 pl-5 text-[0.875rem] leading-[1.7] text-foreground/80">
-          {lines.map((l, li) => (
-            <li key={li}>{renderPreviewInline(l.trim().slice(2))}</li>
-          ))}
-        </ul>
+        <div key={i} className="my-5 border-l-2 border-border pl-5">
+          <ul className="space-y-2 text-[0.875rem] leading-[1.8] text-foreground/80">
+            {lines.map((l, li) => (
+              <li key={li}>{renderPreviewInline(l.trim().slice(2))}</li>
+            ))}
+          </ul>
+        </div>
       );
     } else if (trimmed.startsWith("### ")) {
+      isFirstParagraph = false;
       elements.push(
-        <h3 key={i} className="mt-6 mb-2 text-[1rem] font-semibold">
+        <h3
+          key={i}
+          className="mt-8 mb-3 text-[1rem] font-semibold tracking-[-0.01em]"
+        >
           {renderPreviewInline(trimmed.slice(4))}
         </h3>
       );
     } else if (trimmed.startsWith("## ")) {
+      isFirstParagraph = false;
       elements.push(
-        <h2
-          key={i}
-          className="mt-8 mb-2 text-[1.25rem] tracking-[-0.02em]"
-          style={{ fontFamily: "var(--font-bodoni), serif", fontWeight: 400 }}
-        >
-          {renderPreviewInline(trimmed.slice(3))}
-        </h2>
+        <div key={i} className="mt-10 mb-4">
+          <h2
+            className="text-[1.25rem] tracking-[-0.02em]"
+            style={{ fontFamily: "var(--font-bodoni), serif", fontWeight: 400 }}
+          >
+            {renderPreviewInline(trimmed.slice(3))}
+          </h2>
+          <div className="mt-2 h-px w-12 bg-border" />
+        </div>
       );
     } else {
-      elements.push(
-        <p key={i} className="my-3 text-[0.875rem] leading-[1.7] text-foreground/80">
-          {renderPreviewInline(trimmed)}
-        </p>
-      );
+      if (isFirstParagraph) {
+        isFirstParagraph = false;
+        elements.push(
+          <p key={i} className="my-4 text-[0.9375rem] leading-[1.9] text-foreground/85">
+            {renderPreviewInline(trimmed)}
+          </p>
+        );
+      } else {
+        elements.push(
+          <p key={i} className="my-4 text-[0.875rem] leading-[1.8] text-foreground/75">
+            {renderPreviewInline(trimmed)}
+          </p>
+        );
+      }
     }
   });
 
@@ -123,6 +155,12 @@ export default function AdminNyheterPage() {
   const [uploading, setUploading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+  const [query, setQuery] = useState("");
+  const [importOpen, setImportOpen] = useState(false);
+  const [importTab, setImportTab] = useState<"url" | "file" | "paste">("url");
+  const [importUrl, setImportUrl] = useState("");
+  const [importText, setImportText] = useState("");
+  const [importing, setImporting] = useState(false);
 
   const showToast = useCallback(
     (type: "success" | "error", message: string) => {
@@ -274,6 +312,82 @@ export default function AdminNyheterPage() {
     }
     setDeleteConfirm(null);
     fetchPosts();
+  }
+
+  async function handleImportUrl() {
+    if (!importUrl.trim()) return;
+    setImporting(true);
+    try {
+      const res = await fetch("/api/import-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: importUrl.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast("error", data.error || "Import misslyckades");
+        setImporting(false);
+        return;
+      }
+      setForm({
+        ...emptyForm,
+        title: data.title || "",
+        slug: slugify(data.title || ""),
+        excerpt: data.description || "",
+        content: data.content || "",
+        cover_image: data.image || "",
+      });
+      setEditingId(null);
+      setSlugManuallyEdited(false);
+      setImportOpen(false);
+      setImportUrl("");
+      setEditorOpen(true);
+      showToast("success", "Artikel importerad — granska och spara");
+    } catch {
+      showToast("error", "Kunde inte importera fran URL");
+    }
+    setImporting(false);
+  }
+
+  function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = reader.result as string;
+      const title = file.name.replace(/\.(txt|md|html?)$/i, "").replace(/[-_]/g, " ");
+      setForm({
+        ...emptyForm,
+        title,
+        slug: slugify(title),
+        content: text,
+      });
+      setEditingId(null);
+      setSlugManuallyEdited(false);
+      setImportOpen(false);
+      setEditorOpen(true);
+      showToast("success", "Fil importerad — granska och spara");
+    };
+    reader.readAsText(file);
+  }
+
+  function handleImportPaste() {
+    if (!importText.trim()) return;
+    const lines = importText.trim().split("\n");
+    const title = lines[0]?.trim() || "Importerad artikel";
+    const content = lines.slice(1).join("\n").trim();
+    setForm({
+      ...emptyForm,
+      title,
+      slug: slugify(title),
+      content,
+    });
+    setEditingId(null);
+    setSlugManuallyEdited(false);
+    setImportOpen(false);
+    setImportText("");
+    setEditorOpen(true);
+    showToast("success", "Text importerad — granska och spara");
   }
 
   // Editor view
@@ -621,20 +735,63 @@ export default function AdminNyheterPage() {
           >
             Nyheter
           </h1>
+          {!loading && (
+            <p
+              className="mt-1 text-[0.75rem] text-muted-foreground"
+              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+            >
+              {posts.filter((p) => p.published).length} publicerade · {posts.filter((p) => !p.published).length} utkast
+            </p>
+          )}
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-[0.8125rem] font-medium text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"
-          style={{
-            fontFamily: "var(--font-geist-mono), monospace",
-            boxShadow:
-              "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset",
-          }}
-        >
-          <Plus size={16} />
-          Ny artikel
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setImportOpen(true)}
+            className="flex items-center gap-2 rounded-md border border-border px-4 py-2 text-[0.8125rem] font-medium transition-colors hover:bg-secondary"
+            style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+          >
+            <Import size={16} />
+            Importera
+          </button>
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-[0.8125rem] font-medium text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"
+            style={{
+              fontFamily: "var(--font-geist-mono), monospace",
+              boxShadow:
+                "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset",
+            }}
+          >
+            <Plus size={16} />
+            Ny artikel
+          </button>
+        </div>
       </div>
+
+      {/* Search */}
+      {posts.length > 3 && (
+        <div className="relative mb-4">
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Sok artiklar..."
+            className="w-full rounded-md border border-border bg-background py-2.5 pl-9 pr-9 text-[0.875rem] outline-none transition-colors focus:border-foreground"
+          />
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Table */}
       <div className="overflow-x-auto rounded-lg border border-border bg-card">
@@ -665,17 +822,26 @@ export default function AdminNyheterPage() {
                   Laddar...
                 </td>
               </tr>
-            ) : posts.length === 0 ? (
+            ) : (() => {
+              const filtered = query
+                ? posts.filter(
+                    (p) =>
+                      p.title.toLowerCase().includes(query.toLowerCase()) ||
+                      p.slug.toLowerCase().includes(query.toLowerCase()) ||
+                      (p.excerpt ?? "").toLowerCase().includes(query.toLowerCase())
+                  )
+                : posts;
+              return filtered.length === 0 ? (
               <tr>
                 <td
                   colSpan={4}
                   className="px-4 py-8 text-center text-muted-foreground"
                 >
-                  Inga artiklar skapade
+                  {query ? "Inga artiklar matchar sokningen" : "Inga artiklar skapade"}
                 </td>
               </tr>
             ) : (
-              posts.map((post, i) => (
+              filtered.map((post, i) => (
                 <tr
                   key={post.id}
                   className={`border-b border-border last:border-0 transition-colors hover:bg-secondary/50 ${
@@ -723,6 +889,17 @@ export default function AdminNyheterPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
+                      {post.published && (
+                        <a
+                          href={`/nyheter/${post.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                          title="Visa live"
+                        >
+                          <ExternalLink size={14} />
+                        </a>
+                      )}
                       <button
                         onClick={() => openEdit(post)}
                         className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
@@ -760,10 +937,126 @@ export default function AdminNyheterPage() {
                   </td>
                 </tr>
               ))
-            )}
+            ); })()}
           </tbody>
         </table>
       </div>
+
+      {/* Import modal */}
+      {importOpen && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-[520px] rounded-lg border border-border bg-card shadow-xl">
+            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+              <h2
+                className="text-[1.125rem] tracking-[-0.02em]"
+                style={{ fontFamily: "var(--font-bodoni), serif", fontWeight: 400 }}
+              >
+                Importera artikel
+              </h2>
+              <button
+                onClick={() => { setImportOpen(false); setImportUrl(""); setImportText(""); }}
+                className="rounded-md p-1 text-muted-foreground hover:text-foreground"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex border-b border-border">
+              {([
+                { id: "url" as const, label: "URL", icon: Globe },
+                { id: "file" as const, label: "Fil", icon: FileText },
+                { id: "paste" as const, label: "Klistra in", icon: ClipboardPaste },
+              ]).map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setImportTab(tab.id)}
+                    className={`flex flex-1 items-center justify-center gap-1.5 py-3 text-[0.8125rem] transition-colors ${
+                      importTab === tab.id
+                        ? "border-b-2 border-foreground font-medium text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                    style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                  >
+                    <Icon size={14} />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="p-6">
+              {importTab === "url" && (
+                <div className="space-y-4">
+                  <p className="text-[0.8125rem] text-muted-foreground">
+                    Klistra in en URL sa hamtas titel, beskrivning och innehall automatiskt.
+                  </p>
+                  <input
+                    type="url"
+                    value={importUrl}
+                    onChange={(e) => setImportUrl(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full rounded-md border border-border bg-background px-3 py-2.5 text-[0.875rem] outline-none focus:border-foreground"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleImportUrl}
+                    disabled={!importUrl.trim() || importing}
+                    className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-[0.8125rem] font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
+                    style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                  >
+                    {importing ? <><Loader2 size={14} className="animate-spin" /> Hamtar...</> : "Importera"}
+                  </button>
+                </div>
+              )}
+
+              {importTab === "file" && (
+                <div className="space-y-4">
+                  <p className="text-[0.8125rem] text-muted-foreground">
+                    Ladda upp en textfil (.txt, .md, .html). Filnamnet blir titel.
+                  </p>
+                  <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-border bg-background px-4 py-6 text-[0.8125rem] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground">
+                    <Upload size={16} />
+                    Valj fil
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept=".txt,.md,.html,.htm"
+                      onChange={handleImportFile}
+                    />
+                  </label>
+                </div>
+              )}
+
+              {importTab === "paste" && (
+                <div className="space-y-4">
+                  <p className="text-[0.8125rem] text-muted-foreground">
+                    Klistra in text. Forsta raden blir titel, resten blir innehall. Fungerar bra for text kopierad fran intranat.
+                  </p>
+                  <textarea
+                    value={importText}
+                    onChange={(e) => setImportText(e.target.value)}
+                    rows={8}
+                    placeholder="Klistra in text har..."
+                    className="w-full resize-none rounded-md border border-border bg-background px-3 py-2.5 text-[0.875rem] leading-[1.7] outline-none focus:border-foreground"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleImportPaste}
+                    disabled={!importText.trim()}
+                    className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-[0.8125rem] font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
+                    style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                  >
+                    Importera
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

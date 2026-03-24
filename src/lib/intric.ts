@@ -101,7 +101,7 @@ const EXCLUDED_IDS = new Set([
 
 async function fetchMarketplaceAssistants(): Promise<IntricAssistant[]> {
   const res = await fetch(`${MARKETPLACE_URL}/assistants`, {
-    next: { revalidate: 300 },
+    next: { revalidate: 60 },
   });
   if (!res.ok) throw new Error("Failed to fetch marketplace assistants");
 
@@ -171,7 +171,7 @@ export async function fetchAssistant(
 
   try {
     const res = await fetch(`${MARKETPLACE_URL}/assistants/${id}`, {
-      next: { revalidate: 300 },
+      next: { revalidate: 60 },
     });
     if (res.ok) {
       const data = await res.json();

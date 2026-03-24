@@ -267,7 +267,26 @@ export default function AdminDokumentPage() {
           >
             Dokument
           </h1>
+          {!loading && documents.length > 0 && (
+            <p
+              className="mt-1 text-[0.75rem] text-muted-foreground"
+              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+            >
+              {documents.length} dokument · {Object.entries(CATEGORY_LABEL).map(([key, label]) => { const c = documents.filter((d) => d.category === key).length; return c > 0 ? `${c} ${label.toLowerCase()}` : null; }).filter(Boolean).join(" · ")}
+            </p>
+          )}
         </div>
+        <div className="flex items-center gap-2">
+        <a
+          href="/dokumentation"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-[0.8125rem] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+        >
+          <ExternalLink size={14} />
+          Visa live
+        </a>
         <button
           onClick={openCreate}
           className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-[0.8125rem] font-medium text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"
@@ -280,6 +299,7 @@ export default function AdminDokumentPage() {
           <Plus size={16} />
           Lägg till
         </button>
+        </div>
       </div>
 
       {/* Table */}

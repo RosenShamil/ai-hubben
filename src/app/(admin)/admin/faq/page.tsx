@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { Plus, Pencil, Trash2, X, Check, HelpCircle, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, HelpCircle, ArrowUp, ArrowDown, ChevronDown, ExternalLink } from "lucide-react";
 import type { FAQ } from "@/lib/faqs";
 
 const emptyForm = {
@@ -23,6 +23,7 @@ export default function AdminFaqPage() {
     message: string;
   } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const showToast = useCallback(
     (type: "success" | "error", message: string) => {
@@ -159,6 +160,17 @@ export default function AdminFaqPage() {
             FAQ
           </h1>
         </div>
+        <div className="flex items-center gap-2">
+        <a
+          href="/faq"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-[0.8125rem] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+        >
+          <ExternalLink size={14} />
+          Visa live
+        </a>
         <button
           onClick={openCreate}
           className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-[0.8125rem] font-medium text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"
@@ -171,6 +183,7 @@ export default function AdminFaqPage() {
           <Plus size={16} />
           Lägg till
         </button>
+        </div>
       </div>
 
       {/* Table */}
@@ -212,69 +225,96 @@ export default function AdminFaqPage() {
                 </td>
               </tr>
             ) : (
-              faqs.map((faq, i) => (
-                <tr
-                  key={faq.id}
-                  className={`border-b border-border last:border-0 transition-colors hover:bg-secondary/50 ${
-                    i % 2 === 0 ? "" : "bg-secondary/20"
-                  }`}
-                >
-                  <td className="px-4 py-3 text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <HelpCircle
-                        size={14}
-                        className="text-muted-foreground"
-                      />
-                      {faq.sort_order}
-                    </div>
-                  </td>
-                  <td className="max-w-[300px] truncate px-4 py-3 font-medium">
-                    {faq.question}
-                  </td>
-                  <td className="max-w-[300px] truncate px-4 py-3 text-muted-foreground">
-                    {faq.answer}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1">
-                      <button onClick={() => handleMove(i, "up")} disabled={i === 0} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:pointer-events-none" title="Flytta upp"><ArrowUp size={14} /></button>
-                      <button onClick={() => handleMove(i, "down")} disabled={i === faqs.length - 1} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:pointer-events-none" title="Flytta ner"><ArrowDown size={14} /></button>
-                      <button
-                        onClick={() => openEdit(faq)}
-                        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                        title="Redigera"
-                      >
-                        <Pencil size={14} />
-                      </button>
-                      {deleteConfirm === faq.id ? (
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => handleDelete(faq.id)}
-                            className="rounded-md p-1.5 text-destructive transition-colors hover:bg-destructive/10"
-                            title="Bekräfta"
-                          >
-                            <Check size={14} />
-                          </button>
-                          <button
-                            onClick={() => setDeleteConfirm(null)}
-                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary"
-                            title="Avbryt"
-                          >
-                            <X size={14} />
-                          </button>
-                        </div>
-                      ) : (
+              faqs.flatMap((faq, i) => {
+                const isExpanded = expandedId === faq.id;
+                const rows = [
+                  <tr
+                    key={faq.id}
+                    className={`border-b border-border last:border-0 transition-colors hover:bg-secondary/50 ${
+                      isExpanded ? "bg-secondary/30" : i % 2 === 0 ? "" : "bg-secondary/20"
+                    }`}
+                  >
+                    <td className="px-4 py-3 text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <HelpCircle
+                          size={14}
+                          className="text-muted-foreground"
+                        />
+                        {faq.sort_order}
+                      </div>
+                    </td>
+                    <td
+                      className="max-w-[300px] cursor-pointer px-4 py-3 font-medium"
+                      onClick={() => setExpandedId(isExpanded ? null : faq.id)}
+                    >
+                      <div className="flex items-center gap-2">
+                        <ChevronDown size={14} className={`shrink-0 text-muted-foreground transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                        <span className="truncate">{faq.question}</span>
+                      </div>
+                    </td>
+                    <td className="max-w-[300px] truncate px-4 py-3 text-muted-foreground">
+                      {faq.answer.slice(0, 60)}{faq.answer.length > 60 ? "..." : ""}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => handleMove(i, "up")} disabled={i === 0} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:pointer-events-none" title="Flytta upp"><ArrowUp size={14} /></button>
+                        <button onClick={() => handleMove(i, "down")} disabled={i === faqs.length - 1} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:pointer-events-none" title="Flytta ner"><ArrowDown size={14} /></button>
                         <button
-                          onClick={() => setDeleteConfirm(faq.id)}
-                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                          title="Ta bort"
+                          onClick={() => openEdit(faq)}
+                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                          title="Redigera"
                         >
-                          <Trash2 size={14} />
+                          <Pencil size={14} />
                         </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))
+                        {deleteConfirm === faq.id ? (
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => handleDelete(faq.id)}
+                              className="rounded-md p-1.5 text-destructive transition-colors hover:bg-destructive/10"
+                              title="Bekräfta"
+                            >
+                              <Check size={14} />
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirm(null)}
+                              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary"
+                              title="Avbryt"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setDeleteConfirm(faq.id)}
+                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                            title="Ta bort"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>,
+                ];
+                if (isExpanded) {
+                  rows.push(
+                    <tr key={`${faq.id}-answer`} className="border-b border-border">
+                      <td colSpan={4} className="bg-secondary/10 px-4 py-4">
+                        <p
+                          className="text-[0.6875rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
+                          style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                        >
+                          Svar
+                        </p>
+                        <p className="mt-2 whitespace-pre-wrap text-[0.875rem] leading-[1.7] text-foreground/85">
+                          {faq.answer}
+                        </p>
+                      </td>
+                    </tr>
+                  );
+                }
+                return rows;
+              })
             )}
           </tbody>
         </table>

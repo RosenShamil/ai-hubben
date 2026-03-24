@@ -128,13 +128,21 @@ export default function AdminMeddelandenPage() {
           >
             Meddelanden
           </h1>
+          {!loading && messages.length > 0 && (
+            <p
+              className="mt-1 text-[0.75rem] text-muted-foreground"
+              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+            >
+              {messages.length} totalt · {unreadCount} olasta
+            </p>
+          )}
         </div>
         {unreadCount > 0 && (
           <span
             className="rounded-full bg-blue-100 px-3 py-1 text-[0.75rem] font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300"
             style={{ fontFamily: "var(--font-geist-mono), monospace" }}
           >
-            {unreadCount} olästa
+            {unreadCount} olasta
           </span>
         )}
       </div>

@@ -31,23 +31,32 @@ import {
   BarChart3,
   Phone,
   Award,
+  ChevronRight,
+  ArrowLeft,
 } from "lucide-react";
 
 const SIDEBAR_LINKS = [
+  // Översikt
   { label: "Oversikt", href: "/admin", icon: LayoutDashboard },
+  // Innehåll & sidor
   { label: "Startsida", href: "/admin/startsida", icon: Home },
-  { label: "Statistik", href: "/admin/statistik", icon: BarChart3 },
+  { label: "Nyheter", href: "/admin/nyheter", icon: Newspaper },
+  { label: "FAQ", href: "/admin/faq", icon: HelpCircle },
+  { label: "Om & Kontakt", href: "/admin/innehall", icon: Type },
+  // Utbildning
   { label: "AI-akademin", href: "/admin/akademin", icon: Award },
   { label: "Utbildningstillfällen", href: "/admin/utbildning", icon: GraduationCap },
   { label: "Utbildningsmaterial", href: "/admin/resurser", icon: BookOpen },
-  { label: "Dokument", href: "/admin/dokument", icon: FileText },
-  { label: "Team", href: "/admin/team", icon: Users },
-  { label: "Användare", href: "/admin/anvandare", icon: UserSearch },
-  { label: "Innehåll", href: "/admin/innehall", icon: Type },
-  { label: "Nyheter", href: "/admin/nyheter", icon: Newspaper },
-  { label: "FAQ", href: "/admin/faq", icon: HelpCircle },
-  { label: "Kontakt", href: "/admin/kontakt", icon: Phone },
+  // Assistenter & verktyg
   { label: "Assistenter", href: "/admin/assistenter", icon: Bot },
+  { label: "Statistik", href: "/admin/statistik", icon: BarChart3 },
+  // Resurser
+  { label: "Dokument", href: "/admin/dokument", icon: FileText },
+  // Användare & team
+  { label: "Användare", href: "/admin/anvandare", icon: UserSearch },
+  { label: "Team", href: "/admin/team", icon: Users },
+  // Kommunikation
+  { label: "Kontakt", href: "/admin/kontakt", icon: Phone },
   { label: "Meddelanden", href: "/admin/meddelanden", icon: MessageSquare },
 ];
 
@@ -241,6 +250,28 @@ export default function AdminLayout({
             </span>
           </div>
         </header>
+
+        {/* Breadcrumb (not on overview) */}
+        {pathname !== "/admin" && (
+          <div className="border-b border-border px-4 py-2.5 lg:px-6">
+            <div className="flex items-center justify-between">
+              <Link
+                href="/admin"
+                className="flex items-center gap-1.5 text-[0.8125rem] text-muted-foreground transition-colors hover:text-foreground"
+                style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+              >
+                <ArrowLeft size={14} />
+                Oversikt
+              </Link>
+              <span
+                className="text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground"
+                style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+              >
+                {SIDEBAR_LINKS.find((l) => l.href !== "/admin" && pathname.startsWith(l.href))?.label ?? pathname.split("/").pop()}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Content */}
         <PullToRefresh hardReload>

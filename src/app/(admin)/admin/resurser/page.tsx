@@ -235,6 +235,14 @@ export default function AdminResurserPage() {
           >
             Utbildningsmaterial
           </h1>
+          {!loading && resources.length > 0 && (
+            <p
+              className="mt-1 text-[0.75rem] text-muted-foreground"
+              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+            >
+              {resources.length} resurser · {["guide", "video", "pdf", "kurs"].map((t) => { const c = resources.filter((r) => r.type === t).length; return c > 0 ? `${c} ${t === "guide" ? "guider" : t === "video" ? "videor" : t === "pdf" ? "PDF" : "kurser"}` : null; }).filter(Boolean).join(" · ")}
+            </p>
+          )}
         </div>
         <button
           onClick={openCreate}

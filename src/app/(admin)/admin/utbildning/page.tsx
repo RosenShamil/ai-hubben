@@ -285,6 +285,14 @@ export default function AdminUtbildningPage() {
           >
             Utbildningstillfällen
           </h1>
+          {!loading && (
+            <p
+              className="mt-1 text-[0.75rem] text-muted-foreground"
+              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+            >
+              {sessions.length} tillfallen · {sessions.reduce((sum, s) => sum + (s.participants ?? 0), 0)} deltagare totalt · {sessions.filter((s) => s.date >= new Date().toISOString().slice(0, 10)).length} kommande
+            </p>
+          )}
         </div>
         <button
           onClick={openCreate}
@@ -350,14 +358,25 @@ export default function AdminUtbildningPage() {
             ) : (
               sessions.map((s, i) => {
                 const regCount = registrationCounts[s.id] ?? 0;
+                const isPast = s.date < new Date().toISOString().slice(0, 10);
                 return (
                   <tr
                     key={s.id}
                     className={`border-b border-border last:border-0 transition-colors hover:bg-secondary/50 ${
-                      i % 2 === 0 ? "" : "bg-secondary/20"
+                      isPast ? "opacity-50" : i % 2 === 0 ? "" : "bg-secondary/20"
                     }`}
                   >
-                    <td className="whitespace-nowrap px-4 py-3">{s.date}</td>
+                    <td className="whitespace-nowrap px-4 py-3">
+                      <span>{s.date}</span>
+                      {isPast && (
+                        <span
+                          className="ml-2 text-[0.5625rem] uppercase tracking-wide text-muted-foreground"
+                          style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                        >
+                          Passerad
+                        </span>
+                      )}
+                    </td>
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                       {s.time || "—"}
                     </td>

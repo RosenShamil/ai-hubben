@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import {
   Plus,
+  ExternalLink,
   Pencil,
   Trash2,
   X,
@@ -239,7 +240,26 @@ export default function AdminTeamPage() {
           >
             Team
           </h1>
+          {!loading && members.length > 0 && (
+            <p
+              className="mt-1 text-[0.75rem] text-muted-foreground"
+              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+            >
+              {members.length} medlemmar
+            </p>
+          )}
         </div>
+        <div className="flex items-center gap-2">
+        <a
+          href="/om"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-[0.8125rem] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+        >
+          <ExternalLink size={14} />
+          Visa live
+        </a>
         <button
           onClick={openCreate}
           className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-[0.8125rem] font-medium text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"
@@ -252,6 +272,7 @@ export default function AdminTeamPage() {
           <Plus size={16} />
           Lägg till
         </button>
+        </div>
       </div>
 
       {/* Table */}
