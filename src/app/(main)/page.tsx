@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { fetchKeyMetrics } from "@/lib/stats-data";
 import { fetchFeaturedAssistants } from "@/lib/intric";
 import { fetchPublishedPosts } from "@/lib/posts";
 import { fetchHomeTexts } from "@/lib/home-content-data";
@@ -13,19 +12,16 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function Home() {
-  const [assistants, posts, keyMetrics, homeTexts] = await Promise.all([
+  const [assistants, posts, homeTexts] = await Promise.all([
     fetchFeaturedAssistants().catch(() => []),
     fetchPublishedPosts().catch(() => []),
-    fetchKeyMetrics().catch(() => null),
     fetchHomeTexts().catch(() => ({})),
   ]);
 
-  const stats = keyMetrics ? keyMetrics["all"] : [];
   const latestPosts = posts.slice(0, 3);
 
   return (
     <HomeContent
-      stats={stats}
       assistants={assistants}
       posts={latestPosts}
       homeTexts={homeTexts}

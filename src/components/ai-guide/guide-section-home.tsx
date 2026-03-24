@@ -119,11 +119,8 @@ export function GuideSectionHome({ assistants = [] }: { assistants?: IntricAssis
               style={{ background: BRAND_GRADIENT }}
             />
             <div className="relative flex flex-col items-center text-center">
-              <div
-                className="flex h-14 w-14 items-center justify-center rounded-full"
-                style={{ background: BRAND_GRADIENT }}
-              >
-                <Sparkles size={24} className="text-white" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-border bg-secondary">
+                <Sparkles size={24} className="text-foreground" />
               </div>
               <h2
                 className="mt-5 text-[1.5rem] leading-tight tracking-[-0.03em] sm:text-[2rem]"

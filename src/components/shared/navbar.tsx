@@ -195,17 +195,17 @@ export function Navbar() {
                     )}
                   </>
                 ) : (
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <Link
                       href="/logga-in"
-                      className="text-[0.8125rem] text-muted-foreground transition-colors hover:text-foreground"
+                      className="rounded-full border border-border px-5 py-2 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-muted-foreground transition-all hover:bg-secondary hover:text-foreground"
                       style={{ fontFamily: "var(--font-geist-mono), monospace" }}
                     >
                       Logga in
                     </Link>
                     <Link
                       href="/registrera"
-                      className="rounded-full px-5 py-2 text-[0.8125rem] font-medium uppercase tracking-[0.01em] transition-all duration-150 bg-primary text-primary-foreground"
+                      className="rounded-full bg-primary px-5 py-2 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-primary-foreground transition-all duration-150"
                       style={{
                         fontFamily: "var(--font-geist-mono), monospace",
                         boxShadow:
