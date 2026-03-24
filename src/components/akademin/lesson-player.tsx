@@ -346,6 +346,9 @@ function InteractiveSection({ element }: { element: InteractiveElement }) {
     const items = element.data;
     const [matched, setMatched] = useState<Record<string, string>>({});
     const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
+    const [shuffledDefs] = useState(() =>
+      items.map((i) => i.definition).sort(() => Math.random() - 0.5)
+    );
     const allMatched = Object.keys(matched).length === items.length;
 
     const handleDefClick = (def: string) => {
@@ -393,15 +396,12 @@ function InteractiveSection({ element }: { element: InteractiveElement }) {
           </div>
           <div className="space-y-2">
             <p className="text-[0.75rem] font-medium text-muted-foreground">Beskrivning</p>
-            {items
-              .slice()
-              .sort(() => 0.5 - Math.random())
-              .map((item) => {
-                const isMatched = Object.values(matched).includes(item.definition);
+            {shuffledDefs.map((def) => {
+                const isMatched = Object.values(matched).includes(def);
                 return (
                   <button
-                    key={item.definition}
-                    onClick={() => handleDefClick(item.definition)}
+                    key={def}
+                    onClick={() => handleDefClick(def)}
                     disabled={isMatched || !selectedTerm}
                     className={`w-full rounded-lg border px-3 py-2 text-left text-[0.8125rem] transition-all ${
                       isMatched
@@ -411,7 +411,7 @@ function InteractiveSection({ element }: { element: InteractiveElement }) {
                           : "border-border/50 opacity-60"
                     }`}
                   >
-                    {item.definition}
+                    {def}
                   </button>
                 );
               })}

@@ -19,6 +19,15 @@ import { XP_REWARDS } from "@/lib/education-system";
 import type { AcademyQuizQuestion } from "@/lib/education-system";
 import { showXPToast } from "./xp-toast";
 
+function shuffleOptions(q: AcademyQuizQuestion): AcademyQuizQuestion {
+  const indices = q.options.map((_, i) => i).sort(() => Math.random() - 0.5);
+  return {
+    ...q,
+    options: indices.map((i) => q.options[i]),
+    correctIndex: indices.indexOf(q.correctIndex),
+  };
+}
+
 export function ModuleQuiz({
   moduleId,
   onClose,
@@ -28,7 +37,7 @@ export function ModuleQuiz({
 }) {
   const mod = getModuleById(moduleId);
   const allQuestions = useMemo(
-    () => getQuizQuestionsForModule(moduleId).sort(() => Math.random() - 0.5),
+    () => getQuizQuestionsForModule(moduleId).sort(() => Math.random() - 0.5).map(shuffleOptions),
     [moduleId]
   );
 

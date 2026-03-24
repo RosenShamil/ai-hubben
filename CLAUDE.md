@@ -43,8 +43,10 @@ No test framework is configured. Build uses `next build --webpack` because Serwi
 
 Two layout groups under `src/app/`:
 
-- **`(main)/`** — Public pages: `/`, `/assistenter`, `/assistenter/[id]`, `/statistik`, `/utbildning`, `/kunskapsbank`, `/akademin`, `/akademin/[courseId]`, `/akademin/certifikat`, `/dokumentation`, `/nyheter`, `/nyheter/[slug]`, `/faq`, `/om`, `/kontakt`, `/logga-in`, `/registrera`, `/profil`, `/~offline`
-- **`(admin)/admin/`** — Protected admin CRUD: `/admin/startsida`, `/admin/nyheter`, `/admin/statistik`, `/admin/akademin`, `/admin/assistenter`, `/admin/utbildning`, `/admin/dokumentation`, `/admin/faq`, `/admin/team`, `/admin/innehall`, `/admin/meddelanden`, `/admin/kontakt`, `/admin/resurser`, `/admin/login`
+- **`(main)/`** — Public pages: `/`, `/assistenter`, `/assistenter/[id]`, `/statistik`, `/utbildning` (tabbed: utbildning/akademin/begrepp), `/utbildning/akademin/[courseId]`, `/utbildning/akademin/certifikat`, `/dokumentation`, `/nyheter`, `/nyheter/[slug]`, `/faq`, `/om`, `/kontakt`, `/logga-in`, `/registrera`, `/profil`
+- **`(admin)/admin/`** — Protected admin CRUD: `/admin/startsida`, `/admin/nyheter`, `/admin/statistik`, `/admin/akademin`, `/admin/assistenter`, `/admin/utbildning`, `/admin/dokument`, `/admin/faq`, `/admin/team`, `/admin/innehall`, `/admin/meddelanden`, `/admin/kontakt`, `/admin/resurser`, `/admin/login`
+
+**Redirects:** `/akademin` → `/utbildning?flik=akademin`, `/kunskapsbank` → `/utbildning?flik=begrepp` (legacy URLs preserved)
 
 ### SEO
 

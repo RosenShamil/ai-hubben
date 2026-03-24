@@ -188,6 +188,11 @@ export default function ProfilePage() {
         >
           {profile.full_name || "Din profil"}
         </h1>
+        {profile.job_title && (
+          <p className="mt-1 text-[0.9375rem] text-foreground/70">
+            {profile.job_title}
+          </p>
+        )}
         <p className="mt-1 text-[0.875rem] text-foreground/85">
           {profile.email}
         </p>

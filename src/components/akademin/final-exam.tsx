@@ -24,6 +24,15 @@ import {
 } from "@/lib/education-progress";
 import type { AcademyQuizQuestion } from "@/lib/education-system";
 
+function shuffleOptions(q: AcademyQuizQuestion): AcademyQuizQuestion {
+  const indices = q.options.map((_, i) => i).sort(() => Math.random() - 0.5);
+  return {
+    ...q,
+    options: indices.map((i) => q.options[i]),
+    correctIndex: indices.indexOf(q.correctIndex),
+  };
+}
+
 export function FinalExam({
   levelId,
   onClose,
@@ -37,7 +46,7 @@ export function FinalExam({
   const canRetry = canRetryFinalExam(levelId as "niva-1" | "niva-2" | "niva-3");
 
   const questions = useMemo(
-    () => (level ? getFinalExamQuestions(levelId, level.finalExamQuestionCount) : []),
+    () => (level ? getFinalExamQuestions(levelId, level.finalExamQuestionCount).map(shuffleOptions) : []),
     [levelId, level]
   );
 
