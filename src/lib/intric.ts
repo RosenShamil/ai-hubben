@@ -26,19 +26,57 @@ export type IntricAssistantDetail = IntricAssistant & {
   submitted_by: string | null;
 };
 
+export type AssistantOverride = {
+  assistant_id: string;
+  description_extra: string | null;
+  chat_url: string | null;
+  prompt: string | null;
+  setup_instructions: string | null;
+  hidden: boolean;
+};
+
+async function fetchOverrides(): Promise<Map<string, AssistantOverride>> {
+  const { data } = await supabase
+    .from("assistant_overrides")
+    .select("*");
+  const map = new Map<string, AssistantOverride>();
+  for (const row of data ?? []) {
+    map.set(row.assistant_id, row);
+  }
+  return map;
+}
+
 export async function fetchAssistants(): Promise<IntricAssistant[]> {
-  // Fetch from both sources in parallel
-  const [marketplaceResult, supabaseResult] = await Promise.allSettled([
+  // Fetch from all sources in parallel
+  const [marketplaceResult, supabaseResult, overridesResult] = await Promise.allSettled([
     fetchMarketplaceAssistants(),
     fetchSupabaseAssistants(),
+    fetchOverrides(),
   ]);
 
   const marketplace =
     marketplaceResult.status === "fulfilled" ? marketplaceResult.value : [];
   const community =
     supabaseResult.status === "fulfilled" ? supabaseResult.value : [];
+  const overrides =
+    overridesResult.status === "fulfilled" ? overridesResult.value : new Map<string, AssistantOverride>();
 
-  return [...marketplace, ...community];
+  // Apply overrides: filter hidden, merge description_extra
+  const applyOverrides = (assistants: IntricAssistant[]) =>
+    assistants
+      .filter((a) => !overrides.get(a.id)?.hidden)
+      .map((a) => {
+        const ov = overrides.get(a.id);
+        if (!ov) return a;
+        return {
+          ...a,
+          description: ov.description_extra
+            ? `${a.description}\n\n${ov.description_extra}`
+            : a.description,
+        };
+      });
+
+  return [...applyOverrides(marketplace), ...applyOverrides(community)];
 }
 
 // Swedish organizations to include from Intric Marketplace
@@ -121,40 +159,66 @@ export async function fetchFeaturedAssistants(): Promise<IntricAssistant[]> {
 export async function fetchAssistant(
   id: string
 ): Promise<IntricAssistantDetail> {
+  // Fetch override in parallel with assistant data
+  const overridePromise = supabase
+    .from("assistant_overrides")
+    .select("*")
+    .eq("assistant_id", id)
+    .single();
+
   // Try marketplace first, then Supabase
+  let assistant: IntricAssistantDetail | null = null;
+
   try {
     const res = await fetch(`${MARKETPLACE_URL}/assistants/${id}`, {
       next: { revalidate: 300 },
     });
     if (res.ok) {
       const data = await res.json();
-      return { ...data, source: "marketplace" };
+      assistant = { ...data, source: "marketplace" };
     }
   } catch {
     // Fall through to Supabase
   }
 
-  // Try Supabase
-  const { data, error } = await supabase
-    .from("assistants")
-    .select("*")
-    .eq("id", id)
-    .single();
+  if (!assistant) {
+    const { data, error } = await supabase
+      .from("assistants")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-  if (error || !data) throw new Error("Assistant not found");
+    if (error || !data) throw new Error("Assistant not found");
 
-  return {
-    id: data.id,
-    name: data.name,
-    description: data.description || "",
-    assistant_link: data.assistant_link,
-    icon_url: null,
-    regions: data.regions || ["sweden"],
-    organization: data.organization,
-    created_at: data.created_at,
-    source: "community",
-    prompt: data.prompt,
-    setup_instructions: data.setup_instructions,
-    submitted_by: data.submitted_by,
-  };
+    assistant = {
+      id: data.id,
+      name: data.name,
+      description: data.description || "",
+      assistant_link: data.assistant_link,
+      icon_url: null,
+      regions: data.regions || ["sweden"],
+      organization: data.organization,
+      created_at: data.created_at,
+      source: "community",
+      prompt: data.prompt,
+      setup_instructions: data.setup_instructions,
+      submitted_by: data.submitted_by,
+    };
+  }
+
+  // Apply override
+  const { data: ov } = await overridePromise;
+  if (ov) {
+    if (ov.description_extra) {
+      assistant.description = `${assistant.description}\n\n${ov.description_extra}`;
+    }
+    if (ov.prompt) {
+      assistant.prompt = ov.prompt;
+    }
+    if (ov.setup_instructions) {
+      assistant.setup_instructions = ov.setup_instructions;
+    }
+  }
+
+  return assistant;
 }
