@@ -41,6 +41,26 @@ export async function fetchAssistants(): Promise<IntricAssistant[]> {
   return [...marketplace, ...community];
 }
 
+// Swedish organizations to include from Intric Marketplace
+const ALLOWED_ORGS = new Set([
+  "katrineholms kommun",
+  "intric ab",
+  "intric ai",
+  "gävle kommun",
+  "lidköpings kommun",
+  "mönsterås kommun",
+  "trollhättans stad",
+  "ab svenska bostäder",
+  "atherfold consulting ab",
+  "kundtjänst",
+]);
+
+// Non-Swedish assistants to exclude (German descriptions despite Swedish org)
+const EXCLUDED_IDS = new Set([
+  "b0dde2a3-31c1-45e4-8518-2f4608e4fa9d", // Offboarding Assistent (Intric AI, German)
+  "dfdf10f5-34ed-4ab3-9420-a73d8bbb6c86", // IT Scanner (Intric AB, German)
+]);
+
 async function fetchMarketplaceAssistants(): Promise<IntricAssistant[]> {
   const res = await fetch(`${MARKETPLACE_URL}/assistants`, {
     next: { revalidate: 300 },
@@ -51,8 +71,9 @@ async function fetchMarketplaceAssistants(): Promise<IntricAssistant[]> {
 
   return data
     .filter(
-      (a: { organization: string }) =>
-        a.organization.toLowerCase() === "katrineholms kommun"
+      (a: { id: string; organization: string }) =>
+        ALLOWED_ORGS.has(a.organization.toLowerCase().trim()) &&
+        !EXCLUDED_IDS.has(a.id)
     )
     .map((a: IntricAssistant) => ({ ...a, source: "marketplace" as const }));
 }

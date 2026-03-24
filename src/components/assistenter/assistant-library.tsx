@@ -23,6 +23,64 @@ function getAvatarColor(name: string) {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
+function AssistantCard({ assistant: a, delay }: { assistant: IntricAssistant; delay: number }) {
+  return (
+    <FadeIn delay={delay}>
+      <Link href={`/assistenter/${a.id}`}>
+        <div className="group relative cursor-pointer rounded-lg transition-all duration-300">
+          {/* Travel flash */}
+          <div className="absolute -inset-px rounded-lg overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div
+              className="absolute inset-0 opacity-0 group-hover:animate-[travel-flash_1.125s_linear_forwards]"
+              style={{
+                background:
+                  "conic-gradient(from 0deg, transparent 0%, transparent 70%, white 85%, white 95%, transparent 100%)",
+              }}
+            />
+            <div
+              className="absolute inset-0 opacity-40"
+              style={{ background: BRAND_GRADIENT }}
+            />
+          </div>
+          {/* Card */}
+          <div className="relative flex h-full flex-col gap-4 rounded-lg border border-border bg-card p-6 transition-all duration-300 group-hover:bg-secondary group-hover:shadow-lg">
+            <div className="flex items-center gap-3">
+              {a.icon_url ? (
+                <img
+                  src={a.icon_url}
+                  alt={a.name}
+                  className="h-10 w-10 rounded-md border border-border object-cover"
+                />
+              ) : (
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-md text-[0.875rem] font-semibold text-white"
+                  style={{
+                    backgroundColor: getAvatarColor(a.name),
+                    fontFamily: "var(--font-geist-mono), monospace",
+                  }}
+                >
+                  {a.name[0]}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <h3 className="truncate text-[1rem] font-medium tracking-tight">
+                  {a.name}
+                </h3>
+                <p className="text-[0.8125rem] text-muted-foreground">
+                  {a.organization}
+                </p>
+              </div>
+            </div>
+            <p className="flex-1 line-clamp-2 text-[0.875rem] leading-[1.6] text-foreground/85">
+              {a.description}
+            </p>
+          </div>
+        </div>
+      </Link>
+    </FadeIn>
+  );
+}
+
 export function AssistantLibrary({
   assistants,
 }: {
@@ -41,6 +99,15 @@ export function AssistantLibrary({
         a.organization.toLowerCase().includes(q)
     );
   }, [query, assistants]);
+
+  const katrineholm = useMemo(
+    () => filtered.filter((a) => a.organization.toLowerCase() === "katrineholms kommun"),
+    [filtered]
+  );
+  const ovriga = useMemo(
+    () => filtered.filter((a) => a.organization.toLowerCase() !== "katrineholms kommun"),
+    [filtered]
+  );
 
   return (
     <>
@@ -110,7 +177,7 @@ export function AssistantLibrary({
         <div className="h-px" style={{ background: BRAND_GRADIENT }} />
       </div>
 
-      {/* Grid */}
+      {/* Assistants */}
       <section className="mx-auto max-w-[68.75rem] px-6 py-12 md:py-16">
         {filtered.length === 0 ? (
           <div className="py-20 text-center">
@@ -122,63 +189,56 @@ export function AssistantLibrary({
             </p>
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((a, i) => (
-              <FadeIn key={a.id} delay={i * 0.05}>
-                <Link href={`/assistenter/${a.id}`}>
-                  <div className="group relative cursor-pointer rounded-lg transition-all duration-300">
-                    {/* Travel flash */}
-                    <div className="absolute -inset-px rounded-lg overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div
-                        className="absolute inset-0 opacity-0 group-hover:animate-[travel-flash_1.125s_linear_forwards]"
-                        style={{
-                          background:
-                            "conic-gradient(from 0deg, transparent 0%, transparent 70%, white 85%, white 95%, transparent 100%)",
-                        }}
-                      />
-                      <div
-                        className="absolute inset-0 opacity-40"
-                        style={{ background: BRAND_GRADIENT }}
-                      />
-                    </div>
-                    {/* Card */}
-                    <div className="relative flex h-full flex-col gap-4 rounded-lg border border-border bg-card p-6 transition-all duration-300 group-hover:bg-secondary group-hover:shadow-lg">
-                      <div className="flex items-center gap-3">
-                        {a.icon_url ? (
-                          <img
-                            src={a.icon_url}
-                            alt={a.name}
-                            className="h-10 w-10 rounded-md border border-border object-cover"
-                          />
-                        ) : (
-                          <div
-                            className="flex h-10 w-10 items-center justify-center rounded-md text-[0.875rem] font-semibold text-white"
-                            style={{
-                              backgroundColor: getAvatarColor(a.name),
-                              fontFamily:
-                                "var(--font-geist-mono), monospace",
-                            }}
-                          >
-                            {a.name[0]}
-                          </div>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <h3 className="truncate text-[1rem] font-medium tracking-tight">
-                            {a.name}
-                          </h3>
-                          <p className="text-[0.8125rem] text-muted-foreground">
-                            {a.organization}
-                          </p>
-                        </div>
-                      </div>
-                      <p className="flex-1 line-clamp-2 text-[0.875rem] leading-[1.6] text-foreground/85">
-                        {a.description}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              </FadeIn>
-            ))}
+          <div className="space-y-16">
+            {/* Katrineholms kommun */}
+            {katrineholm.length > 0 && (
+              <div>
+                <div className="mb-6">
+                  <p
+                    className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+                    style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                  >
+                    Katrineholms kommun
+                  </p>
+                  <h2
+                    className="mt-1 text-[1.25rem] tracking-[-0.02em] sm:text-[1.5rem]"
+                    style={{ fontFamily: "var(--font-bodoni), serif", fontWeight: 400 }}
+                  >
+                    Våra assistenter
+                  </h2>
+                </div>
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {katrineholm.map((a, i) => (
+                    <AssistantCard key={a.id} assistant={a} delay={i * 0.05} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Övriga Sverige */}
+            {ovriga.length > 0 && (
+              <div>
+                <div className="mb-6">
+                  <p
+                    className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+                    style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                  >
+                    Övriga Sverige
+                  </p>
+                  <h2
+                    className="mt-1 text-[1.25rem] tracking-[-0.02em] sm:text-[1.5rem]"
+                    style={{ fontFamily: "var(--font-bodoni), serif", fontWeight: 400 }}
+                  >
+                    Fler assistenter
+                  </h2>
+                </div>
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {ovriga.map((a, i) => (
+                    <AssistantCard key={a.id} assistant={a} delay={i * 0.05} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </section>
