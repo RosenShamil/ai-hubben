@@ -202,7 +202,7 @@ export default function ProfilePage() {
         {/* ─── Section 1: Profile Information ─── */}
         <section className={card}>
           <h2 className={sectionHeading} style={headingStyle}>
-            <User size={20} /> Profilinformation
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary"><User size={16} className="text-foreground" /></span> Profilinformation
           </h2>
           <form
             onSubmit={profileForm.handleSubmit(onProfileSubmit)}
@@ -369,7 +369,7 @@ export default function ProfilePage() {
         {guideProfile && (
           <section className={card}>
             <h2 className={sectionHeading} style={headingStyle}>
-              <Map size={20} /> Min AI-resa
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary"><Map size={16} className="text-foreground" /></span> Min AI-resa
             </h2>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-md border border-border p-3">
@@ -425,7 +425,7 @@ export default function ProfilePage() {
         {eduProgress && (
           <section className={card}>
             <h2 className={sectionHeading} style={headingStyle}>
-              <GraduationCap size={20} /> Akademin
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary"><GraduationCap size={16} className="text-foreground" /></span> Akademin
             </h2>
 
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -518,7 +518,7 @@ export default function ProfilePage() {
         {knowProgress && (
           <section className={card}>
             <h2 className={sectionHeading} style={headingStyle}>
-              <BookOpen size={20} /> Kunskapsbanken
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary"><BookOpen size={16} className="text-foreground" /></span> Kunskapsbanken
             </h2>
 
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -576,7 +576,7 @@ export default function ProfilePage() {
         {/* ─── Section 5: Favoriter ─── */}
         <section className={card}>
           <h2 className={sectionHeading} style={headingStyle}>
-            <Heart size={20} /> Mina favoriter
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary"><Heart size={16} className="text-foreground" /></span> Mina favoriter
           </h2>
 
           {favorites.length === 0 ? (
@@ -657,7 +657,7 @@ function StatCard({
 }) {
   return (
     <div className="rounded-md border border-border p-3 text-center">
-      <div className="mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-muted-foreground">
+      <div className="mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-foreground">
         {icon}
       </div>
       <p className="text-[1.125rem] font-medium">{value}</p>

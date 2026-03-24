@@ -46,14 +46,19 @@ export function GuideSectionHome({ assistants = [] }: { assistants?: IntricAssis
     return (
       <section className="mx-auto max-w-[68.75rem] px-6 py-12 md:py-16">
         <FadeIn>
-          <div className="rounded-xl border border-border bg-card p-6 md:p-8">
+          <div className="group relative rounded-xl transition-all duration-300">
+            <div className="absolute -inset-px rounded-xl overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div
+                className="absolute inset-0 opacity-0 group-hover:animate-[travel-flash_1.125s_linear_forwards]"
+                style={{ background: "conic-gradient(from 0deg, transparent 0%, transparent 70%, white 85%, white 95%, transparent 100%)" }}
+              />
+              <div className="absolute inset-0 opacity-40" style={{ background: BRAND_GRADIENT }} />
+            </div>
+            <div className="relative rounded-xl border border-border bg-card p-6 md:p-8">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
-                <div
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
-                  style={{ background: BRAND_GRADIENT }}
-                >
-                  <Sparkles size={20} className="text-white" />
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-secondary">
+                  <Sparkles size={20} className="text-foreground" />
                 </div>
                 <div>
                   <p
@@ -102,6 +107,7 @@ export function GuideSectionHome({ assistants = [] }: { assistants?: IntricAssis
               </Link>
             </div>
           </div>
+          </div>
         </FadeIn>
       </section>
     );
@@ -112,40 +118,49 @@ export function GuideSectionHome({ assistants = [] }: { assistants?: IntricAssis
     <>
       <section className="mx-auto max-w-[68.75rem] px-6 py-12 md:py-16">
         <FadeIn>
-          <div className="relative overflow-hidden rounded-xl border border-border bg-card p-8 md:p-12">
-            {/* Gradient accent */}
-            <div
-              className="absolute inset-x-0 top-0 h-1"
-              style={{ background: BRAND_GRADIENT }}
-            />
-            <div className="relative flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-border bg-secondary">
-                <Sparkles size={24} className="text-foreground" />
+          <div className="group relative rounded-xl transition-all duration-300">
+            <div className="absolute -inset-px rounded-xl overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div
+                className="absolute inset-0 opacity-0 group-hover:animate-[travel-flash_1.125s_linear_forwards]"
+                style={{ background: "conic-gradient(from 0deg, transparent 0%, transparent 70%, white 85%, white 95%, transparent 100%)" }}
+              />
+              <div className="absolute inset-0 opacity-40" style={{ background: BRAND_GRADIENT }} />
+            </div>
+            <div className="relative overflow-hidden rounded-xl border border-border bg-card p-8 md:p-12">
+              {/* Gradient accent */}
+              <div
+                className="absolute inset-x-0 top-0 h-1"
+                style={{ background: BRAND_GRADIENT }}
+              />
+              <div className="relative flex flex-col items-center text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-border bg-secondary">
+                  <Sparkles size={24} className="text-foreground" />
+                </div>
+                <h2
+                  className="mt-5 text-[1.5rem] leading-tight tracking-[-0.03em] sm:text-[2rem]"
+                  style={{ fontFamily: "var(--font-bodoni), serif", fontWeight: 400 }}
+                >
+                  Starta din AI-resa
+                </h2>
+                <p className="mt-3 max-w-md text-[0.9375rem] leading-relaxed text-foreground/85">
+                  Svara på 4 snabba frågor och få en personlig guide med verktyg,
+                  tips och utbildning anpassad till just din roll.
+                </p>
+                <button
+                  onClick={() => setQuizOpen(true)}
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-primary-foreground transition-all duration-150 active:scale-[0.98]"
+                  style={{
+                    fontFamily: "var(--font-geist-mono), monospace",
+                    boxShadow:
+                      "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset",
+                  }}
+                >
+                  Kom igång <ArrowRight size={14} />
+                </button>
+                <p className="mt-3 text-[0.75rem] text-muted-foreground">
+                  Tar ungefär 30 sekunder · Ingen inloggning krävs
+                </p>
               </div>
-              <h2
-                className="mt-5 text-[1.5rem] leading-tight tracking-[-0.03em] sm:text-[2rem]"
-                style={{ fontFamily: "var(--font-bodoni), serif", fontWeight: 400 }}
-              >
-                Starta din AI-resa
-              </h2>
-              <p className="mt-3 max-w-md text-[0.9375rem] leading-relaxed text-foreground/85">
-                Svara på 4 snabba frågor och få en personlig guide med verktyg,
-                tips och utbildning anpassad till just din roll.
-              </p>
-              <button
-                onClick={() => setQuizOpen(true)}
-                className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-primary-foreground transition-all duration-150 active:scale-[0.98]"
-                style={{
-                  fontFamily: "var(--font-geist-mono), monospace",
-                  boxShadow:
-                    "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset",
-                }}
-              >
-                Kom igång <ArrowRight size={14} />
-              </button>
-              <p className="mt-3 text-[0.75rem] text-muted-foreground">
-                Tar ungefär 30 sekunder · Ingen inloggning krävs
-              </p>
             </div>
           </div>
         </FadeIn>

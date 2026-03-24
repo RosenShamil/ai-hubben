@@ -288,37 +288,46 @@ export function CertificateGallery() {
               );
               return (
                 <FadeIn key={cert.certificateId} delay={i * 0.1}>
-                  <div className="group relative overflow-hidden rounded-xl border border-border bg-card transition-all hover:shadow-xl">
-                    <div
-                      className="h-1.5 w-full"
-                      style={{
-                        background: LEVEL_GRADIENTS[cert.levelId],
-                      }}
-                    />
-                    <div className="p-6">
+                  <div className="group relative rounded-xl transition-all duration-300">
+                    <div className="absolute -inset-px rounded-xl overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div
-                        className="flex h-14 w-14 items-center justify-center rounded-2xl"
-                        style={{ background: LEVEL_GRADIENTS[cert.levelId] }}
-                      >
-                        <Award size={28} className="text-white" />
-                      </div>
-                      <h3 className="mt-4 text-[1.0625rem] font-medium">
-                        {level?.title}
-                      </h3>
-                      <p className="mt-1 text-[0.8125rem] text-foreground/85">
-                        {cert.name}
-                      </p>
-                      <p className="text-[0.75rem] text-muted-foreground">
-                        {cert.earnedDate} · {cert.certificateId}
-                      </p>
+                        className="absolute inset-0 opacity-0 group-hover:animate-[travel-flash_1.125s_linear_forwards]"
+                        style={{ background: "conic-gradient(from 0deg, transparent 0%, transparent 70%, white 85%, white 95%, transparent 100%)" }}
+                      />
+                      <div className="absolute inset-0 opacity-40" style={{ background: BRAND_GRADIENT }} />
+                    </div>
+                    <div className="relative overflow-hidden rounded-xl border border-border bg-card transition-all group-hover:shadow-xl">
+                      <div
+                        className="h-1.5 w-full"
+                        style={{
+                          background: LEVEL_GRADIENTS[cert.levelId],
+                        }}
+                      />
+                      <div className="p-6">
+                        <div
+                          className="flex h-14 w-14 items-center justify-center rounded-2xl"
+                          style={{ background: LEVEL_GRADIENTS[cert.levelId] }}
+                        >
+                          <Award size={28} className="text-white" />
+                        </div>
+                        <h3 className="mt-4 text-[1.0625rem] font-medium">
+                          {level?.title}
+                        </h3>
+                        <p className="mt-1 text-[0.8125rem] text-foreground/85">
+                          {cert.name}
+                        </p>
+                        <p className="text-[0.75rem] text-muted-foreground">
+                          {cert.earnedDate} · {cert.certificateId}
+                        </p>
 
-                      <button
-                        onClick={() => handleDownload(cert)}
-                        className="mt-4 flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-[0.8125rem] font-medium transition-all hover:bg-secondary"
-                      >
-                        <Download size={14} />
-                        Ladda ner
-                      </button>
+                        <button
+                          onClick={() => handleDownload(cert)}
+                          className="mt-4 flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-[0.8125rem] font-medium transition-all hover:bg-secondary"
+                        >
+                          <Download size={14} />
+                          Ladda ner
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </FadeIn>
