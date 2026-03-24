@@ -144,31 +144,38 @@ Client-side only via `AuthProvider` context (`src/components/shared/auth-provide
 
 ## Project Status
 
-### Fully Implemented (~95%)
-- All 18 public pages + 15 admin pages
-- Auth system (registration, login, profile, password change, admin check)
-- AI-akademin: 3 certification levels, 96 lessons, quizzes, final exams, certificates, XP, 13+ badges
+### Fully Implemented (~97%)
+- All 18 public pages + 16 admin pages (including `/admin/anvandare`)
+- Auth system (registration, login, profile with job title display, password change, admin check)
+- AI-akademin: 3 certification levels, 96 lessons, quizzes with randomized answers, final exams, certificates, XP, 13+ badges
 - Kunskapsbank: 222 concepts, 12 categories, 225 explainers, 222 fun facts, 6 learning paths, quizzes, scenarios, daily byte, my-journey
 - AI-resa onboarding quiz (7 departments, 7 roles, personalized recommendations)
-- Assistants library (Intric Marketplace + community uploads via modal + admin moderation)
+- Assistants library: 40+ Swedish assistants from Intric Marketplace + community uploads, split into "Katrineholms kommun" and "Övriga Sverige" sections
+- Assistant overrides: admin can add extra description, chat URL, prompt, instructions, and hide/show marketplace assistants via `assistant_overrides` table
 - Statistics dashboard (admin-managed data, not live API)
-- News/blog with RSS feed
+- News/blog with RSS feed, article import (URL/file/paste), improved article rendering with visual hierarchy and clickable links/emails
 - Global search modal (Ctrl+K, searches 8 data sources)
 - Progress sync (localStorage ↔ Supabase on login)
 - Favorites system (assistants, courses, lessons)
 - Chat widget (embedded Intric iframe on all pages + per-assistant chat links)
 - PWA (Serwist, offline fallback, installable)
 - Training management with registration flow and capacity checks
-- Full admin CMS (content, team, documents, FAQ, messages, resources, featured assistants, chat links, statistics)
+- Full admin CMS with live dashboard, breadcrumb navigation, logically grouped sidebar, per-page content editing, counters, live links, search on large lists
+- Admin users page (`/admin/anvandare`) with expandable progress panels per user
 - SEO (sitemap.xml, robots.txt, dynamic metadata)
 - Swipe gestures on lesson player, storyboard, quiz
+- Travel-flash hover effect on AI profile card, CTA, and certificate cards
+- All public pages revalidate within 60 seconds of admin changes
+- iKAI knowledge base and system prompt prepared for AI-hubben support (93% test pass rate)
 
 ### Not Implemented
-- **`/projekt` — Project/case showcase page** (5 projects described in masterplan: hemtjänst-AI, AI-kameror, SDK, digital post, katrineholm.se-assistent). No route, components, data, or admin page exists.
+- **`/projekt` — Project/case showcase page** (5 projects described in masterplan). No route, components, data, or admin page exists.
+- **Domain migration** — `kommunai.se` registered but not configured. See `docs/roadmap-todo.md` section 1.6.
+- **LMS / custom courses** — Concept designed (see `docs/roadmap-todo.md` section 2) but not built.
 
 ### Design Decisions (Intentional Simplifications)
 - Statistics are admin-managed (not live Intric API) — Intric Marketplace API has no stats endpoints
-- News content uses custom markdown parser (not MDX) — sufficient for current needs
+- News content uses custom markdown parser (not MDX) — supports bold, headings, lists, links, emails
 - Search uses `ilike` substring matching (not Supabase full-text search) — works well for current data volume
 - No skeleton loading states — pages load fast enough with spinners
 - Community assistant uploads go live immediately (no `status` field / moderation queue)
@@ -177,5 +184,10 @@ Client-side only via `AuthProvider` context (`src/components/shared/auth-provide
 
 - `docs/aihubben-masterplan.md` — Detailed design brief, database schema overview, and feature roadmap
 - `docs/design-system.md` — Full design system: color tokens, typography scales, spacing, component patterns
+- `docs/roadmap-todo.md` — Complete roadmap: LMS concept, multi-kommun vision, business model, iKAI fixes, domain migration, prioritized phases
+- `docs/regelverk-och-compliance.md` — Regulatory compliance report (GDPR, DOS-lagen, NIS2, EU AI Act)
+- `docs/ikai-aihubben-kunskap.md` — iKAI knowledge base document for AI-hubben (upload to Intric)
+- `docs/ikai-aihubben-tillaggsprompt.md` — iKAI system prompt addition for AI-hubben
+- `docs/ikai-testlista.md` — iKAI test checklist (35 questions, 93% pass rate achieved)
 - `docs/ikai-kunskap-aihubben.md` — Knowledge bank content reference
 - `docs/ecc-kommandon.md` — ECC commands reference

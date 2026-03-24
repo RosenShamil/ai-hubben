@@ -36,7 +36,29 @@ Nuvarande: enkel inkorg med lasa/ta bort + mailto-svar. Behover uppgradering.
 - [ ] Tilldela meddelande till annan admin/person
 - [ ] Svarsmallar for vanliga fragor ("Tack for ditt meddelande, vi aterkommer inom 48h")
 
-### 1.5 Smarre forbattringar
+### 1.5 iKAI — AI-hubben kunskapsfix
+Testresultat: 93% OK (40/43 fragor). Atgarder:
+
+**Kunskapsdokumentet (ikai-aihubben-kunskap.md):**
+- [ ] Sakerstall att assistentlistan (Ekona, Konteringsassistenten) indexeras korrekt i Intric — fraga 3.2 hittade dem inte
+- [ ] Fortydliga att akademin ar textbaserade lektioner, inte videolektioner
+
+**Tillaggsprompten (ikai-aihubben-tillaggsprompt.md):**
+- [ ] Lagg till: "Community-assistenter publiceras direkt utan granskning"
+- [ ] Lagg till: "Nar du namner en sida eller funktion, forklara alltid hur anvandaren navigerar dit (vilken meny, flik eller knapp)"
+- [ ] Lagg till: "Ange inte specifika forvaltningars AI-anvandning utan aktuell data — hanvisa till statistiksidan"
+- [ ] Valfritt: Notera att kunskapsbanken nas via /utbildning?flik=begrepp (inte /kunskapsbanken)
+
+### 1.6 Domanbyte och domanregistrering
+- [ ] Registrera ny doman (kommunai.se ar registrerad, behover DNS-konfigurering)
+- [ ] Vercel: Lagg till kommunai.se + www.kommunai.se som custom domain
+- [ ] DNS: Peka A-record/CNAME till Vercel
+- [ ] Kod: Uppdatera BASE_URL/SITE_URL i sitemap.ts, robots.ts, rss.xml/route.ts, layout.tsx (OG), CLAUDE.md, masterplan
+- [ ] Redirect: aihubben.se → kommunai.se (Vercel redirect rule)
+- [ ] Supabase Auth: Konfigurera SMTP med kommunai.se-epost for auth-mejl
+- Se aven `memory/project_domain_migration.md` for detaljerade steg
+
+### 1.7 Smarre forbattringar
 - [ ] Community assistant uploads — lagga till moderationsflode (status-falt, admin-godkannande)
 - [ ] Skeleton loading states (nuvarande: spinners)
 - [ ] Full-text search i Supabase (nuvarande: `ilike` substring)
@@ -279,11 +301,29 @@ Gors EN gang, atervands i alla mallar for alla kommuner. Uppdateras vid nya laga
 ## 9. PRIORITERINGSFORSLAG
 
 ### Fas 0 — Nu (befintlig plattform)
-- [x] Bugfixar fran kollegors feedback (quiz shuffle, profil-titel)
+- [x] Bugfixar fran kollegors feedback (quiz shuffle, profil-titel, bygglov-stavning)
 - [x] Admin-sida for anvandare med framsteg
+- [x] Komplett admin-overhaul: alla 16 sidor granskade och forbattrade
+- [x] Live dashboard med data fran alla tabeller + marketplace API
+- [x] Breadcrumb-navigering pa alla admin-sidor
+- [x] Sidebar logiskt grupperad och omdopt
+- [x] Startsida-admin: inline textredigering + alla svenska assistenter i dropdown
+- [x] Nyheter: sok, raknare, importfunktion (URL/fil/klistra), forbattrad artikelrendering
+- [x] FAQ: expanderbara rader, live-lank
+- [x] Assistenter: komplett oversikt (marketplace + community), overrides, dolj/visa, Intric Library-lank
+- [x] Alla sidor: raknare, live-lankar, forbattrad UX
+- [x] Marketplace-assistenter: alla svenska orgs inkluderade, tyska exkluderade
+- [x] Assistentsidan: uppdelad i "Vara assistenter" + "Ovriga Sverige"
+- [x] Travel-flash hover-effekt pa AI-profil, CTA, certifikatkort
+- [x] Artikelrendering: visuell hierarki, klickbara lankar/mejl, markdown-stod
+- [x] Revalidering standardiserad till 60 sek pa alla publika sidor
+- [x] URL-import API-route for nyhetsartiklar
+- [x] assistant_overrides-tabell for marketplace-overrides
+- [x] iKAI kunskapsdokument + tillaggsprompt + testlista (93% godkant)
 - [ ] `/projekt`-sidan
 - [ ] Compliance-atgarder (se punkt 1.3)
-- [ ] Domanbyte till kommunai.se
+- [ ] Domanbyte till kommunai.se (se punkt 1.6)
+- [ ] iKAI-fixar (se punkt 1.5)
 
 ### Fas 1 — MVP anpassade kurser
 - [ ] Mallbibliotek (5-10 mallar)
