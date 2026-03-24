@@ -80,7 +80,7 @@ export function GuideSectionHome({ assistants = [] }: { assistants?: IntricAssis
             </div>
             <div className="mt-5 grid grid-cols-3 gap-3">
               <Link
-                href="/akademin"
+                href="/utbildning?flik=akademin"
                 className="flex flex-col items-center gap-2 rounded-lg border border-border p-4 text-center transition-all hover:bg-secondary"
               >
                 <GraduationCap size={20} className="text-muted-foreground" />
@@ -94,7 +94,7 @@ export function GuideSectionHome({ assistants = [] }: { assistants?: IntricAssis
                 <span className="text-[0.75rem] font-medium">Assistenter</span>
               </Link>
               <Link
-                href="/kunskapsbank"
+                href="/utbildning?flik=begrepp"
                 className="flex flex-col items-center gap-2 rounded-lg border border-border p-4 text-center transition-all hover:bg-secondary"
               >
                 <BookOpen size={20} className="text-muted-foreground" />

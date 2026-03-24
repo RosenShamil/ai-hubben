@@ -1,5 +1,5 @@
-import { AcademyPage } from "@/components/akademin/academy-page";
+import { redirect } from "next/navigation";
 
 export default function AkademinPage() {
-  return <AcademyPage />;
+  redirect("/utbildning?flik=akademin");
 }

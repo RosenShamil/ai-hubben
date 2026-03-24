@@ -487,7 +487,7 @@ export default function ProfilePage() {
                         </p>
                       </div>
                       <Link
-                        href="/akademin/certifikat"
+                        href="/utbildning/akademin/certifikat"
                         className="text-[0.8125rem] text-muted-foreground hover:text-foreground"
                       >
                         <ExternalLink size={14} />
@@ -500,7 +500,7 @@ export default function ProfilePage() {
 
             <div className="mt-4">
               <Link
-                href="/akademin"
+                href="/utbildning?flik=akademin"
                 className="text-[0.8125rem] text-muted-foreground underline underline-offset-4 hover:text-foreground"
               >
                 Gå till akademin
@@ -559,7 +559,7 @@ export default function ProfilePage() {
 
             <div className="mt-4">
               <Link
-                href="/kunskapsbank"
+                href="/utbildning?flik=begrepp"
                 className="text-[0.8125rem] text-muted-foreground underline underline-offset-4 hover:text-foreground"
               >
                 Gå till kunskapsbanken
@@ -611,7 +611,7 @@ export default function ProfilePage() {
                       <FavoriteRow
                         key={fav.id}
                         fav={fav}
-                        href="/akademin"
+                        href="/utbildning?flik=akademin"
                         onRemove={() => handleRemoveFavorite(fav)}
                       />
                     ))}

@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { CourseOverview } from "@/components/akademin/course-overview";
 
 export default async function CoursePage({
   params,
@@ -6,5 +6,5 @@ export default async function CoursePage({
   params: Promise<{ courseId: string }>;
 }) {
   const { courseId } = await params;
-  redirect(`/utbildning/akademin/${courseId}`);
+  return <CourseOverview courseId={courseId} />;
 }

@@ -22,7 +22,7 @@ const TABS = [
 
 type TabKey = (typeof TABS)[number]["key"];
 
-export function KunskapsbankPage() {
+export function KunskapsbankPage({ embedded = false }: { embedded?: boolean }) {
   const [activeTab, setActiveTab] = useState<TabKey>("begrepp");
   const [readCount, setReadCount] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -45,82 +45,86 @@ export function KunskapsbankPage() {
   return (
     <>
       {/* Hero */}
-      <section className="mx-auto max-w-[68.75rem] px-6 pt-20 pb-12 md:pt-28 md:pb-16">
-        <FadeIn>
-          <p
-            className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
-            style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-          >
-            Lär dig AI & IT
-          </p>
-          <h1
-            className="mt-4 text-[1.75rem] leading-[1.1] tracking-[-0.04em] sm:text-[2.75rem] md:text-[4.5rem]"
-            style={{
-              fontFamily: "var(--font-bodoni), serif",
-              fontWeight: 400,
-            }}
-          >
-            Kunskapsbanken
-          </h1>
-          <p className="mt-6 max-w-[42rem] text-[1.0625rem] leading-[1.7] text-foreground">
-            Alla AI- och IT-begrepp förklarade enkelt — från absolut nybörjare
-            till avancerad nivå. Sök, utforska och lär dig i din egen takt.
-          </p>
-        </FadeIn>
+      {!embedded && (
+        <section className="mx-auto max-w-[68.75rem] px-6 pt-20 pb-12 md:pt-28 md:pb-16">
+          <FadeIn>
+            <p
+              className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+            >
+              Lär dig AI & IT
+            </p>
+            <h1
+              className="mt-4 text-[1.75rem] leading-[1.1] tracking-[-0.04em] sm:text-[2.75rem] md:text-[4.5rem]"
+              style={{
+                fontFamily: "var(--font-bodoni), serif",
+                fontWeight: 400,
+              }}
+            >
+              Kunskapsbanken
+            </h1>
+            <p className="mt-6 max-w-[42rem] text-[1.0625rem] leading-[1.7] text-foreground">
+              Alla AI- och IT-begrepp förklarade enkelt — från absolut nybörjare
+              till avancerad nivå. Sök, utforska och lär dig i din egen takt.
+            </p>
+          </FadeIn>
 
-        {/* Progress bar */}
-        <FadeIn delay={0.1}>
-          <div className="mt-8 rounded-lg border border-border bg-card p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-[0.875rem] text-foreground/85">
-                Du har utforskat{" "}
-                <span className="font-medium text-foreground">
-                  {readCount}
-                </span>{" "}
-                av{" "}
-                <span className="font-medium text-foreground">
-                  {CONCEPTS.length}
-                </span>{" "}
-                begrepp
-              </p>
-              {streak > 1 && (
-                <p className="text-[0.8125rem] text-muted-foreground">
-                  🔥 {streak} dagar i rad
+          {/* Progress bar */}
+          <FadeIn delay={0.1}>
+            <div className="mt-8 rounded-lg border border-border bg-card p-4">
+              <div className="flex items-center justify-between">
+                <p className="text-[0.875rem] text-foreground/85">
+                  Du har utforskat{" "}
+                  <span className="font-medium text-foreground">
+                    {readCount}
+                  </span>{" "}
+                  av{" "}
+                  <span className="font-medium text-foreground">
+                    {CONCEPTS.length}
+                  </span>{" "}
+                  begrepp
                 </p>
-              )}
+                {streak > 1 && (
+                  <p className="text-[0.8125rem] text-muted-foreground">
+                    🔥 {streak} dagar i rad
+                  </p>
+                )}
+              </div>
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{
+                    width: `${Math.min(
+                      (readCount / CONCEPTS.length) * 100,
+                      100
+                    )}%`,
+                    background: BRAND_GRADIENT,
+                  }}
+                />
+              </div>
             </div>
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{
-                  width: `${Math.min(
-                    (readCount / CONCEPTS.length) * 100,
-                    100
-                  )}%`,
-                  background: BRAND_GRADIENT,
-                }}
+          </FadeIn>
+
+          {/* Daily byte */}
+          <FadeIn delay={0.15}>
+            <div className="mt-6">
+              <DailyByteCard
+                onOpenConcept={(c) => setDetailConcept(c)}
               />
             </div>
-          </div>
-        </FadeIn>
-
-        {/* Daily byte */}
-        <FadeIn delay={0.15}>
-          <div className="mt-6">
-            <DailyByteCard
-              onOpenConcept={(c) => setDetailConcept(c)}
-            />
-          </div>
-        </FadeIn>
-      </section>
+          </FadeIn>
+        </section>
+      )}
 
       {/* Gradient divider */}
-      <div className="mx-auto max-w-[68.75rem] px-6">
-        <div className="h-px" style={{ background: BRAND_GRADIENT }} />
-      </div>
+      {!embedded && (
+        <div className="mx-auto max-w-[68.75rem] px-6">
+          <div className="h-px" style={{ background: BRAND_GRADIENT }} />
+        </div>
+      )}
 
       {/* Tab navigation */}
-      <section className="mx-auto max-w-[68.75rem] px-6 py-8">
+      <section className={embedded ? "" : "mx-auto max-w-[68.75rem] px-6 py-8"}>
         <FadeIn delay={0.15}>
           <div className="flex gap-1 overflow-x-auto rounded-lg border border-border bg-card p-1">
             {TABS.map((tab) => {

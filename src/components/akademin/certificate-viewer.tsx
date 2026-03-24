@@ -239,7 +239,7 @@ export function CertificateGallery() {
       <section className="mx-auto max-w-[68.75rem] px-6 pt-20 pb-8 md:pt-28">
         <FadeIn>
           <Link
-            href="/akademin"
+            href="/utbildning?flik=akademin"
             className="mb-6 inline-flex items-center gap-1 text-[0.8125rem] text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft size={14} />
@@ -273,7 +273,7 @@ export function CertificateGallery() {
                 ditt första certifikat.
               </p>
               <Link
-                href="/akademin"
+                href="/utbildning?flik=akademin"
                 className="mt-6 inline-block rounded-lg bg-foreground px-6 py-2.5 text-[0.875rem] font-medium text-background transition-all hover:bg-foreground/90"
               >
                 Gå till akademin →

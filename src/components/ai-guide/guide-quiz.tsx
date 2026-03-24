@@ -564,7 +564,7 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                       </p>
                       <p className="mt-1 text-[0.9375rem] font-medium">{result.levelDescription}</p>
                       <Link
-                        href="/akademin"
+                        href="/utbildning?flik=akademin"
                         className="mt-2 inline-flex items-center gap-1 text-[0.8125rem] font-medium underline underline-offset-4"
                         onClick={onComplete}
                       >
@@ -625,7 +625,7 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                           return (
                             <a
                               key={id}
-                              href={`/kunskapsbank?sok=${encodeURIComponent(label)}`}
+                              href={`/utbildning?flik=begrepp`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="rounded-full border border-border px-3 py-1.5 text-[0.75rem] font-medium transition-all hover:bg-secondary"
@@ -653,7 +653,7 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                     </p>
                     <div className="mt-3 flex flex-wrap gap-3">
                       <Link
-                        href="/akademin"
+                        href="/utbildning?flik=akademin"
                         onClick={onComplete}
                         className="rounded-full bg-primary px-5 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-primary-foreground transition-all duration-150 active:scale-[0.98]"
                         style={{
@@ -673,7 +673,7 @@ export function GuideQuiz({ onComplete, onClose, assistants = [] }: QuizProps) {
                         Utforska assistenter
                       </a>
                       <a
-                        href="/kunskapsbank"
+                        href="/utbildning?flik=begrepp"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="rounded-full border border-border px-5 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.01em] transition-all hover:bg-secondary"

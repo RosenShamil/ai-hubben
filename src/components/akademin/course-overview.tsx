@@ -56,7 +56,7 @@ export function CourseOverview({ courseId }: { courseId: string }) {
     return (
       <div className="mx-auto max-w-[68.75rem] px-6 pt-20">
         <p className="text-muted-foreground">Kursen hittades inte.</p>
-        <Link href="/akademin" className="mt-4 inline-block text-[0.875rem] text-foreground underline">
+        <Link href="/utbildning?flik=akademin" className="mt-4 inline-block text-[0.875rem] text-foreground underline">
           ← Tillbaka till akademin
         </Link>
       </div>
@@ -105,7 +105,7 @@ export function CourseOverview({ courseId }: { courseId: string }) {
       <section className="mx-auto max-w-[68.75rem] px-6 pt-20 pb-8 md:pt-28">
         <FadeIn>
           <Link
-            href="/akademin"
+            href="/utbildning?flik=akademin"
             className="mb-6 inline-flex items-center gap-1 text-[0.8125rem] text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft size={14} />

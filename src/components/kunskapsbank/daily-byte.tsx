@@ -37,7 +37,7 @@ export function DailyByteTeaser() {
 
   return (
     <Link
-      href="/kunskapsbank"
+      href="/utbildning?flik=begrepp"
       className="group flex items-center gap-4 rounded-lg border border-border bg-card p-4 transition-all hover:bg-secondary hover:shadow-lg"
     >
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-secondary">
@@ -48,7 +48,7 @@ export function DailyByteTeaser() {
           className="text-[0.5625rem] font-medium uppercase tracking-[0.12em] text-muted-foreground"
           style={{ fontFamily: "var(--font-geist-mono), monospace" }}
         >
-          Dagens AI-byte
+          Dagens begrepp
         </p>
         <p className="mt-0.5 truncate text-[0.875rem] font-medium">
           {concept.title}
@@ -94,7 +94,7 @@ export function DailyByteCard({
             className="text-[0.625rem] font-medium uppercase tracking-[0.12em] text-muted-foreground"
             style={{ fontFamily: "var(--font-geist-mono), monospace" }}
           >
-            Dagens AI-byte
+            Dagens begrepp
           </p>
         </div>
         {streak > 1 && (

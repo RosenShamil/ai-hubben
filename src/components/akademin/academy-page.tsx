@@ -94,7 +94,7 @@ function isLevelUnlocked(
 // Component
 // ---------------------------------------------------------------------------
 
-export function AcademyPage() {
+export function AcademyPage({ embedded = false }: { embedded?: boolean }) {
   const [progress, setProgress] = useState<EducationProgress | null>(null);
   const [examLevelId, setExamLevelId] = useState<string | null>(null);
   const [certLevelId, setCertLevelId] = useState<string | null>(null);
@@ -158,29 +158,33 @@ export function AcademyPage() {
       <XPToastContainer />
       <BadgeNotificationContainer />
       {/* Hero */}
-      <section className="mx-auto max-w-[68.75rem] px-6 pt-20 pb-12 md:pt-28 md:pb-16">
-        <FadeIn>
-          <p
-            className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
-            style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-          >
-            AI-utbildning för kommunanställda
-          </p>
-          <h1
-            className="mt-4 text-[1.75rem] leading-[1.1] tracking-[-0.04em] sm:text-[2.75rem] md:text-[4.5rem]"
-            style={{ fontFamily: "var(--font-bodoni), serif", fontWeight: 400 }}
-          >
-            AI-akademin
-          </h1>
-          <p className="mt-6 max-w-[42rem] text-[1.0625rem] leading-[1.7] text-foreground">
-            Lär dig AI från grunden till avancerad nivå. Tre certifieringsnivåer med
-            engagerande lektioner, quiz och verkliga exempel från kommunen.
-          </p>
-        </FadeIn>
+      {!embedded && (
+        <section className="mx-auto max-w-[68.75rem] px-6 pt-20 pb-12 md:pt-28 md:pb-16">
+          <FadeIn>
+            <p
+              className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+            >
+              AI-utbildning för kommunanställda
+            </p>
+            <h1
+              className="mt-4 text-[1.75rem] leading-[1.1] tracking-[-0.04em] sm:text-[2.75rem] md:text-[4.5rem]"
+              style={{ fontFamily: "var(--font-bodoni), serif", fontWeight: 400 }}
+            >
+              AI-akademin
+            </h1>
+            <p className="mt-6 max-w-[42rem] text-[1.0625rem] leading-[1.7] text-foreground">
+              Lär dig AI från grunden till avancerad nivå. Tre certifieringsnivåer med
+              engagerande lektioner, quiz och verkliga exempel från kommunen.
+            </p>
+          </FadeIn>
+        </section>
+      )}
 
-        {/* XP & Stats bar */}
+      {/* XP & Stats bar */}
+      <section className={embedded ? "" : "mx-auto max-w-[68.75rem] px-6 pb-12"}>
         <FadeIn delay={0.1}>
-          <div className="mt-8 flex flex-wrap items-center gap-6 rounded-xl border border-border bg-card p-5">
+          <div className="flex flex-wrap items-center gap-6 rounded-xl border border-border bg-card p-5">
             {/* XP Level */}
             <div className="flex items-center gap-3">
               <motion.div
@@ -237,7 +241,7 @@ export function AcademyPage() {
             {/* Continue button */}
             {continueTarget && (
               <Link
-                href={`/akademin/${continueTarget.courseId}?modul=${continueTarget.moduleId}&lektion=${continueTarget.lessonId}`}
+                href={`/utbildning/akademin/${continueTarget.courseId}?modul=${continueTarget.moduleId}&lektion=${continueTarget.lessonId}`}
                 className="ml-auto flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.01em] text-primary-foreground transition-all duration-150 active:scale-[0.98]"
                 style={{
                   fontFamily: "var(--font-geist-mono), monospace",
@@ -253,9 +257,11 @@ export function AcademyPage() {
       </section>
 
       {/* Gradient divider */}
-      <div className="mx-auto max-w-[68.75rem] px-6">
-        <div className="h-px" style={{ background: BRAND_GRADIENT }} />
-      </div>
+      {!embedded && (
+        <div className="mx-auto max-w-[68.75rem] px-6">
+          <div className="h-px" style={{ background: BRAND_GRADIENT }} />
+        </div>
+      )}
 
       {/* Levels */}
       <section className="mx-auto max-w-[68.75rem] px-6 py-12">
@@ -380,7 +386,7 @@ export function AcademyPage() {
                               return (
                                 <Link
                                   key={course.id}
-                                  href={`/akademin/${course.id}`}
+                                  href={`/utbildning/akademin/${course.id}`}
                                   className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-[0.8125rem] transition-all hover:shadow-md ${
                                     isDone
                                       ? "border-emerald-500/20 bg-emerald-500/[0.05]"
@@ -431,7 +437,7 @@ export function AcademyPage() {
                       {/* Arrow / CTA */}
                       {unlocked && (
                         <Link
-                          href={`/akademin/${getCoursesByLevel(level.id)[0]?.id}`}
+                          href={`/utbildning/akademin/${getCoursesByLevel(level.id)[0]?.id}`}
                           className="hidden shrink-0 self-center sm:block"
                         >
                           <ChevronRight
@@ -460,7 +466,7 @@ export function AcademyPage() {
                         return (
                           <div className="mt-4 flex items-center gap-3">
                             <Link
-                              href="/akademin/certifikat"
+                              href="/utbildning/akademin/certifikat"
                               className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.05] px-4 py-2.5 text-[0.8125rem] font-medium text-emerald-500 transition-all hover:bg-emerald-500/10"
                             >
                               <Award size={16} />

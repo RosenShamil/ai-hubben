@@ -23,9 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/assistenter`, changeFrequency: "daily", priority: 0.9 },
     { url: `${BASE_URL}/statistik`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE_URL}/utbildning`, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${BASE_URL}/kunskapsbank`, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/akademin`, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/akademin/certifikat`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/utbildning/akademin/certifikat`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/dokumentation`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/nyheter`, changeFrequency: "daily", priority: 0.7 },
     { url: `${BASE_URL}/faq`, changeFrequency: "monthly", priority: 0.6 },
@@ -34,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const coursePages: MetadataRoute.Sitemap = COURSES.map((course) => ({
-    url: `${BASE_URL}/akademin/${course.id}`,
+    url: `${BASE_URL}/utbildning/akademin/${course.id}`,
     changeFrequency: "monthly" as const,
     priority: 0.6,
   }));

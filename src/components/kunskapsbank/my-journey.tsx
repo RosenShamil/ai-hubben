@@ -639,7 +639,7 @@ export function MyJourney() {
                   : `Du har klarat ${eduProgress.completedLessons.length} lektioner och ${eduProgress.certificates.length} certifikat. Fortsätt din resa!`}
               </p>
               <a
-                href="/akademin"
+                href="/utbildning?flik=akademin"
                 className="mt-4 inline-flex items-center gap-2 rounded-lg bg-foreground px-5 py-2.5 text-[0.8125rem] font-medium text-background transition-all hover:bg-foreground/90"
               >
                 <LucideIcons.GraduationCap size={14} />

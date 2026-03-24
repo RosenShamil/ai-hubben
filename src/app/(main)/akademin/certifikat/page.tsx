@@ -1,5 +1,5 @@
-import { CertificateGallery } from "@/components/akademin/certificate-viewer";
+import { redirect } from "next/navigation";
 
 export default function CertifikatPage() {
-  return <CertificateGallery />;
+  redirect("/utbildning/akademin/certifikat");
 }
