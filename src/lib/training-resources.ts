@@ -5,6 +5,8 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+export type SessionStatus = "open" | "closed" | "full" | "completed";
+
 export interface TrainingSession {
   id: string;
   date: string;
@@ -16,6 +18,7 @@ export interface TrainingSession {
   time: string | null;
   location: string | null;
   max_participants: number;
+  status: SessionStatus;
   created_at: string;
 }
 

@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { Plus, Pencil, Trash2, X, Check, Users, Loader2 } from "lucide-react";
 
+type SessionStatus = "open" | "closed" | "full" | "completed";
+
 interface TrainingSession {
   id: string;
   date: string;
@@ -15,8 +17,23 @@ interface TrainingSession {
   time: string | null;
   location: string | null;
   max_participants: number;
+  status: SessionStatus;
   created_at: string;
 }
+
+const STATUS_LABELS: Record<SessionStatus, string> = {
+  open: "Öppen",
+  closed: "Stängd",
+  full: "Fullbokad",
+  completed: "Genomförd",
+};
+
+const STATUS_STYLES: Record<SessionStatus, string> = {
+  open: "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300",
+  closed: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
+  full: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300",
+  completed: "bg-secondary text-muted-foreground",
+};
 
 interface TrainingRegistration {
   id: string;
@@ -57,6 +74,7 @@ const emptyForm = {
   time: "",
   location: "",
   max_participants: 30,
+  status: "open" as SessionStatus,
 };
 
 export default function AdminUtbildningPage() {
@@ -142,6 +160,7 @@ export default function AdminUtbildningPage() {
       time: session.time ?? "",
       location: session.location ?? "",
       max_participants: session.max_participants ?? 30,
+      status: session.status ?? "open",
     });
     setEditingId(session.id);
     setModalOpen(true);
@@ -161,6 +180,7 @@ export default function AdminUtbildningPage() {
       time: form.time || null,
       location: form.location || null,
       max_participants: form.max_participants,
+      status: form.status,
     };
 
     if (editingId) {
@@ -317,6 +337,7 @@ export default function AdminUtbildningPage() {
                 "Datum",
                 "Tid",
                 "Typ",
+                "Status",
                 "Forvaltning",
                 "Plats",
                 "Anmalda",
@@ -340,7 +361,7 @@ export default function AdminUtbildningPage() {
             {loading ? (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={9}
                   className="px-4 py-8 text-center text-muted-foreground"
                 >
                   Laddar...
@@ -349,7 +370,7 @@ export default function AdminUtbildningPage() {
             ) : sessions.length === 0 ? (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={9}
                   className="px-4 py-8 text-center text-muted-foreground"
                 >
                   Inga utbildningstillfallen registrerade
@@ -358,24 +379,15 @@ export default function AdminUtbildningPage() {
             ) : (
               sessions.map((s, i) => {
                 const regCount = registrationCounts[s.id] ?? 0;
-                const isPast = s.date < new Date().toISOString().slice(0, 10);
                 return (
                   <tr
                     key={s.id}
                     className={`border-b border-border last:border-0 transition-colors hover:bg-secondary/50 ${
-                      isPast ? "opacity-50" : i % 2 === 0 ? "" : "bg-secondary/20"
+                      s.status === "completed" ? "opacity-50" : i % 2 === 0 ? "" : "bg-secondary/20"
                     }`}
                   >
                     <td className="whitespace-nowrap px-4 py-3">
                       <span>{s.date}</span>
-                      {isPast && (
-                        <span
-                          className="ml-2 text-[0.5625rem] uppercase tracking-wide text-muted-foreground"
-                          style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-                        >
-                          Passerad
-                        </span>
-                      )}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                       {s.time || "—"}
@@ -389,6 +401,13 @@ export default function AdminUtbildningPage() {
                         }`}
                       >
                         {s.type === "workshop" ? "Workshop" : "Individuell"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-block rounded-full px-2 py-0.5 text-[0.6875rem] font-medium ${STATUS_STYLES[s.status ?? "open"]}`}
+                      >
+                        {STATUS_LABELS[s.status ?? "open"]}
                       </span>
                     </td>
                     <td className="px-4 py-3">{s.department}</td>
@@ -524,6 +543,26 @@ export default function AdminUtbildningPage() {
                     <option value="individual">Individuell</option>
                   </select>
                 </div>
+              </div>
+
+              <div>
+                <label
+                  className="mb-1.5 block text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
+                  style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                >
+                  Status *
+                </label>
+                <select
+                  required
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value as SessionStatus })}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-[0.875rem] outline-none focus:border-foreground"
+                >
+                  <option value="open">Öppen för anmälan</option>
+                  <option value="closed">Stängd för anmälan</option>
+                  <option value="full">Fullbokad</option>
+                  <option value="completed">Genomförd</option>
+                </select>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">

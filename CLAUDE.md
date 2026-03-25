@@ -15,27 +15,24 @@ pnpm build        # Production build (webpack — turbopack is dev-only)
 pnpm lint         # ESLint
 ```
 
-No test framework is configured. Build uses `next build --webpack` because Serwist service worker requires webpack.
+No test framework is configured. Build uses webpack because Serwist service worker requires it — `pnpm dev` uses Turbopack, so dev/prod rendering can diverge. Always verify with `pnpm build` before deploying.
 
 **Required env vars** (in `.env.local`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
 
-**Path alias:** `@/*` → `./src/*` (configured in tsconfig.json)
+**Path alias:** `@/*` -> `./src/*` (configured in tsconfig.json)
 
 ## Tech Stack
 
-- **Next.js 16** (App Router) + TypeScript
-- **Tailwind CSS v4** (PostCSS plugin, no tailwind.config — all config in CSS)
+- **Next.js 16** (App Router) + TypeScript + **pnpm**
+- **Tailwind CSS v4** via PostCSS plugin — **no `tailwind.config` file**. All theme config lives in `src/app/globals.css` using `@theme inline` blocks and CSS custom properties. To add colors, spacing, or fonts, edit `globals.css`, not a config file.
 - **Aceternity UI** (copy-paste components in `src/components/ui/`) + **shadcn/ui**
-- **Framer Motion** for animations + swipe gestures
-- **Supabase** (PostgreSQL + Auth + Storage) — client-side only, no server actions
+- **Framer Motion** for animations + swipe gestures; **GSAP** for scroll-triggered animations
+- **Supabase** (PostgreSQL + Auth + Storage) — client-side SDK + one server action for cache revalidation
 - **Serwist** for PWA/service worker (disabled in dev, active in production)
 - **Recharts** for statistics charts
-- **GSAP** for scroll-triggered and timeline animations
 - **React Hook Form** + **Zod** for form validation (auth + admin pages)
-- **Lucide React** for icons
-- **next-themes** for light/dark mode toggle
-- **Umami Cloud** for analytics (privacy-friendly, cookie-free)
-- **pnpm** as package manager
+- **Lucide React** for icons; **next-themes** for light/dark mode
+- **Umami Cloud** for privacy-friendly analytics
 
 ## Architecture
 
@@ -44,150 +41,93 @@ No test framework is configured. Build uses `next build --webpack` because Serwi
 Two layout groups under `src/app/`:
 
 - **`(main)/`** — Public pages: `/`, `/assistenter`, `/assistenter/[id]`, `/statistik`, `/utbildning` (tabbed: utbildning/akademin/begrepp), `/utbildning/akademin/[courseId]`, `/utbildning/akademin/certifikat`, `/dokumentation`, `/nyheter`, `/nyheter/[slug]`, `/faq`, `/om`, `/kontakt`, `/logga-in`, `/registrera`, `/profil`
-- **`(admin)/admin/`** — Protected admin CRUD: `/admin/startsida`, `/admin/nyheter`, `/admin/statistik`, `/admin/akademin`, `/admin/assistenter`, `/admin/utbildning`, `/admin/dokument`, `/admin/faq`, `/admin/team`, `/admin/innehall`, `/admin/meddelanden`, `/admin/kontakt`, `/admin/resurser`, `/admin/login`
+- **`(admin)/admin/`** — Protected admin CRUD: `/admin/startsida`, `/admin/nyheter`, `/admin/statistik`, `/admin/akademin`, `/admin/assistenter`, `/admin/utbildning`, `/admin/dokument`, `/admin/faq`, `/admin/team`, `/admin/innehall`, `/admin/meddelanden`, `/admin/kontakt`, `/admin/resurser`, `/admin/login`, `/admin/anvandare`
 
-**Redirects:** `/akademin` → `/utbildning?flik=akademin`, `/kunskapsbank` → `/utbildning?flik=begrepp` (legacy URLs preserved)
-
-### SEO
-
-- `src/app/sitemap.ts` — Dynamic sitemap at `/sitemap.xml` (static pages + courses + posts + assistants, revalidated hourly)
-- `src/app/robots.ts` — Robots.txt blocking `/admin/`, `/profil`, `/logga-in`, `/registrera`, `/~offline`
-- Dynamic `generateMetadata()` on `/nyheter/[slug]` and `/assistenter/[id]`
+**Redirects:** `/akademin` -> `/utbildning?flik=akademin`, `/kunskapsbank` -> `/utbildning?flik=begrepp`
 
 ### Data Flow
 
-- **One API route:** `/nyheter/rss.xml` generates an RSS 2.0 feed from published posts.
-- All other data access goes directly through the Supabase client SDK.
 - **No global state library.** Server components fetch on render; client components use `useState` + `useEffect` with direct Supabase calls.
 - **No React Query/SWR.** Manual fetch + refetch patterns.
-- Public pages use server components with `revalidate` for caching.
-- Admin pages are all client components (`"use client"`) with local state.
-- Statistics are managed manually via admin panel (`stats_data` table), not fetched live from Intric API.
-- Assistants come from two sources merged: Intric Marketplace API (live, 5 min ISR) + Supabase `assistants` table (community submissions).
-
-### Supabase Tables
-
-`profiles`, `user_progress`, `user_favorites`, `admins`, `assistants`, `featured_assistants`, `posts`, `faqs`, `documents`, `team_members`, `contact_messages`, `contact_entries`, `training_resources`, `training_sessions`, `training_registrations`, `site_content`, `stats_data`, `education_events`
-
-### Key Files
-
-Core infrastructure:
-- `src/lib/supabase.ts` — Supabase client init (public anon key)
-- `src/lib/supabase-auth.ts` — Auth helpers: `signIn`, `signUp`, `signOut`, `isCurrentUserAdmin`, `getUserProfile`, `updateUserProfile`, `changePassword`, `resetPassword`
-- `src/lib/auth-validation.ts` — Zod schemas for login, register, profile, password change forms
-- `src/lib/constants.ts` — Navigation links, mobile tabs, footer links, brand gradient
-- `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
-- `src/hooks/use-swipe-navigation.ts` — Reusable Framer Motion swipe gesture hook
-- `src/sw.ts` — Serwist service worker config
-- `src/app/manifest.ts` — PWA web app manifest
-
-Data and progress (files in `src/lib/` follow `{feature}-{concern}.ts` naming):
-- `progress-sync.ts` — Syncs localStorage progress with Supabase `user_progress` table on login
-- `favorites.ts` — CRUD for user favorites in Supabase `user_favorites` table
-- `intric.ts` — Fetches AI assistants from Intric Marketplace API (`marketplace.intric.ai`) + Supabase
-- `assistant-chat-links.ts` — Per-assistant Intric public chat URLs (defaults + Supabase override)
-- `stats-data.ts` — Statistics data with hardcoded defaults + Supabase `stats_data` fallback
-- `training-data.ts` — Training session aggregation from Supabase
-- `posts.ts` — News/blog post fetching from Supabase
-- `knowledge-bank.ts` / `knowledge-progress.ts` — 222 concepts, quiz, learning paths + localStorage progress
-- `education-data.ts` / `education-data-niva2.ts` / `education-data-niva3.ts` — All course/lesson/quiz data (96 lessons across 3 levels)
-- `education-progress.ts` / `education-system.ts` / `education-analytics.ts` — Academy progress, XP/badges, admin analytics
-- `certificate-generator.ts` — Canvas-based certificate rendering (PNG) for all 3 levels
-- `badge-checker.ts` — Auto-check and award 13+ badges (common→legendary)
-- `ai-guide-data.ts` / `ai-guide-profile.ts` — Onboarding quiz (7 departments, 7 roles, 30 use cases) + localStorage profile
-- `explainers-data.ts` / `explainers-data-2.ts` / `explainers-data-3.ts` — 225 animated explainers
-- `fun-facts.ts` / `daily-byte.ts` — 222 fun facts, daily concept picker
+- Public pages use server components with `revalidate` for ISR caching.
+- Admin pages are all `"use client"` with local state.
+- Assistants merge two sources: Intric Marketplace API (live, 5 min ISR) + Supabase `assistants` table (community submissions).
+- Statistics are admin-managed via `stats_data` table (Intric API has no stats endpoints). Admin saves auto-calculate "Totalt" and "Årsjämförelse" from 2025+2026 data, and trigger `revalidatePath("/statistik")` via server action (`src/app/actions.ts`).
+- Training sessions use `status` field (`open`/`closed`/`full`/`completed`) to control registration availability on the public page.
+- **One API route:** `/nyheter/rss.xml` for RSS feed. All other data goes through Supabase client SDK.
 
 ### Auth Model
 
 Client-side only via `AuthProvider` context (`src/components/shared/auth-provider.tsx`):
-- **Public users** register at `/registrera` (email verification required) and log in at `/logga-in`
-- **Admin users** are determined by the `admins` table — no self-registration as admin
 - `AuthProvider` wraps the `(main)` layout, providing `useAuth()` hook with `{ user, profile, isAdmin, loading, signOut, refreshProfile }`
-- Admin layout checks `isCurrentUserAdmin()` on mount and redirects to `/logga-in` if unauthenticated
-- Progress (education, knowledge, AI guide) syncs between localStorage and Supabase `user_progress` table on login
-- No middleware — all auth is in layout components and the AuthProvider context
+- Admin users determined by `admins` table — no self-registration as admin
+- Admin layout checks `isCurrentUserAdmin()` on mount and redirects if unauthenticated
+- No middleware — all auth is in layout components and AuthProvider context
+- Progress (education, knowledge) syncs between localStorage and Supabase `user_progress` on login
+
+### Key Infrastructure Files
+
+- `src/lib/supabase.ts` — Supabase client init
+- `src/lib/supabase-auth.ts` — Auth helpers (signIn, signUp, signOut, isCurrentUserAdmin, etc.)
+- `src/lib/constants.ts` — Navigation links, mobile tabs, footer links, brand gradient
+- `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
+- `src/app/actions.ts` — Server actions (revalidateStats for ISR cache invalidation)
+- `src/hooks/use-swipe-navigation.ts` — Reusable Framer Motion swipe gesture hook
+- `src/sw.ts` — Serwist service worker config
+- `src/app/manifest.ts` — PWA web app manifest
+
+Data files in `src/lib/` follow `{feature}-{concern}.ts` naming (e.g., `education-data.ts`, `education-progress.ts`, `knowledge-bank.ts`).
+
+### Supabase Tables
+
+`profiles`, `user_progress`, `user_favorites`, `admins`, `assistants`, `featured_assistants`, `assistant_overrides`, `posts`, `faqs`, `documents`, `team_members`, `contact_messages`, `contact_entries`, `training_resources`, `training_sessions` (has `status` column: open/closed/full/completed), `training_registrations`, `site_content`, `stats_data`, `education_events`
 
 ### Styling
 
-- Tailwind v4 with CSS custom properties for theming (light default, dark toggle)
-- Fonts: **Bodoni Moda** (headings), **General Sans** (body), **Geist Mono** (labels/uppercase)
-- Brand rainbow gradient defined in `constants.ts` (`BRAND_GRADIENT`)
-- Component variants via shadcn's `cva` pattern in `src/components/ui/button.tsx`
+- Tailwind v4 with CSS custom properties in `globals.css` (light default, dark toggle via `@custom-variant dark`)
+- Fonts: **Bodoni Moda** (headings via `--font-heading`), **General Sans** (body via `--font-sans`), **Geist Mono** (labels via `--font-mono`)
+- Brand rainbow gradient in `constants.ts` (`BRAND_GRADIENT`)
+- shadcn `cva` pattern for component variants
 
-### Shared Components
+### Component Organization
 
-- `src/components/shared/` — Navbar, Footer, BottomTabBar, ChatWidget (Intric iframe), ThemeProvider, AuthProvider, CountUp, FadeIn, PullToRefresh, SearchModal (Ctrl+K), SubmitAssistantModal
-- `src/components/ai-guide/` — "Starta din AI-resa" interactive onboarding quiz on homepage
-- `src/components/ui/` — shadcn + Aceternity animated components (spotlight, moving-border, etc.)
-- Feature components live alongside their pages in `src/components/{feature}/`
-- `src/components/kunskapsbank/` — Knowledge bank: concept cards, search, filters, storyboard lessons (swipe), quiz (swipe), scenarios, animated explainers, daily byte, my-journey
-- `src/components/akademin/` — AI Academy: academy-page, course-overview, lesson-player (swipe), module-quiz, final-exam, certificate-viewer, xp-toast, badge-notification
+- `src/components/shared/` — Navbar, Footer, BottomTabBar, ChatWidget, ThemeProvider, AuthProvider, SearchModal, etc.
+- `src/components/ui/` — shadcn + Aceternity animated components
+- `src/components/{feature}/` — Feature-specific components (akademin, kunskapsbank, ai-guide, etc.)
 
-### Mobile UX
+### SEO
 
-- Bottom tab bar (5 tabs: Hem, Assistenter, Statistik, Utbildning, Mer)
-- Pull-to-refresh on public + admin pages
-- Swipe gestures (left/right) on lesson player, storyboard lessons, and quiz player via `useSwipeNavigation` hook
-- Floating chat widget (Intric iframe) positioned above bottom tab bar
-- `touchAction: "pan-y"` on swipeable areas to allow vertical scroll while capturing horizontal swipe
+- `src/app/sitemap.ts` — Dynamic sitemap (static pages + courses + posts + assistants)
+- `src/app/robots.ts` — Blocks `/admin/`, `/profil`, `/logga-in`, `/registrera`
+- Dynamic `generateMetadata()` on `/nyheter/[slug]` and `/assistenter/[id]`
 
 ## Conventions
 
 - **Swedish** for UI text and routes (`/assistenter`, `/statistik`, `/utbildning`)
 - **English** for code (variable names, component names, commit messages)
-- Design goal: Speakeasy-inspired — premium, sophisticated, not generic AI/Tailwind-look
-- Mobile-first, PWA with app-like feel (bottom tab bar, smooth transitions)
+- Design goal: **Speakeasy-inspired** — premium, sophisticated, not generic AI/Tailwind-look
+- Mobile-first PWA with app-like feel (bottom tab bar, swipe gestures, pull-to-refresh)
 - Max 2-3 heavy animations per page
-- WCAG 2.1 AA accessibility (focus-visible, aria-labels, prefers-reduced-motion, skip link)
-- Workflow: explain → approve → implement → test → push
+- WCAG 2.1 AA accessibility (focus-visible, aria-labels, prefers-reduced-motion)
+- Workflow: explain -> approve -> implement -> test -> push
 
-## Project Status
+## Design Decisions (Intentional)
 
-### Fully Implemented (~97%)
-- All 18 public pages + 16 admin pages (including `/admin/anvandare`)
-- Auth system (registration, login, profile with job title display, password change, admin check)
-- AI-akademin: 3 certification levels, 96 lessons, quizzes with randomized answers, final exams, certificates, XP, 13+ badges
-- Kunskapsbank: 222 concepts, 12 categories, 225 explainers, 222 fun facts, 6 learning paths, quizzes, scenarios, daily byte, my-journey
-- AI-resa onboarding quiz (7 departments, 7 roles, personalized recommendations)
-- Assistants library: 40+ Swedish assistants from Intric Marketplace + community uploads, split into "Katrineholms kommun" and "Övriga Sverige" sections
-- Assistant overrides: admin can add extra description, chat URL, prompt, instructions, and hide/show marketplace assistants via `assistant_overrides` table
-- Statistics dashboard (admin-managed data, not live API)
-- News/blog with RSS feed, article import (URL/file/paste), improved article rendering with visual hierarchy and clickable links/emails
-- Global search modal (Ctrl+K, searches 8 data sources)
-- Progress sync (localStorage ↔ Supabase on login)
-- Favorites system (assistants, courses, lessons)
-- Chat widget (embedded Intric iframe on all pages + per-assistant chat links)
-- PWA (Serwist, offline fallback, installable)
-- Training management with registration flow and capacity checks
-- Full admin CMS with live dashboard, breadcrumb navigation, logically grouped sidebar, per-page content editing, counters, live links, search on large lists
-- Admin users page (`/admin/anvandare`) with expandable progress panels per user
-- SEO (sitemap.xml, robots.txt, dynamic metadata)
-- Swipe gestures on lesson player, storyboard, quiz
-- Travel-flash hover effect on AI profile card, CTA, and certificate cards
-- All public pages revalidate within 60 seconds of admin changes
-- iKAI knowledge base and system prompt prepared for AI-hubben support (93% test pass rate)
+- Statistics are admin-managed (not live API) — Intric has no stats endpoints
+- News uses custom markdown parser (not MDX) — supports bold, headings, lists, links, emails
+- Search uses `ilike` substring matching — sufficient for current data volume
+- Community assistant uploads go live immediately (no moderation queue)
 
-### Not Implemented
-- **`/projekt` — Project/case showcase page** (5 projects described in masterplan). No route, components, data, or admin page exists.
-- **Domain migration** — `kommunai.se` registered but not configured. See `docs/roadmap-todo.md` section 1.6.
-- **LMS / custom courses** — Concept designed (see `docs/roadmap-todo.md` section 2) but not built.
+## Not Yet Implemented
 
-### Design Decisions (Intentional Simplifications)
-- Statistics are admin-managed (not live Intric API) — Intric Marketplace API has no stats endpoints
-- News content uses custom markdown parser (not MDX) — supports bold, headings, lists, links, emails
-- Search uses `ilike` substring matching (not Supabase full-text search) — works well for current data volume
-- No skeleton loading states — pages load fast enough with spinners
-- Community assistant uploads go live immediately (no `status` field / moderation queue)
+- **`/projekt`** — Project/case showcase page (described in masterplan but no code exists)
+- **Domain migration** — `kommunai.se` registered but not configured (see `docs/roadmap-todo.md`)
+- **LMS / custom courses** — Concept designed but not built (see `docs/roadmap-todo.md`)
 
 ## Documentation
 
-- `docs/aihubben-masterplan.md` — Detailed design brief, database schema overview, and feature roadmap
-- `docs/design-system.md` — Full design system: color tokens, typography scales, spacing, component patterns
-- `docs/roadmap-todo.md` — Complete roadmap: LMS concept, multi-kommun vision, business model, iKAI fixes, domain migration, prioritized phases
-- `docs/regelverk-och-compliance.md` — Regulatory compliance report (GDPR, DOS-lagen, NIS2, EU AI Act)
-- `docs/ikai-aihubben-kunskap.md` — iKAI knowledge base document for AI-hubben (upload to Intric)
-- `docs/ikai-aihubben-tillaggsprompt.md` — iKAI system prompt addition for AI-hubben
-- `docs/ikai-testlista.md` — iKAI test checklist (35 questions, 93% pass rate achieved)
-- `docs/ikai-kunskap-aihubben.md` — Knowledge bank content reference
-- `docs/ecc-kommandon.md` — ECC commands reference
+- `docs/aihubben-masterplan.md` — Design brief, database schema, feature roadmap
+- `docs/design-system.md` — Color tokens, typography scales, spacing, component patterns
+- `docs/roadmap-todo.md` — LMS concept, multi-kommun vision, business model, prioritized phases
+- `docs/regelverk-och-compliance.md` — GDPR, DOS-lagen, NIS2, EU AI Act compliance report
+- `docs/ikai-*.md` — iKAI knowledge base, system prompt, and test checklist

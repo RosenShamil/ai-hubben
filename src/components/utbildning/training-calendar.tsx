@@ -14,7 +14,21 @@ import {
 } from "lucide-react";
 import { FadeIn } from "@/components/shared/fade-in";
 import { supabase } from "@/lib/supabase";
-import type { TrainingSession } from "@/lib/training-resources";
+import type { TrainingSession, SessionStatus } from "@/lib/training-resources";
+
+const STATUS_LABELS: Record<SessionStatus, string> = {
+  open: "Öppen",
+  closed: "Stängd",
+  full: "Fullbokad",
+  completed: "Genomförd",
+};
+
+const STATUS_STYLES: Record<SessionStatus, string> = {
+  open: "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300",
+  closed: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
+  full: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300",
+  completed: "bg-secondary text-muted-foreground",
+};
 
 const SWEDISH_MONTHS = [
   "januari",
@@ -361,9 +375,15 @@ export function TrainingCalendar({
                       <span
                         key={s.id}
                         className={`h-1.5 w-1.5 rounded-full ${
-                          s.type === "workshop"
-                            ? "bg-blue-500"
-                            : "bg-purple-500"
+                          s.status === "completed"
+                            ? "bg-muted-foreground/40"
+                            : s.status === "full"
+                              ? "bg-red-500"
+                              : s.status === "closed"
+                                ? "bg-amber-500"
+                                : s.type === "workshop"
+                                  ? "bg-blue-500"
+                                  : "bg-purple-500"
                         }`}
                       />
                     ))}
@@ -375,23 +395,29 @@ export function TrainingCalendar({
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-5 border-t border-border px-5 py-3">
+        <div className="flex flex-wrap items-center gap-4 border-t border-border px-5 py-3">
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-blue-500" />
-            <span
-              className="text-[0.6875rem] text-muted-foreground"
-              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-            >
-              Workshop
+            <span className="text-[0.6875rem] text-muted-foreground" style={{ fontFamily: "var(--font-geist-mono), monospace" }}>
+              Öppen
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-purple-500" />
-            <span
-              className="text-[0.6875rem] text-muted-foreground"
-              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-            >
-              Individuell
+            <span className="h-2 w-2 rounded-full bg-red-500" />
+            <span className="text-[0.6875rem] text-muted-foreground" style={{ fontFamily: "var(--font-geist-mono), monospace" }}>
+              Fullbokad
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-amber-500" />
+            <span className="text-[0.6875rem] text-muted-foreground" style={{ fontFamily: "var(--font-geist-mono), monospace" }}>
+              Stängd
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-muted-foreground/40" />
+            <span className="text-[0.6875rem] text-muted-foreground" style={{ fontFamily: "var(--font-geist-mono), monospace" }}>
+              Genomförd
             </span>
           </div>
         </div>
@@ -460,18 +486,12 @@ export function TrainingCalendar({
                           </div>
                         </div>
                         <span
-                          className={`shrink-0 text-[0.75rem] font-medium ${
-                            spotsLeft <= 0
-                              ? "text-red-600 dark:text-red-400"
-                              : "text-muted-foreground"
-                          }`}
+                          className={`shrink-0 rounded-full px-2 py-0.5 text-[0.6875rem] font-medium ${STATUS_STYLES[s.status ?? "open"]}`}
                           style={{
                             fontFamily: "var(--font-geist-mono), monospace",
                           }}
                         >
-                          {spotsLeft <= 0
-                            ? "Fullbokat"
-                            : `${spotsLeft} platser`}
+                          {STATUS_LABELS[s.status ?? "open"]}
                         </span>
                       </div>
                     </button>
@@ -514,6 +534,11 @@ export function TrainingCalendar({
                       {selectedSession.type === "workshop"
                         ? "Workshop"
                         : "Individuell"}
+                    </span>
+                    <span
+                      className={`inline-block rounded-full px-2.5 py-0.5 text-[0.6875rem] font-medium ${STATUS_STYLES[selectedSession.status ?? "open"]}`}
+                    >
+                      {STATUS_LABELS[selectedSession.status ?? "open"]}
                     </span>
                   </div>
 
@@ -559,7 +584,51 @@ export function TrainingCalendar({
                     const spotsLeft =
                       selectedSession.max_participants - count;
                     const isFull = spotsLeft <= 0;
+                    const status = selectedSession.status ?? "open";
 
+                    // Non-open statuses: show info instead of registration
+                    if (status === "completed") {
+                      return (
+                        <div className="rounded-lg border border-border bg-secondary/50 p-4 text-center">
+                          <p className="text-[0.875rem] font-medium text-muted-foreground">
+                            Genomförd utbildning
+                          </p>
+                          <p className="mt-1 text-[0.8125rem] text-muted-foreground/70">
+                            {selectedSession.participants > 0
+                              ? `${selectedSession.participants} deltagare`
+                              : ""}
+                          </p>
+                        </div>
+                      );
+                    }
+
+                    if (status === "full") {
+                      return (
+                        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-center dark:border-red-900 dark:bg-red-950">
+                          <p className="text-[0.875rem] font-medium text-red-700 dark:text-red-300">
+                            Fullbokad
+                          </p>
+                          <p className="mt-1 text-[0.8125rem] text-red-600 dark:text-red-400">
+                            Det finns inga lediga platser kvar.
+                          </p>
+                        </div>
+                      );
+                    }
+
+                    if (status === "closed") {
+                      return (
+                        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-center dark:border-amber-900 dark:bg-amber-950">
+                          <p className="text-[0.875rem] font-medium text-amber-700 dark:text-amber-300">
+                            Anmälan stängd
+                          </p>
+                          <p className="mt-1 text-[0.8125rem] text-amber-600 dark:text-amber-400">
+                            Anmälan till detta tillfälle är inte längre öppen.
+                          </p>
+                        </div>
+                      );
+                    }
+
+                    // status === "open" — show registration
                     if (regSuccess) {
                       return (
                         <div className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950">

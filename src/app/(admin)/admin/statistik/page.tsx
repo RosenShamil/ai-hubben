@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { Check, Loader2, Plus, Trash2, ExternalLink } from "lucide-react";
+import { revalidateStats } from "@/app/actions";
+import { Check, Loader2, Plus, Trash2, ExternalLink, RefreshCw } from "lucide-react";
 
 /* ── Types ── */
 
@@ -40,27 +41,109 @@ interface YearComparisonRow {
   "2026": number;
 }
 
+/* ── Auto-calculation helpers ── */
+
+function formatSwedishNumber(n: number): string {
+  return n.toLocaleString("sv-SE").replace(/,/g, "\u00a0");
+}
+
+function mergeKeyMetrics(m2025: KeyMetricRow[], m2026: KeyMetricRow[]): KeyMetricRow[] {
+  return m2026.map((m26) => {
+    const m25 = m2025.find((m) => m.label === m26.label);
+    const val25 = m25?.value ?? 0;
+    const val26 = m26.value;
+    const total = val25 + val26;
+    const change = val25 > 0 ? Math.round(((val26 - val25) / val25) * 100) : 0;
+    return {
+      label: m26.label,
+      value: total,
+      formatted: formatSwedishNumber(total),
+      change,
+      changeLabel: change > 0 ? "2026 vs 2025" : "totalt",
+    };
+  });
+}
+
+function mergeByName(a: NameValueRow[], b: NameValueRow[]): NameValueRow[] {
+  const map = new Map<string, number>();
+  for (const item of a) map.set(item.name, (map.get(item.name) ?? 0) + item.value);
+  for (const item of b) map.set(item.name, (map.get(item.name) ?? 0) + item.value);
+  return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
+}
+
+function mergeByNameMessages(a: NameMessagesRow[], b: NameMessagesRow[]): NameMessagesRow[] {
+  const map = new Map<string, number>();
+  for (const item of a) map.set(item.name, (map.get(item.name) ?? 0) + item.messages);
+  for (const item of b) map.set(item.name, (map.get(item.name) ?? 0) + item.messages);
+  return Array.from(map.entries())
+    .map(([name, messages]) => ({ name, messages }))
+    .sort((a, b) => b.messages - a.messages);
+}
+
+function mergeFileUploads(a: FileUploadRow[], b: FileUploadRow[]): FileUploadRow[] {
+  const map = new Map<string, number>();
+  for (const item of a) map.set(item.type, (map.get(item.type) ?? 0) + item.count);
+  for (const item of b) map.set(item.type, (map.get(item.type) ?? 0) + item.count);
+  return Array.from(map.entries())
+    .map(([type, count]) => ({ type, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+function mergeDailyInteractions(a: DateInteractionRow[], b: DateInteractionRow[]): DateInteractionRow[] {
+  return [...a, ...b];
+}
+
+function buildYearComparison(m2025: KeyMetricRow[], m2026: KeyMetricRow[]): YearComparisonRow[] {
+  const labelToCategory: Record<string, string> = {
+    "Aktiva användare": "Användare",
+    "Interaktioner": "Interaktioner",
+    "Skapade assistenter": "Assistenter",
+    "Utbildade": "Utbildade",
+  };
+  return m2026
+    .filter((m) => labelToCategory[m.label])
+    .map((m26) => {
+      const m25 = m2025.find((m) => m.label === m26.label);
+      return {
+        category: labelToCategory[m26.label],
+        "2025": m25?.value ?? 0,
+        "2026": m26.value,
+      };
+    });
+}
+
 /* ── Helpers ── */
 
 const monoStyle = { fontFamily: "var(--font-geist-mono), monospace" };
 const bodoniStyle = { fontFamily: "var(--font-bodoni), serif", fontWeight: 400 as const };
 const btnShadow = "0px 2px 1px 0px rgba(255,255,255,0.15) inset, 0px -2px 1px 0px rgba(0,0,0,0.05) inset";
 
-function SectionHeader({ label, title }: { label: string; title: string }) {
+function SectionHeader({ label, title, auto }: { label: string; title: string; auto?: boolean }) {
   return (
-    <div className="mb-4">
-      <p
-        className="text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
-        style={monoStyle}
-      >
-        {label}
-      </p>
-      <h2
-        className="mt-1 text-[1.5rem] tracking-[-0.04em]"
-        style={bodoniStyle}
-      >
-        {title}
-      </h2>
+    <div className="mb-4 flex items-start justify-between">
+      <div>
+        <p
+          className="text-[0.625rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
+          style={monoStyle}
+        >
+          {label}
+        </p>
+        <h2
+          className="mt-1 text-[1.5rem] tracking-[-0.04em]"
+          style={bodoniStyle}
+        >
+          {title}
+        </h2>
+      </div>
+      {auto && (
+        <span
+          className="mt-1 flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[0.625rem] font-medium uppercase tracking-[0.06em] text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300"
+          style={monoStyle}
+        >
+          <RefreshCw size={10} />
+          Auto
+        </span>
+      )}
     </div>
   );
 }
@@ -100,22 +183,16 @@ export default function AdminStatistikPage() {
 
   // Default values
   const defaultMetrics2025: KeyMetricRow[] = [
-    { label: "Interaktioner", value: 2881, formatted: "2 881", change: 0, changeLabel: "" },
+    { label: "Interaktioner", value: 2881, formatted: "2\u00a0881", change: 0, changeLabel: "" },
     { label: "Aktiva användare", value: 139, formatted: "139", change: 0, changeLabel: "" },
     { label: "Skapade assistenter", value: 120, formatted: "120", change: 0, changeLabel: "" },
     { label: "Utbildade", value: 160, formatted: "160", change: 0, changeLabel: "" },
   ];
   const defaultMetrics2026: KeyMetricRow[] = [
-    { label: "Interaktioner", value: 6973, formatted: "6 973", change: 142, changeLabel: "vs 2025" },
+    { label: "Interaktioner", value: 6973, formatted: "6\u00a0973", change: 142, changeLabel: "vs 2025" },
     { label: "Aktiva användare", value: 257, formatted: "257", change: 85, changeLabel: "vs 2025" },
     { label: "Skapade assistenter", value: 190, formatted: "190", change: 58, changeLabel: "vs 2025" },
     { label: "Utbildade", value: 340, formatted: "340", change: 113, changeLabel: "vs 2025" },
-  ];
-  const defaultMetricsAll: KeyMetricRow[] = [
-    { label: "Interaktioner", value: 9854, formatted: "9 854", change: 142, changeLabel: "2026 vs 2025" },
-    { label: "Aktiva användare", value: 257, formatted: "257", change: 85, changeLabel: "2026 vs 2025" },
-    { label: "Skapade assistenter", value: 190, formatted: "190", change: 58, changeLabel: "2026 vs 2025" },
-    { label: "Utbildade", value: 500, formatted: "500", change: 113, changeLabel: "totalt" },
   ];
   const defaultTopAssistants: NameMessagesRow[] = [
     { name: "Intric", messages: 3759 }, { name: "Promptexperten", messages: 460 },
@@ -131,20 +208,12 @@ export default function AdminStatistikPage() {
   const defaultFileUploads: FileUploadRow[] = [
     { type: "PDF", count: 1853 }, { type: "Word", count: 498 }, { type: "PNG", count: 154 },
   ];
-  const defaultYearComparison: YearComparisonRow[] = [
-    { category: "Användare", "2025": 139, "2026": 257 },
-    { category: "Interaktioner", "2025": 2881, "2026": 6973 },
-    { category: "Assistenter", "2025": 120, "2026": 190 },
-    { category: "Utbildade", "2025": 160, "2026": 340 },
-  ];
 
-  // Data state (initialized with defaults)
+  // Data state — only 2025 and 2026 (all is auto-calculated)
   const [metrics2025, setMetrics2025] = useState<KeyMetricRow[]>(defaultMetrics2025);
   const [metrics2026, setMetrics2026] = useState<KeyMetricRow[]>(defaultMetrics2026);
-  const [metricsAll, setMetricsAll] = useState<KeyMetricRow[]>(defaultMetricsAll);
   const [dailyInteractions2025, setDailyInteractions2025] = useState<DateInteractionRow[]>([]);
   const [dailyInteractions2026, setDailyInteractions2026] = useState<DateInteractionRow[]>([]);
-  const [dailyInteractionsAll, setDailyInteractionsAll] = useState<DateInteractionRow[]>([]);
   const [topAssistants2025, setTopAssistants2025] = useState<NameMessagesRow[]>([]);
   const [topAssistants2026, setTopAssistants2026] = useState<NameMessagesRow[]>([]);
   const [topAssistantsAll, setTopAssistantsAll] = useState<NameMessagesRow[]>(defaultTopAssistants);
@@ -157,13 +226,19 @@ export default function AdminStatistikPage() {
   const [fileUploads2025, setFileUploads2025] = useState<FileUploadRow[]>([]);
   const [fileUploads2026, setFileUploads2026] = useState<FileUploadRow[]>([]);
   const [fileUploadsAll, setFileUploadsAll] = useState<FileUploadRow[]>(defaultFileUploads);
-  const [yearComparison, setYearComparison] = useState<YearComparisonRow[]>(defaultYearComparison);
   const [userRoles2025, setUserRoles2025] = useState<NameValueRow[]>([]);
   const [userRoles2026, setUserRoles2026] = useState<NameValueRow[]>([]);
   const [userRolesAll, setUserRolesAll] = useState<NameValueRow[]>([]);
-  const [platformOverview, setPlatformOverview] = useState<{ registeredUsers: number; activeUsers: number; spaces: number; totalAssistants: number }>({ registeredUsers: 0, activeUsers: 0, spaces: 0, totalAssistants: 0 });
+  const [metricsAll, setMetricsAll] = useState<KeyMetricRow[]>([]);
+  const [yearComparison, setYearComparison] = useState<YearComparisonRow[]>([]);
+  const [platformOverview, setPlatformOverview] = useState<{
+    registeredUsers: number;
+    activeUsers: number;
+    spaces: number;
+    totalAssistants: number;
+  }>({ registeredUsers: 0, activeUsers: 0, spaces: 0, totalAssistants: 0 });
 
-  // Saving state per section
+  // Saving state
   const [savingSection, setSavingSection] = useState<string | null>(null);
   const [unsavedKeys, setUnsavedKeys] = useState<string[]>([]);
 
@@ -197,7 +272,6 @@ export default function AdminStatistikPage() {
       if (map.key_metrics_all) setMetricsAll(map.key_metrics_all as KeyMetricRow[]);
       if (map.daily_interactions_2025) setDailyInteractions2025(map.daily_interactions_2025 as DateInteractionRow[]);
       if (map.daily_interactions_2026) setDailyInteractions2026(map.daily_interactions_2026 as DateInteractionRow[]);
-      if (map.daily_interactions_all) setDailyInteractionsAll(map.daily_interactions_all as DateInteractionRow[]);
       if (map.top_assistants_2025) setTopAssistants2025(map.top_assistants_2025 as NameMessagesRow[]);
       if (map.top_assistants_2026) setTopAssistants2026(map.top_assistants_2026 as NameMessagesRow[]);
       if (map.top_assistants_all) setTopAssistantsAll(map.top_assistants_all as NameMessagesRow[]);
@@ -216,15 +290,14 @@ export default function AdminStatistikPage() {
       if (map.user_roles_all) setUserRolesAll(map.user_roles_all as NameValueRow[]);
       if (map.platform_overview) setPlatformOverview(map.platform_overview as typeof platformOverview);
 
-      // Track which keys use defaults (not saved to DB)
       const allExpectedKeys = [
-        "key_metrics_2025", "key_metrics_2026", "key_metrics_all",
-        "daily_interactions_2025", "daily_interactions_2026", "daily_interactions_all",
-        "top_assistants_2025", "top_assistants_2026", "top_assistants_all",
-        "model_usage_2025", "model_usage_2026", "model_usage_all",
-        "assistant_split_2025", "assistant_split_2026", "assistant_split_all",
-        "file_uploads_2025", "file_uploads_2026", "file_uploads_all",
-        "year_comparison", "user_roles_2025", "user_roles_2026", "user_roles_all",
+        "key_metrics_2025", "key_metrics_2026",
+        "daily_interactions_2025", "daily_interactions_2026",
+        "top_assistants_2025", "top_assistants_2026",
+        "model_usage_2025", "model_usage_2026",
+        "assistant_split_2025", "assistant_split_2026",
+        "file_uploads_2025", "file_uploads_2026",
+        "user_roles_2025", "user_roles_2026",
         "platform_overview",
       ];
       setUnsavedKeys(allExpectedKeys.filter((k) => !map[k]));
@@ -234,21 +307,130 @@ export default function AdminStatistikPage() {
     load();
   }, [showToast]);
 
-  async function saveSection(key: string, value: unknown) {
-    setSavingSection(key);
+  // ── Core save with auto-calculation + revalidation ──
+
+  async function upsertKey(key: string, value: unknown) {
     const { error } = await supabase
       .from("stats_data")
       .upsert(
         { key, value, updated_at: new Date().toISOString() },
         { onConflict: "key" }
       );
+    return error;
+  }
 
+  // Fetch fresh value from DB (avoids stale React state in async functions)
+  async function fetchDbValue<T>(key: string): Promise<T | null> {
+    const { data } = await supabase
+      .from("stats_data")
+      .select("value")
+      .eq("key", key)
+      .single();
+    return data?.value as T | null;
+  }
+
+  async function saveWithSync(key: string, value: unknown) {
+    setSavingSection(key);
+
+    // 1. Save the section itself
+    const error = await upsertKey(key, value);
     if (error) {
       showToast("error", "Kunde inte spara: " + error.message);
-    } else {
-      showToast("success", "Sparad!");
+      setSavingSection(null);
+      return;
     }
+
+    // 2. Auto-calculate "all" counterpart + year comparison
+    const match = key.match(/^(.+)_(2025|2026)$/);
+    if (match) {
+      const [, base, savedPeriod] = match;
+      const otherPeriod = savedPeriod === "2025" ? "2026" : "2025";
+
+      // Use the just-saved value for the saved period,
+      // and fetch fresh from DB for the other period
+      const otherValue = await fetchDbValue(`${base}_${otherPeriod}`);
+      const d2025 = savedPeriod === "2025" ? value : otherValue;
+      const d2026 = savedPeriod === "2026" ? value : otherValue;
+
+      if (d2025 && d2026) {
+        await autoCalculateAll(base, d2025, d2026);
+      }
+    }
+
+    // 3. Revalidate the public page
+    try {
+      await revalidateStats();
+    } catch {
+      // Revalidation may fail in dev — not critical
+    }
+
+    showToast("success", "Sparad! Statistiksidan uppdateras inom sekunder.");
     setSavingSection(null);
+    setUnsavedKeys((prev) => prev.filter((k) => k !== key));
+  }
+
+  async function autoCalculateAll(base: string, d2025: unknown, d2026: unknown) {
+    let allData: unknown = null;
+
+    switch (base) {
+      case "key_metrics": {
+        allData = mergeKeyMetrics(d2025 as KeyMetricRow[], d2026 as KeyMetricRow[]);
+        setMetricsAll(allData as KeyMetricRow[]);
+
+        const yearComp = buildYearComparison(d2025 as KeyMetricRow[], d2026 as KeyMetricRow[]);
+        setYearComparison(yearComp);
+        await upsertKey("year_comparison", yearComp);
+        break;
+      }
+      case "daily_interactions": {
+        allData = mergeDailyInteractions(d2025 as DateInteractionRow[], d2026 as DateInteractionRow[]);
+        break;
+      }
+      case "top_assistants": {
+        allData = mergeByNameMessages(d2025 as NameMessagesRow[], d2026 as NameMessagesRow[]);
+        setTopAssistantsAll(allData as NameMessagesRow[]);
+        break;
+      }
+      case "model_usage": {
+        allData = mergeByName(d2025 as NameValueRow[], d2026 as NameValueRow[]);
+        setModelUsageAll(allData as NameValueRow[]);
+        break;
+      }
+      case "assistant_split": {
+        allData = mergeByName(d2025 as NameValueRow[], d2026 as NameValueRow[]);
+        setAssistantSplitAll(allData as NameValueRow[]);
+        break;
+      }
+      case "file_uploads": {
+        allData = mergeFileUploads(d2025 as FileUploadRow[], d2026 as FileUploadRow[]);
+        setFileUploadsAll(allData as FileUploadRow[]);
+        break;
+      }
+      case "user_roles": {
+        allData = mergeByName(d2025 as NameValueRow[], d2026 as NameValueRow[]);
+        setUserRolesAll(allData as NameValueRow[]);
+        break;
+      }
+    }
+
+    if (allData) {
+      await upsertKey(`${base}_all`, allData);
+    }
+  }
+
+  // Save platform overview (no auto-calc needed)
+  async function savePlatformOverview() {
+    setSavingSection("platform_overview");
+    const error = await upsertKey("platform_overview", platformOverview);
+    if (error) {
+      showToast("error", "Kunde inte spara: " + error.message);
+      setSavingSection(null);
+      return;
+    }
+    try { await revalidateStats(); } catch { /* ok */ }
+    showToast("success", "Sparad! Statistiksidan uppdateras inom sekunder.");
+    setSavingSection(null);
+    setUnsavedKeys((prev) => prev.filter((k) => k !== "platform_overview"));
   }
 
   if (loading) {
@@ -292,11 +474,11 @@ export default function AdminStatistikPage() {
             Statistik
           </h1>
           <p className="mt-2 text-[0.875rem] text-muted-foreground">
-            Redigera all statistikdata som visas pa statistiksidan. Spara per sektion.
+            Redigera statistikdata per period. <strong>Totalt</strong>, <strong>Årsjämförelse</strong> och <strong>Förändring %</strong> beräknas automatiskt från 2025 + 2026.
           </p>
           {unsavedKeys.length > 0 && (
             <p className="mt-2 text-[0.75rem] text-amber-600 dark:text-amber-400" style={monoStyle}>
-              {unsavedKeys.length} sektioner anvander standardvarden (ej sparade i databasen)
+              {unsavedKeys.length} sektioner använder standardvärden (ej sparade i databasen)
             </p>
           )}
         </div>
@@ -324,15 +506,14 @@ export default function AdminStatistikPage() {
           {[
             ["sec-metrics-2025", "Nyckeltal 2025"],
             ["sec-metrics-2026", "Nyckeltal 2026"],
-            ["sec-metrics-all", "Nyckeltal Totalt"],
             ["sec-daily", "Dagliga interaktioner"],
             ["sec-platform", "Plattform"],
-            ["sec-roles", "Anvandarroller"],
+            ["sec-roles", "Användarroller"],
             ["sec-top", "Topp assistenter"],
             ["sec-models", "AI-modeller"],
             ["sec-split", "Personliga vs anpassade"],
             ["sec-files", "Filuppladdningar"],
-            ["sec-year", "Arsjamforelse"],
+            ["sec-auto", "Auto-beräknat"],
           ].map(([id, label]) => (
             <button
               key={id}
@@ -350,14 +531,11 @@ export default function AdminStatistikPage() {
         {/* ── Key Metrics 2025 ── */}
         <section id="sec-metrics-2025" className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
           <SectionHeader label="Nyckeltal" title="2025" />
-          <KeyMetricsEditor
-            rows={metrics2025}
-            onChange={setMetrics2025}
-          />
+          <KeyMetricsEditor rows={metrics2025} onChange={setMetrics2025} />
           <div className="mt-4 flex justify-end">
             <SaveButton
               saving={savingSection === "key_metrics_2025"}
-              onClick={() => saveSection("key_metrics_2025", metrics2025)}
+              onClick={() => saveWithSync("key_metrics_2025", metrics2025)}
             />
           </div>
         </section>
@@ -365,40 +543,25 @@ export default function AdminStatistikPage() {
         {/* ── Key Metrics 2026 ── */}
         <section id="sec-metrics-2026" className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
           <SectionHeader label="Nyckeltal" title="2026" />
-          <KeyMetricsEditor
-            rows={metrics2026}
-            onChange={setMetrics2026}
-          />
+          <KeyMetricsEditor rows={metrics2026} onChange={setMetrics2026} />
           <div className="mt-4 flex justify-end">
             <SaveButton
               saving={savingSection === "key_metrics_2026"}
-              onClick={() => saveSection("key_metrics_2026", metrics2026)}
-            />
-          </div>
-        </section>
-
-        {/* ── Key Metrics All ── */}
-        <section id="sec-metrics-all" className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
-          <SectionHeader label="Nyckeltal" title="Alla perioder" />
-          <KeyMetricsEditor
-            rows={metricsAll}
-            onChange={setMetricsAll}
-          />
-          <div className="mt-4 flex justify-end">
-            <SaveButton
-              saving={savingSection === "key_metrics_all"}
-              onClick={() => saveSection("key_metrics_all", metricsAll)}
+              onClick={() => saveWithSync("key_metrics_2026", metrics2026)}
             />
           </div>
         </section>
 
         {/* ── Daily Interactions ── */}
-        {([["daily_interactions_2025", "Dagliga interaktioner 2025", dailyInteractions2025, setDailyInteractions2025], ["daily_interactions_2026", "Dagliga interaktioner 2026", dailyInteractions2026, setDailyInteractions2026], ["daily_interactions_all", "Dagliga interaktioner Totalt", dailyInteractionsAll, setDailyInteractionsAll]] as const).map(([key, title, data, setData], i) => (
+        {([
+          ["daily_interactions_2025", "Dagliga interaktioner 2025", dailyInteractions2025, setDailyInteractions2025],
+          ["daily_interactions_2026", "Dagliga interaktioner 2026", dailyInteractions2026, setDailyInteractions2026],
+        ] as const).map(([key, title, data, setData], i) => (
           <section key={key} id={i === 0 ? "sec-daily" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
             <SectionHeader label="Diagram" title={title} />
             <DateInteractionsEditor rows={data as DateInteractionRow[]} onChange={setData as (rows: DateInteractionRow[]) => void} />
             <div className="mt-4 flex justify-end">
-              <SaveButton saving={savingSection === key} onClick={() => saveSection(key, data)} />
+              <SaveButton saving={savingSection === key} onClick={() => saveWithSync(key, data)} />
             </div>
           </section>
         ))}
@@ -418,79 +581,168 @@ export default function AdminStatistikPage() {
             })}
           </div>
           <div className="mt-4 flex justify-end">
-            <SaveButton saving={savingSection === "platform_overview"} onClick={() => saveSection("platform_overview", platformOverview)} />
+            <SaveButton saving={savingSection === "platform_overview"} onClick={savePlatformOverview} />
           </div>
         </section>
 
         {/* ── User Roles ── */}
-        {([["user_roles_2025", "Användarroller 2025", userRoles2025, setUserRoles2025], ["user_roles_2026", "Användarroller 2026", userRoles2026, setUserRoles2026], ["user_roles_all", "Användarroller Totalt", userRolesAll, setUserRolesAll]] as const).map(([key, title, data, setData], i) => (
+        {([
+          ["user_roles_2025", "Användarroller 2025", userRoles2025, setUserRoles2025],
+          ["user_roles_2026", "Användarroller 2026", userRoles2026, setUserRoles2026],
+        ] as const).map(([key, title, data, setData], i) => (
           <section key={key} id={i === 0 ? "sec-roles" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
             <SectionHeader label="Diagram" title={title} />
             <NameValueEditor rows={data as NameValueRow[]} onChange={setData as (rows: NameValueRow[]) => void} nameLabel="Roll" valueLabel="Antal" />
             <div className="mt-4 flex justify-end">
-              <SaveButton saving={savingSection === key} onClick={() => saveSection(key, data)} />
+              <SaveButton saving={savingSection === key} onClick={() => saveWithSync(key, data)} />
             </div>
           </section>
         ))}
 
         {/* ── Top Assistants ── */}
-        {([["top_assistants_2025", "Topp assistenter 2025", topAssistants2025, setTopAssistants2025], ["top_assistants_2026", "Topp assistenter 2026", topAssistants2026, setTopAssistants2026], ["top_assistants_all", "Topp assistenter Totalt", topAssistantsAll, setTopAssistantsAll]] as const).map(([key, title, data, setData], i) => (
+        {([
+          ["top_assistants_2025", "Topp assistenter 2025", topAssistants2025, setTopAssistants2025],
+          ["top_assistants_2026", "Topp assistenter 2026", topAssistants2026, setTopAssistants2026],
+        ] as const).map(([key, title, data, setData], i) => (
           <section key={key} id={i === 0 ? "sec-top" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
             <SectionHeader label="Diagram" title={title} />
             <NameMessagesEditor rows={data as NameMessagesRow[]} onChange={setData as (rows: NameMessagesRow[]) => void} />
             <div className="mt-4 flex justify-end">
-              <SaveButton saving={savingSection === key} onClick={() => saveSection(key, data)} />
+              <SaveButton saving={savingSection === key} onClick={() => saveWithSync(key, data)} />
             </div>
           </section>
         ))}
 
         {/* ── Model Usage ── */}
-        {([["model_usage_2025", "AI-modeller 2025", modelUsage2025, setModelUsage2025], ["model_usage_2026", "AI-modeller 2026", modelUsage2026, setModelUsage2026], ["model_usage_all", "AI-modeller Totalt", modelUsageAll, setModelUsageAll]] as const).map(([key, title, data, setData], i) => (
+        {([
+          ["model_usage_2025", "AI-modeller 2025", modelUsage2025, setModelUsage2025],
+          ["model_usage_2026", "AI-modeller 2026", modelUsage2026, setModelUsage2026],
+        ] as const).map(([key, title, data, setData], i) => (
           <section key={key} id={i === 0 ? "sec-models" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
             <SectionHeader label="Diagram" title={title} />
             <NameValueEditor rows={data as NameValueRow[]} onChange={setData as (rows: NameValueRow[]) => void} nameLabel="Modell" valueLabel="Antal" />
             <div className="mt-4 flex justify-end">
-              <SaveButton saving={savingSection === key} onClick={() => saveSection(key, data)} />
+              <SaveButton saving={savingSection === key} onClick={() => saveWithSync(key, data)} />
             </div>
           </section>
         ))}
 
         {/* ── Assistant Split ── */}
-        {([["assistant_split_2025", "Personliga vs anpassade 2025", assistantSplit2025, setAssistantSplit2025], ["assistant_split_2026", "Personliga vs anpassade 2026", assistantSplit2026, setAssistantSplit2026], ["assistant_split_all", "Personliga vs anpassade Totalt", assistantSplitAll, setAssistantSplitAll]] as const).map(([key, title, data, setData], i) => (
+        {([
+          ["assistant_split_2025", "Personliga vs anpassade 2025", assistantSplit2025, setAssistantSplit2025],
+          ["assistant_split_2026", "Personliga vs anpassade 2026", assistantSplit2026, setAssistantSplit2026],
+        ] as const).map(([key, title, data, setData], i) => (
           <section key={key} id={i === 0 ? "sec-split" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
             <SectionHeader label="Diagram" title={title} />
             <NameValueEditor rows={data as NameValueRow[]} onChange={setData as (rows: NameValueRow[]) => void} nameLabel="Typ" valueLabel="Antal" />
             <div className="mt-4 flex justify-end">
-              <SaveButton saving={savingSection === key} onClick={() => saveSection(key, data)} />
+              <SaveButton saving={savingSection === key} onClick={() => saveWithSync(key, data)} />
             </div>
           </section>
         ))}
 
         {/* ── File Uploads ── */}
-        {([["file_uploads_2025", "Filuppladdningar 2025", fileUploads2025, setFileUploads2025], ["file_uploads_2026", "Filuppladdningar 2026", fileUploads2026, setFileUploads2026], ["file_uploads_all", "Filuppladdningar Totalt", fileUploadsAll, setFileUploadsAll]] as const).map(([key, title, data, setData], i) => (
+        {([
+          ["file_uploads_2025", "Filuppladdningar 2025", fileUploads2025, setFileUploads2025],
+          ["file_uploads_2026", "Filuppladdningar 2026", fileUploads2026, setFileUploads2026],
+        ] as const).map(([key, title, data, setData], i) => (
           <section key={key} id={i === 0 ? "sec-files" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
             <SectionHeader label="Diagram" title={title} />
             <FileUploadsEditor rows={data as FileUploadRow[]} onChange={setData as (rows: FileUploadRow[]) => void} />
             <div className="mt-4 flex justify-end">
-              <SaveButton saving={savingSection === key} onClick={() => saveSection(key, data)} />
+              <SaveButton saving={savingSection === key} onClick={() => saveWithSync(key, data)} />
             </div>
           </section>
         ))}
 
-        {/* ── Year Comparison ── */}
-        <section id="sec-year" className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
-          <SectionHeader label="Diagram" title="Årsjämförelse" />
-          <YearComparisonEditor
-            rows={yearComparison}
-            onChange={setYearComparison}
-          />
-          <div className="mt-4 flex justify-end">
-            <SaveButton
-              saving={savingSection === "year_comparison"}
-              onClick={() => saveSection("year_comparison", yearComparison)}
-            />
+        {/* ══════════════════════════════════════════
+           Auto-calculated sections (read-only preview)
+           ══════════════════════════════════════════ */}
+        <div id="sec-auto" className="scroll-mt-20 space-y-6">
+          <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-4 dark:border-blue-900 dark:bg-blue-950/30">
+            <p className="flex items-center gap-2 text-[0.8125rem] font-medium text-blue-800 dark:text-blue-200" style={monoStyle}>
+              <RefreshCw size={14} />
+              Följande sektioner beräknas automatiskt från 2025 + 2026-data
+            </p>
+            <p className="mt-1 text-[0.75rem] text-blue-600 dark:text-blue-400">
+              Spara en 2025- eller 2026-sektion ovan för att uppdatera dessa.
+            </p>
           </div>
-        </section>
+
+          {/* Auto: Key Metrics All */}
+          <section className="rounded-lg border border-dashed border-blue-300 bg-card p-6 dark:border-blue-800">
+            <SectionHeader label="Nyckeltal" title="Totalt (auto)" auto />
+            {metricsAll.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {metricsAll.map((m) => (
+                  <div key={m.label} className="rounded-md border border-border bg-background p-3">
+                    <p className="text-[0.625rem] uppercase tracking-[0.1em] text-muted-foreground" style={monoStyle}>{m.label}</p>
+                    <p className="mt-1 text-[1.25rem] tracking-tight" style={bodoniStyle}>{m.formatted}</p>
+                    {m.change > 0 && (
+                      <p className="mt-1 text-[0.625rem] text-green-600 dark:text-green-400" style={monoStyle}>+{m.change}% {m.changeLabel}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[0.8125rem] text-muted-foreground">Spara nyckeltal för 2025 och 2026 för att generera totaler.</p>
+            )}
+          </section>
+
+          {/* Auto: Year Comparison */}
+          <section className="rounded-lg border border-dashed border-blue-300 bg-card p-6 dark:border-blue-800">
+            <SectionHeader label="Diagram" title="Årsjämförelse (auto)" auto />
+            {yearComparison.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-[0.8125rem]">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className={thClass} style={monoStyle}>Kategori</th>
+                      <th className={thClass} style={monoStyle}>2025</th>
+                      <th className={thClass} style={monoStyle}>2026</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {yearComparison.map((row) => (
+                      <tr key={row.category} className="border-b border-border last:border-0">
+                        <td className="px-3 py-2">{row.category}</td>
+                        <td className="px-3 py-2 tabular-nums" style={monoStyle}>{row["2025"].toLocaleString("sv-SE")}</td>
+                        <td className="px-3 py-2 tabular-nums" style={monoStyle}>{row["2026"].toLocaleString("sv-SE")}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-[0.8125rem] text-muted-foreground">Spara nyckeltal för att generera årsjämförelse.</p>
+            )}
+          </section>
+
+          {/* Auto: Other "all" summaries */}
+          {([
+            ["Topp assistenter (totalt)", topAssistantsAll, "name", "messages"],
+            ["AI-modeller (totalt)", modelUsageAll, "name", "value"],
+            ["Personliga vs anpassade (totalt)", assistantSplitAll, "name", "value"],
+            ["Filuppladdningar (totalt)", fileUploadsAll, "type", "count"],
+            ["Användarroller (totalt)", userRolesAll, "name", "value"],
+          ] as const).map(([title, data, nameKey, valueKey]) => (
+            <section key={title} className="rounded-lg border border-dashed border-blue-300 bg-card p-6 dark:border-blue-800">
+              <SectionHeader label="Sammanslaget" title={title} auto />
+              {(data as unknown as Array<Record<string, unknown>>).length > 0 ? (
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+                  {(data as unknown as Array<Record<string, unknown>>).map((item, i) => (
+                    <div key={i} className="rounded-md border border-border bg-background px-3 py-2">
+                      <p className="text-[0.6875rem] text-muted-foreground" style={monoStyle}>{String(item[nameKey])}</p>
+                      <p className="text-[1rem] font-medium tabular-nums" style={monoStyle}>{Number(item[valueKey]).toLocaleString("sv-SE")}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[0.8125rem] text-muted-foreground">Spara 2025- och 2026-data för att generera sammanslag.</p>
+              )}
+            </section>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -544,10 +796,10 @@ function KeyMetricsEditor({
           <thead>
             <tr className="border-b border-border">
               <th className={thClass} style={monoStyle}>Etikett</th>
-              <th className={thClass} style={monoStyle}>Varde</th>
+              <th className={thClass} style={monoStyle}>Värde</th>
               <th className={thClass} style={monoStyle}>Formaterat</th>
-              <th className={thClass} style={monoStyle}>Forandring %</th>
-              <th className={thClass} style={monoStyle}>Forandringsetikett</th>
+              <th className={thClass} style={monoStyle}>Förändring %</th>
+              <th className={thClass} style={monoStyle}>Förändringsetikett</th>
               <th className={thClass} style={monoStyle}></th>
             </tr>
           </thead>
@@ -608,7 +860,7 @@ function KeyMetricsEditor({
         onClick={addRow}
         className="mt-3 flex items-center gap-1.5 text-[0.8125rem] text-muted-foreground hover:text-foreground"
       >
-        <Plus size={14} /> Lagg till rad
+        <Plus size={14} /> Lägg till rad
       </button>
     </div>
   );
@@ -679,7 +931,7 @@ function DateInteractionsEditor({
         onClick={() => onChange([...rows, { date: "", interactions: 0 }])}
         className="mt-3 flex items-center gap-1.5 text-[0.8125rem] text-muted-foreground hover:text-foreground"
       >
-        <Plus size={14} /> Lagg till rad
+        <Plus size={14} /> Lägg till rad
       </button>
     </div>
   );
@@ -748,19 +1000,19 @@ function NameMessagesEditor({
         onClick={() => onChange([...rows, { name: "", messages: 0 }])}
         className="mt-3 flex items-center gap-1.5 text-[0.8125rem] text-muted-foreground hover:text-foreground"
       >
-        <Plus size={14} /> Lagg till rad
+        <Plus size={14} /> Lägg till rad
       </button>
     </div>
   );
 }
 
-/* ── Name/Value editor (models, split) ── */
+/* ── Name/Value editor (models, split, roles) ── */
 
 function NameValueEditor({
   rows,
   onChange,
   nameLabel = "Namn",
-  valueLabel = "Varde",
+  valueLabel = "Värde",
 }: {
   rows: NameValueRow[];
   onChange: (rows: NameValueRow[]) => void;
@@ -821,7 +1073,7 @@ function NameValueEditor({
         onClick={() => onChange([...rows, { name: "", value: 0 }])}
         className="mt-3 flex items-center gap-1.5 text-[0.8125rem] text-muted-foreground hover:text-foreground"
       >
-        <Plus size={14} /> Lagg till rad
+        <Plus size={14} /> Lägg till rad
       </button>
     </div>
   );
@@ -890,89 +1142,7 @@ function FileUploadsEditor({
         onClick={() => onChange([...rows, { type: "", count: 0 }])}
         className="mt-3 flex items-center gap-1.5 text-[0.8125rem] text-muted-foreground hover:text-foreground"
       >
-        <Plus size={14} /> Lagg till rad
-      </button>
-    </div>
-  );
-}
-
-/* ── Year Comparison editor ── */
-
-function YearComparisonEditor({
-  rows,
-  onChange,
-}: {
-  rows: YearComparisonRow[];
-  onChange: (rows: YearComparisonRow[]) => void;
-}) {
-  return (
-    <div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-[0.8125rem]">
-          <thead>
-            <tr className="border-b border-border">
-              <th className={thClass} style={monoStyle}>Kategori</th>
-              <th className={thClass} style={monoStyle}>2025</th>
-              <th className={thClass} style={monoStyle}>2026</th>
-              <th className={thClass} style={monoStyle}></th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, i) => (
-              <tr key={i} className="border-b border-border last:border-0">
-                <td className="px-2 py-1.5">
-                  <input
-                    className={inputClass}
-                    value={row.category}
-                    onChange={(e) => {
-                      const next = [...rows];
-                      next[i] = { ...next[i], category: e.target.value };
-                      onChange(next);
-                    }}
-                  />
-                </td>
-                <td className="px-2 py-1.5">
-                  <input
-                    className={inputClass}
-                    type="number"
-                    value={row["2025"]}
-                    onChange={(e) => {
-                      const next = [...rows];
-                      next[i] = { ...next[i], "2025": Number(e.target.value) || 0 };
-                      onChange(next);
-                    }}
-                  />
-                </td>
-                <td className="px-2 py-1.5">
-                  <input
-                    className={inputClass}
-                    type="number"
-                    value={row["2026"]}
-                    onChange={(e) => {
-                      const next = [...rows];
-                      next[i] = { ...next[i], "2026": Number(e.target.value) || 0 };
-                      onChange(next);
-                    }}
-                  />
-                </td>
-                <td className="px-2 py-1.5">
-                  <button
-                    onClick={() => onChange(rows.filter((_, j) => j !== i))}
-                    className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <button
-        onClick={() => onChange([...rows, { category: "", "2025": 0, "2026": 0 }])}
-        className="mt-3 flex items-center gap-1.5 text-[0.8125rem] text-muted-foreground hover:text-foreground"
-      >
-        <Plus size={14} /> Lagg till rad
+        <Plus size={14} /> Lägg till rad
       </button>
     </div>
   );
