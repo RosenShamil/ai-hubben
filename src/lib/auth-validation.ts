@@ -9,7 +9,8 @@ export type LoginValues = z.infer<typeof loginSchema>;
 
 export const registerSchema = z
   .object({
-    full_name: z.string().min(2, "Namn måste vara minst 2 tecken"),
+    first_name: z.string().min(2, "Förnamn måste vara minst 2 tecken"),
+    last_name: z.string().min(2, "Efternamn måste vara minst 2 tecken"),
     email: z.string().email("Ange en giltig e-postadress"),
     password: z.string().min(8, "Lösenord måste vara minst 8 tecken"),
     confirmPassword: z.string(),

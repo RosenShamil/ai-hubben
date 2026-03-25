@@ -37,12 +37,17 @@ export default function RegisterPage() {
   async function onSubmit(values: RegisterValues) {
     setError("");
     try {
-      await signUp(values.email, values.password, values.full_name);
+      const fullName = `${values.first_name} ${values.last_name}`;
+      await signUp(values.email, values.password, fullName);
       setSuccess(true);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Registrering misslyckades";
-      setError(message);
+      if (message.toLowerCase().includes("already registered") || message.toLowerCase().includes("already been registered")) {
+        setError("Det finns redan ett konto med denna e-postadress. Försök logga in istället.");
+      } else {
+        setError(message);
+      }
     }
   }
 
@@ -104,26 +109,49 @@ export default function RegisterPage() {
           className="rounded-lg border border-border bg-card p-8"
         >
           <div className="space-y-5">
-            <div>
-              <label
-                htmlFor="full_name"
-                className="mb-1.5 block text-[0.6875rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
-                style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-              >
-                Namn
-              </label>
-              <input
-                id="full_name"
-                type="text"
-                {...register("full_name")}
-                className="w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-[0.9375rem] outline-none transition-colors focus:border-foreground"
-                placeholder="Ditt namn"
-              />
-              {errors.full_name && (
-                <p className="mt-1 text-[0.8125rem] text-destructive">
-                  {errors.full_name.message}
-                </p>
-              )}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="first_name"
+                  className="mb-1.5 block text-[0.6875rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
+                  style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                >
+                  Förnamn
+                </label>
+                <input
+                  id="first_name"
+                  type="text"
+                  {...register("first_name")}
+                  className="w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-[0.9375rem] outline-none transition-colors focus:border-foreground"
+                  placeholder="Förnamn"
+                />
+                {errors.first_name && (
+                  <p className="mt-1 text-[0.8125rem] text-destructive">
+                    {errors.first_name.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label
+                  htmlFor="last_name"
+                  className="mb-1.5 block text-[0.6875rem] font-medium uppercase tracking-[0.1em] text-muted-foreground"
+                  style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                >
+                  Efternamn
+                </label>
+                <input
+                  id="last_name"
+                  type="text"
+                  {...register("last_name")}
+                  className="w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-[0.9375rem] outline-none transition-colors focus:border-foreground"
+                  placeholder="Efternamn"
+                />
+                {errors.last_name && (
+                  <p className="mt-1 text-[0.8125rem] text-destructive">
+                    {errors.last_name.message}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div>
