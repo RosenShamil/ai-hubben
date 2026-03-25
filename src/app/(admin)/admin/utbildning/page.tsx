@@ -434,7 +434,7 @@ export default function AdminUtbildningPage() {
                         <button
                           onClick={() => openEdit(s)}
                           className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                          title="Redigera"
+                          aria-label="Redigera"
                         >
                           <Pencil size={14} />
                         </button>
@@ -443,14 +443,14 @@ export default function AdminUtbildningPage() {
                             <button
                               onClick={() => handleDelete(s.id)}
                               className="rounded-md p-1.5 text-destructive transition-colors hover:bg-destructive/10"
-                              title="Bekrafta"
+                              aria-label="Bekräfta"
                             >
                               <Check size={14} />
                             </button>
                             <button
                               onClick={() => setDeleteConfirm(null)}
                               className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary"
-                              title="Avbryt"
+                              aria-label="Avbryt"
                             >
                               <X size={14} />
                             </button>
@@ -459,7 +459,7 @@ export default function AdminUtbildningPage() {
                           <button
                             onClick={() => setDeleteConfirm(s.id)}
                             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                            title="Ta bort"
+                            aria-label="Ta bort"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -841,14 +841,14 @@ export default function AdminUtbildningPage() {
                                 )
                               }
                               className="rounded-md p-1.5 text-destructive transition-colors hover:bg-destructive/10"
-                              title="Bekrafta"
+                              aria-label="Bekräfta"
                             >
                               <Check size={14} />
                             </button>
                             <button
                               onClick={() => setDeleteRegConfirm(null)}
                               className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary"
-                              title="Avbryt"
+                              aria-label="Avbryt"
                             >
                               <X size={14} />
                             </button>
@@ -857,7 +857,7 @@ export default function AdminUtbildningPage() {
                           <button
                             onClick={() => setDeleteRegConfirm(reg.id)}
                             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                            title="Ta bort anmalan"
+                            aria-label="Ta bort anmälan"
                           >
                             <Trash2 size={14} />
                           </button>

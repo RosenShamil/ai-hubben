@@ -79,7 +79,8 @@ export function ConceptDetailModal({
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              className="absolute right-4 top-4 rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              aria-label="Stäng"
             >
               <X size={18} />
             </button>

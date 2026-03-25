@@ -13,6 +13,7 @@ import {
   BookOpen,
   Heart,
   LogOut,
+  Download,
   ChevronDown,
   ChevronUp,
   Trash2,
@@ -24,6 +25,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/components/shared/auth-provider";
 import { updateUserProfile, changePassword } from "@/lib/supabase-auth";
+import { deleteUserAccount, exportUserData } from "@/app/actions";
 import {
   profileSchema,
   changePasswordSchema,
@@ -73,6 +75,11 @@ export default function ProfilePage() {
   const [passwordSaved, setPasswordSaved] = useState(false);
   const [profileError, setProfileError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [exporting, setExporting] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   // Load local data
   useEffect(() => {
@@ -161,6 +168,43 @@ export default function ProfilePage() {
     if (!user) return;
     await removeFavorite(user.id, fav.item_type, fav.item_id);
     setFavorites((prev) => prev.filter((f) => f.id !== fav.id));
+  }
+
+  async function handleExportData() {
+    if (!user) return;
+    setExporting(true);
+    try {
+      const data = await exportUserData(user.id);
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ai-hubben-mina-uppgifter-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // Silent fail — export is best-effort
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    if (!user || deleteConfirmText !== "RADERA") return;
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      await deleteUserAccount(user.id);
+      await signOut();
+      router.push("/");
+    } catch (err: unknown) {
+      setDeleteError(
+        err instanceof Error ? err.message : "Kunde inte radera kontot"
+      );
+      setDeleting(false);
+    }
   }
 
   async function handleSignOut() {
@@ -623,6 +667,96 @@ export default function ProfilePage() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+        </section>
+
+        {/* ─── Data export (GDPR Art. 20) ─── */}
+        <section className={card}>
+          <h2 className={sectionHeading} style={headingStyle}>
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary">
+              <Download size={16} className="text-foreground" />
+            </span>{" "}
+            Mina uppgifter
+          </h2>
+          <p className="mt-3 text-[0.9375rem] text-muted-foreground">
+            Ladda ner alla personuppgifter vi har sparade om dig i
+            maskinläsbart format (JSON).
+          </p>
+          <button
+            onClick={handleExportData}
+            disabled={exporting}
+            className="mt-4 rounded-md border border-border px-5 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.05em] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-50"
+            style={monoStyle}
+          >
+            {exporting ? "Exporterar..." : "Exportera mina uppgifter"}
+          </button>
+        </section>
+
+        {/* ─── Delete account ─── */}
+        <section className="rounded-lg border border-destructive/30 bg-destructive/5 p-6">
+          <h2 className={sectionHeading} style={headingStyle}>
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
+              <Trash2 size={16} className="text-destructive" />
+            </span>{" "}
+            Radera konto
+          </h2>
+
+          {!deleteConfirmOpen ? (
+            <>
+              <p className="mt-3 text-[0.9375rem] text-muted-foreground">
+                Permanent radering av ditt konto och all tillhörande data
+                (profil, utbildningsframsteg, favoriter och
+                utbildningsanmälningar). Detta kan inte ångras.
+              </p>
+              <button
+                onClick={() => setDeleteConfirmOpen(true)}
+                className="mt-4 rounded-md border border-destructive/50 px-5 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.05em] text-destructive transition-colors hover:bg-destructive hover:text-white"
+                style={monoStyle}
+              >
+                Radera mitt konto
+              </button>
+            </>
+          ) : (
+            <div className="mt-4 space-y-4">
+              <p className="text-[0.9375rem] text-destructive font-medium">
+                Är du säker? Skriv RADERA för att bekräfta.
+              </p>
+              <input
+                type="text"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="Skriv RADERA"
+                className="w-full rounded-md border border-destructive/30 bg-background px-3.5 py-2.5 text-[0.9375rem] outline-none transition-colors focus:border-destructive"
+              />
+
+              {deleteError && (
+                <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-[0.8125rem] text-destructive">
+                  {deleteError}
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleteConfirmText !== "RADERA" || deleting}
+                  className="rounded-md bg-destructive px-5 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.05em] text-white transition-all hover:opacity-90 disabled:opacity-50"
+                  style={monoStyle}
+                >
+                  {deleting ? "Raderar..." : "Bekräfta radering"}
+                </button>
+                <button
+                  onClick={() => {
+                    setDeleteConfirmOpen(false);
+                    setDeleteConfirmText("");
+                    setDeleteError("");
+                  }}
+                  className="rounded-md border border-border px-5 py-2.5 text-[0.8125rem] font-medium uppercase tracking-[0.05em] text-muted-foreground transition-colors hover:bg-secondary"
+                  style={monoStyle}
+                >
+                  Avbryt
+                </button>
+              </div>
             </div>
           )}
         </section>

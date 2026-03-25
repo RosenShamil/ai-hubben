@@ -49,7 +49,8 @@ export function AnimatedExplainerView({
         </div>
         <button
           onClick={onClose}
-          className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          aria-label="Stäng"
         >
           <X size={18} />
         </button>

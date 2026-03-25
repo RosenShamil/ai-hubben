@@ -564,49 +564,49 @@ Se avsnitt 3.2 ovan.
 
 | # | Åtgärd | Regelverk | Status |
 |---|--------|-----------|--------|
-| 1 | Verifiera att Supabase körs i EU-region | GDPR | ⬜ |
-| 2 | Teckna DPA med Supabase | GDPR | ⬜ |
-| 3 | Teckna DPA med Vercel | GDPR | ⬜ |
-| 4 | Publicera integritetspolicy/dataskyddsinformation | GDPR | ⬜ |
-| 5 | Publicera tillgänglighetsredogörelse | DOS-lagen | ⬜ |
-| 6 | Upprätta registerförteckning (Art. 30) | GDPR | ⬜ |
-| 7 | Verifiera att kommunen anmält till MCF (NIS2) | Cybersäkerhetslagen | ⬜ |
-| 8 | Implementera radera-konto-funktion | GDPR Art. 17 | ⬜ |
+| 1 | Verifiera att Supabase körs i EU-region | GDPR | ✅ Bekräftat: eu-west-1 (Irland) |
+| 2 | Teckna DPA med Supabase | GDPR | 📋 Gör via Supabase Dashboard → Settings → Legal → DPA. Inkludera SCC. |
+| 3 | Teckna DPA med Vercel | GDPR | 📋 Tillgängligt på vercel.com/legal/dpa. Vercel är DPF-certifierade. |
+| 4 | Publicera integritetspolicy/dataskyddsinformation | GDPR | ✅ `/integritetspolicy` — DPO via Sydarkivera, rättsliga grunder, rättigheter, cookies, AI-transparens |
+| 5 | Publicera tillgänglighetsredogörelse | DOS-lagen | ✅ `/tillganglighet` — DIGG-mall, WCAG 2.1 AA, kända brister, DIGG-anmälningslänk |
+| 6 | Upprätta registerförteckning (Art. 30) | GDPR | ✅ `docs/registerforteckning.md` — 7 behandlingar, biträdesförteckning, rättighetstöd |
+| 7 | Verifiera att kommunen anmält till MCF (NIS2) | Cybersäkerhetslagen | 📋 Kolla med kommunens säkerhetsansvarig. Deadline var 2026-02-16. |
+| 8 | Implementera radera-konto-funktion | GDPR Art. 17 | ✅ Profilsidan — tvåstegsbekräftelse, raderar all data + auth-användare |
 
 ### Prioritet 2: HÖG (juridiskt obligatoriskt, före aug 2026)
 
 | # | Åtgärd | Regelverk | Status |
 |---|--------|-----------|--------|
-| 9 | Genomför AI-riskklassificering | EU AI Act | ⬜ |
-| 10 | Implementera AI-transparensmeddelanden | EU AI Act Art. 50 | ⬜ |
-| 11 | Genomför DPIA (konsekvensbedömning) | GDPR Art. 35 | ⬜ |
-| 12 | Ta fram kommunens AI-policy | DIGG riktlinje 1 | ⬜ |
-| 13 | Genomför suveränitetsanalys för molntjänster | OSL + eSam | ⬜ |
-| 14 | Klassificera information (KLASSA) | MSB/cybersäkerhetslagen | ⬜ |
-| 15 | Upprätta incidentrapporteringsrutin | Cybersäkerhetslagen | ⬜ |
-| 16 | Dokumentera AI-system (teknisk dokumentation) | EU AI Act | ⬜ |
+| 9 | Genomför AI-riskklassificering | EU AI Act | 📋 Redan bedömt i avsnitt 1.1: assistenter=begränsad risk, akademin=potentiellt hög om AI-bedömning, övrigt=minimal. Formalisera i dokument. |
+| 10 | Implementera AI-transparensmeddelanden | EU AI Act Art. 50 | ✅ Chatwidget, assistentdetaljsida, assistentbibliotek — "drivs av AI, granska svaren" |
+| 11 | Genomför DPIA (konsekvensbedömning) | GDPR Art. 35 | 📋 Krävs för AI-assistenter + utbildningsdata. Använd IMY:s DPIA-mall. |
+| 12 | Ta fram kommunens AI-policy | DIGG riktlinje 1 | 📋 Organisatoriskt beslut. Kan publiceras i AI-hubbens dokumentationssektion. |
+| 13 | Genomför suveränitetsanalys för molntjänster | OSL + eSam | 📋 Använd eSam:s metodstöd. Supabase=AWS Irland, Vercel=USA+EU (DPF). |
+| 14 | Klassificera information (KLASSA) | MSB/cybersäkerhetslagen | 📋 Använd SKR:s KLASSA-verktyg (klassa.skr.se). |
+| 15 | Upprätta incidentrapporteringsrutin | Cybersäkerhetslagen | 📋 Rapportering till MCF. Samordna med kommunens IT-säkerhet. |
+| 16 | Dokumentera AI-system (teknisk dokumentation) | EU AI Act | 📋 Dokumentera Intric-integrationen, AI-modeller, dataflöden. CLAUDE.md är en bra utgångspunkt. |
 
 ### Prioritet 3: MEDIUM (rekommenderat, bör göras)
 
 | # | Åtgärd | Regelverk | Status |
 |---|--------|-----------|--------|
-| 17 | Gallringsplan med kommunarkivarie | Arkivlagen | ⬜ |
-| 18 | Exportfunktion för användardata | GDPR Art. 20 | ⬜ |
-| 19 | Förbered för WCAG 2.2 AA | EN 301 549 v4.1.1 | ⬜ |
-| 20 | Verifiera Intric:s DPA och datalokalisering | GDPR | ⬜ |
-| 21 | Verifiera Umami Cloud:s DPA och datalokalisering | GDPR | ⬜ |
-| 22 | Utbildningsmaterial om informationsklassning vid AI-användning | DIGG riktlinje 15 | ⬜ |
-| 23 | Etiska riktlinjer i akademin | DIGG riktlinje 18 | ⬜ |
-| 24 | Riskbedömning av plattformens cybersäkerhet | ISO 27001 | ⬜ |
+| 17 | Gallringsplan med kommunarkivarie | Arkivlagen | 📋 Kontakta kommunarkivarien. Gäller kontaktmeddelanden, nyheter, styrdokument. |
+| 18 | Exportfunktion för användardata | GDPR Art. 20 | ✅ Profilsidan — JSON-export av profil, framsteg, favoriter, anmälningar |
+| 19 | Förbered för WCAG 2.2 AA | EN 301 549 v4.1.1 | ✅ Target size ≥24px på alla interaktiva element, aria-labels på stängknappar |
+| 20 | Verifiera Intric:s DPA och datalokalisering | GDPR | 📋 Kontakta Intric — fråga om DPA och var AI-bearbetning sker. |
+| 21 | Verifiera Umami Cloud:s DPA och datalokalisering | GDPR | 📋 Kontakta Umami — eller överväg self-hosting (#25). |
+| 22 | Utbildningsmaterial om informationsklassning vid AI-användning | DIGG riktlinje 15 | 📋 Kan läggas till i AI-akademin som en kurs/modul. |
+| 23 | Etiska riktlinjer i akademin | DIGG riktlinje 18 | 📋 Kan läggas till i AI-akademin som en kurs/modul. |
+| 24 | Riskbedömning av plattformens cybersäkerhet | ISO 27001 | 📋 Samordna med kommunens informationssäkerhetsansvarig. |
 
 ### Prioritet 4: LÅGT (bra praxis)
 
 | # | Åtgärd | Regelverk | Status |
 |---|--------|-----------|--------|
-| 25 | Överväg self-hosting av Umami | Datalokaliseringsprincip | ⬜ |
-| 26 | Delta i SKR/AI Sweden-nätverk | SKR rekommendation | ⬜ |
-| 27 | Utvärdera svensk/europeisk hosting-alternativ | Suveränitetsprincip | ⬜ |
-| 28 | Upprätta kontinuitetsplan | ISO 27001 / NIS2 | ⬜ |
+| 25 | Överväg self-hosting av Umami | Datalokaliseringsprincip | 📋 Löser #21 automatiskt. Kan köras på Vercel eller egen server. |
+| 26 | Delta i SKR/AI Sweden-nätverk | SKR rekommendation | 📋 ai.se/kraftsamling, skr.se/ai |
+| 27 | Utvärdera svensk/europeisk hosting-alternativ | Suveränitetsprincip | 📋 Alternativ: Safespring, Elastx, City Cloud (svenska moln). |
+| 28 | Upprätta kontinuitetsplan | ISO 27001 / NIS2 | 📋 Dokumentera vad som händer om Supabase/Vercel går ner. |
 
 ---
 

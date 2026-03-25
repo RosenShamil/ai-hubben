@@ -133,6 +133,12 @@ export default function AdminLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      <a
+        href="#admin-main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm"
+      >
+        Hoppa till innehåll
+      </a>
       {/* Rainbow top bar */}
       <div className="h-1 w-full" style={{ background: BRAND_GRADIENT }} />
       <div className="flex flex-1">
@@ -171,6 +177,7 @@ export default function AdminLayout({
           <button
             onClick={() => setSidebarOpen(false)}
             className="lg:hidden text-muted-foreground hover:text-foreground"
+            aria-label="Stäng meny"
           >
             <X size={18} />
           </button>
@@ -230,6 +237,7 @@ export default function AdminLayout({
           <button
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden text-muted-foreground hover:text-foreground"
+            aria-label="Öppna meny"
           >
             <Menu size={20} />
           </button>
@@ -275,7 +283,7 @@ export default function AdminLayout({
 
         {/* Content */}
         <PullToRefresh hardReload>
-          <main className="flex-1 overflow-auto p-4 lg:p-6">{children}</main>
+          <main id="admin-main-content" className="flex-1 overflow-auto p-4 lg:p-6">{children}</main>
         </PullToRefresh>
       </div>
       </div>

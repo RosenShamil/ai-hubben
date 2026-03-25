@@ -459,7 +459,7 @@ export default function AdminStartsidaPage() {
                       <button
                         onClick={() => handleRemove(f.id)}
                         className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                        title="Ta bort fran startsidan"
+                        aria-label="Ta bort från startsidan"
                       >
                         <Trash2 size={14} />
                       </button>

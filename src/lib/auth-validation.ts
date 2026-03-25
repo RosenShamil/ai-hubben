@@ -14,6 +14,9 @@ export const registerSchema = z
     email: z.string().email("Ange en giltig e-postadress"),
     password: z.string().min(8, "Lösenord måste vara minst 8 tecken"),
     confirmPassword: z.string(),
+    acceptPrivacy: z.literal(true, {
+      message: "Du måste godkänna integritetspolicyn för att registrera dig",
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Lösenorden matchar inte",

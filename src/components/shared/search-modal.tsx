@@ -219,7 +219,7 @@ export function SearchModal({
                     inputRef.current?.focus();
                   }}
                   aria-label="Rensa sökning"
-                  className="shrink-0 rounded-md p-1 text-muted-foreground hover:text-foreground"
+                  className="shrink-0 rounded-md p-2 text-muted-foreground hover:text-foreground"
                 >
                   <X size={16} />
                 </button>

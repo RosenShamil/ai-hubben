@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, Bot } from "lucide-react";
 import { FadeIn } from "@/components/shared/fade-in";
 import { SubmitAssistantModal } from "@/components/shared/submit-assistant-modal";
 import { BRAND_GRADIENT } from "@/lib/constants";
@@ -149,6 +149,13 @@ export function AssistantLibrary({
             Utforska kommunens AI-assistenter. Sök och hitta verktyg som
             förenklar din vardag.
           </p>
+          <div className="mt-5 flex items-center gap-2.5 rounded-md border border-border bg-secondary/50 px-4 py-2.5">
+            <Bot size={14} className="shrink-0 text-muted-foreground" />
+            <p className="text-[0.8125rem] leading-[1.5] text-muted-foreground">
+              Assistenterna drivs av artificiell intelligens. Svaren genereras
+              automatiskt och bör granskas av användaren.
+            </p>
+          </div>
         </FadeIn>
       </section>
 

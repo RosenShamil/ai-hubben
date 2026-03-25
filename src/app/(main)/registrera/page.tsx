@@ -230,6 +230,33 @@ export default function RegisterPage() {
               )}
             </div>
 
+            <div className="flex items-start gap-3">
+              <input
+                id="acceptPrivacy"
+                type="checkbox"
+                {...register("acceptPrivacy")}
+                className="mt-1 h-4 w-4 shrink-0 rounded border-border accent-primary"
+              />
+              <label
+                htmlFor="acceptPrivacy"
+                className="text-[0.8125rem] leading-[1.5] text-muted-foreground"
+              >
+                Jag har läst och godkänner{" "}
+                <Link
+                  href="/integritetspolicy"
+                  target="_blank"
+                  className="text-foreground underline underline-offset-4 hover:opacity-80"
+                >
+                  integritetspolicyn
+                </Link>
+              </label>
+            </div>
+            {errors.acceptPrivacy && (
+              <p className="text-[0.8125rem] text-destructive">
+                {errors.acceptPrivacy.message}
+              </p>
+            )}
+
             {error && (
               <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-[0.8125rem] text-destructive">
                 {error}

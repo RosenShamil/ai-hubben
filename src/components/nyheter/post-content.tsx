@@ -191,7 +191,7 @@ export function PostContent({ post }: { post: Post }) {
           <div className="mt-8 overflow-hidden rounded-lg">
             <img
               src={post.cover_image}
-              alt=""
+              alt={post.title}
               className="h-auto w-full object-cover"
             />
           </div>

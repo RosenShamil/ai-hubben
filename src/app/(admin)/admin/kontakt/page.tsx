@@ -272,12 +272,12 @@ export default function AdminKontaktPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
-                      <button onClick={() => handleMove(i, "up")} disabled={i === 0} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:pointer-events-none" title="Flytta upp"><ArrowUp size={14} /></button>
-                      <button onClick={() => handleMove(i, "down")} disabled={i === entries.length - 1} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:pointer-events-none" title="Flytta ner"><ArrowDown size={14} /></button>
+                      <button onClick={() => handleMove(i, "up")} disabled={i === 0} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:pointer-events-none" aria-label="Flytta upp"><ArrowUp size={14} /></button>
+                      <button onClick={() => handleMove(i, "down")} disabled={i === entries.length - 1} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:pointer-events-none" aria-label="Flytta ner"><ArrowDown size={14} /></button>
                       <button
                         onClick={() => openEdit(entry)}
                         className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                        title="Redigera"
+                        aria-label="Redigera"
                       >
                         <Pencil size={14} />
                       </button>
@@ -286,14 +286,14 @@ export default function AdminKontaktPage() {
                           <button
                             onClick={() => handleDelete(entry.id)}
                             className="rounded-md p-1.5 text-destructive transition-colors hover:bg-destructive/10"
-                            title="Bekräfta"
+                            aria-label="Bekräfta"
                           >
                             <Check size={14} />
                           </button>
                           <button
                             onClick={() => setDeleteConfirm(null)}
                             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary"
-                            title="Avbryt"
+                            aria-label="Avbryt"
                           >
                             <X size={14} />
                           </button>
@@ -302,7 +302,7 @@ export default function AdminKontaktPage() {
                         <button
                           onClick={() => setDeleteConfirm(entry.id)}
                           className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                          title="Ta bort"
+                          aria-label="Ta bort"
                         >
                           <Trash2 size={14} />
                         </button>

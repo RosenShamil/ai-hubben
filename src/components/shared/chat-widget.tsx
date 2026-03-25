@@ -110,6 +110,14 @@ export function ChatWidget() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f5a623] opacity-60" />
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#f5a623]" />
                 </span>
+                <div>
+                  <p className="text-[0.8125rem] font-medium text-white leading-tight">
+                    iKAI
+                  </p>
+                  <p className="text-[0.625rem] text-white/70 leading-tight">
+                    AI-assistent — svaren genereras av AI
+                  </p>
+                </div>
               </div>
 
               <div className="flex items-center gap-1.5">

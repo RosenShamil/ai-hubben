@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Bot } from "lucide-react";
 import { fetchAssistant } from "@/lib/intric";
 import { FadeIn } from "@/components/shared/fade-in";
 import { AssistantActions } from "@/components/assistenter/assistant-actions";
@@ -186,6 +186,15 @@ export default async function AssistantDetailPage({
                   chatLink={chatLinks[assistant.id]}
                 />
               )}
+
+              {/* AI transparency notice (EU AI Act Art. 50) */}
+              <div className="flex items-start gap-3 rounded-lg border border-border bg-secondary/50 p-4">
+                <Bot size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
+                <p className="text-[0.8125rem] leading-[1.5] text-muted-foreground">
+                  Denna assistent drivs av artificiell intelligens. Svaren
+                  genereras automatiskt och bör alltid granskas av användaren.
+                </p>
+              </div>
 
               {/* Info card */}
               <div className="rounded-lg border border-border bg-card p-5 space-y-4">

@@ -39,6 +39,8 @@ export const FOOTER_LINKS = [
     links: [
       { label: "Om AI-hubben", href: "/om" },
       { label: "Kontakt", href: "/kontakt" },
+      { label: "Integritetspolicy", href: "/integritetspolicy" },
+      { label: "Tillgänglighet", href: "/tillganglighet" },
     ],
   },
 ] as const;

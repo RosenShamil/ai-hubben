@@ -476,7 +476,7 @@ export default function AdminAssistenterPage() {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wide text-blue-700 transition-colors hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 dark:hover:bg-blue-900"
                           style={monoStyle}
-                          title="Oppna i Intric Library"
+                          aria-label="Öppna i Intric Library"
                         >
                           <Globe size={10} /> API
                         </a>
@@ -525,7 +525,7 @@ export default function AdminAssistenterPage() {
                         <button
                           onClick={() => openEdit(a)}
                           className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                          title="Redigera"
+                          aria-label="Redigera"
                         >
                           <Pencil size={14} />
                         </button>
@@ -533,7 +533,7 @@ export default function AdminAssistenterPage() {
                           <button
                             onClick={() => handleToggleHidden(a)}
                             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                            title={isHidden ? "Visa" : "Doj"}
+                            aria-label={isHidden ? "Visa" : "Dölj"}
                           >
                             {isHidden ? <Eye size={14} /> : <EyeOff size={14} />}
                           </button>
@@ -542,14 +542,14 @@ export default function AdminAssistenterPage() {
                             <button
                               onClick={() => handleSetStatus(a.id, "approved")}
                               className="rounded-md p-1.5 text-green-600 transition-colors hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-950"
-                              title="Godkänn"
+                              aria-label="Godkänn"
                             >
                               <CheckCircle2 size={14} />
                             </button>
                             <button
                               onClick={() => handleSetStatus(a.id, "rejected")}
                               className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                              title="Avvisa"
+                              aria-label="Avvisa"
                             >
                               <XCircle size={14} />
                             </button>
@@ -559,14 +559,14 @@ export default function AdminAssistenterPage() {
                             <button
                               onClick={() => handleDelete(a.id)}
                               className="rounded-md p-1.5 text-destructive transition-colors hover:bg-destructive/10"
-                              title="Bekrafta"
+                              aria-label="Bekräfta"
                             >
                               <Check size={14} />
                             </button>
                             <button
                               onClick={() => setDeleteConfirm(null)}
                               className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary"
-                              title="Avbryt"
+                              aria-label="Avbryt"
                             >
                               <X size={14} />
                             </button>
@@ -575,7 +575,7 @@ export default function AdminAssistenterPage() {
                           <button
                             onClick={() => setDeleteConfirm(a.id)}
                             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                            title="Ta bort"
+                            aria-label="Ta bort"
                           >
                             <Trash2 size={14} />
                           </button>
