@@ -3,7 +3,7 @@
 
 **Version:** 2.0 (fullständig statusrapport)
 **Datum:** 2026-03-23
-**Status:** ~95% implementerat — enda saknade feature: `/projekt`-sidan
+**Status:** Kärnplattform komplett
 
 ---
 
@@ -15,7 +15,6 @@ AI-hubben är Katrineholms kommun centrala plattform för allt AI-relaterat. Den
 - Live-statistik från Intric-plattformen
 - Dokumentation, riktlinjer och vägledning (PDF:er)
 - Utbildningar, workshops och videoresurser
-- Projekt och case från kommunens AI-implementeringar
 - En egendesignad AI-chatbot med tillgång till kommundata
 
 ### 1.2 Målgrupper

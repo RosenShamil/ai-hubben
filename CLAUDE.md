@@ -120,7 +120,6 @@ Data files in `src/lib/` follow `{feature}-{concern}.ts` naming (e.g., `educatio
 
 ## Not Yet Implemented
 
-- **`/projekt`** — Project/case showcase page (described in masterplan but no code exists)
 - **Domain migration** — `kommunai.se` registered but not configured (see `docs/roadmap-todo.md`)
 - **LMS / custom courses** — Concept designed but not built (see `docs/roadmap-todo.md`)
 

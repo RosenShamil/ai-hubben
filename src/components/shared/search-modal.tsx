@@ -93,7 +93,7 @@ export function SearchModal({
 
     const lq = q.toLowerCase();
 
-    // Static pages matching
+    // Static pages matching (client-side, no DB needed)
     const items: SearchResult[] = [];
     for (const page of PAGES) {
       if (
@@ -111,151 +111,60 @@ export function SearchModal({
       }
     }
 
-    const [assistants, posts, faqs, docs, team, contacts] = await Promise.allSettled([
-      // Assistants from Supabase (community)
-      supabase
-        .from("assistants")
-        .select("id, name, description")
-        .or(`name.ilike.%${q}%,description.ilike.%${q}%`)
-        .limit(5),
-      // Posts
-      supabase
-        .from("posts")
-        .select("id, title, excerpt, slug, content")
-        .eq("published", true)
-        .or(`title.ilike.%${q}%,excerpt.ilike.%${q}%,content.ilike.%${q}%`)
-        .limit(5),
-      // FAQs
-      supabase
-        .from("faqs")
-        .select("id, question, answer")
-        .or(`question.ilike.%${q}%,answer.ilike.%${q}%`)
-        .limit(5),
-      // Documents
-      supabase
-        .from("documents")
-        .select("id, title, description")
-        .or(`title.ilike.%${q}%,description.ilike.%${q}%`)
-        .limit(5),
-      // Team members
-      supabase
-        .from("team_members")
-        .select("id, name, role, email")
-        .or(`name.ilike.%${q}%,role.ilike.%${q}%,email.ilike.%${q}%`)
-        .limit(5),
-      // Contact entries
-      supabase
-        .from("contact_entries")
-        .select("id, label, title, description, email, phone")
-        .or(`title.ilike.%${q}%,label.ilike.%${q}%,description.ilike.%${q}%,email.ilike.%${q}%`)
-        .limit(5),
+    // Full-text search across all Supabase tables (one RPC call)
+    const [dbResults, marketplaceResults] = await Promise.allSettled([
+      supabase.rpc("search_all", { search_query: q }),
+      fetch("https://marketplace.intric.ai/api/assistants").then((r) =>
+        r.ok ? r.json() : []
+      ),
     ]);
 
-    if (assistants.status === "fulfilled" && assistants.value.data) {
-      for (const a of assistants.value.data) {
+    if (dbResults.status === "fulfilled" && dbResults.value.data) {
+      for (const row of dbResults.value.data as Array<{
+        id: string;
+        title: string;
+        description: string;
+        href: string;
+        type: string;
+      }>) {
         items.push({
-          id: a.id,
-          title: a.name,
-          description: a.description?.slice(0, 100) || "",
-          href: `/assistenter/${a.id}`,
-          type: "assistent",
+          id: row.id,
+          title: row.title,
+          description: row.description || "",
+          href: row.href,
+          type: row.type as SearchResult["type"],
         });
       }
     }
 
-    if (posts.status === "fulfilled" && posts.value.data) {
-      for (const p of posts.value.data) {
-        items.push({
-          id: p.id,
-          title: p.title,
-          description: p.excerpt?.slice(0, 100) || "",
-          href: `/nyheter/${p.slug}`,
-          type: "nyhet",
-        });
-      }
-    }
+    // Marketplace assistants (client-side filter)
+    if (marketplaceResults.status === "fulfilled") {
+      const all = marketplaceResults.value as Array<{
+        id: string;
+        name: string;
+        description: string;
+        organization: string;
+      }>;
+      const matches = (all || [])
+        .filter(
+          (a) =>
+            a.organization.toLowerCase() === "katrineholms kommun" &&
+            (a.name.toLowerCase().includes(lq) ||
+              a.description?.toLowerCase().includes(lq))
+        )
+        .slice(0, 5);
 
-    if (faqs.status === "fulfilled" && faqs.value.data) {
-      for (const f of faqs.value.data) {
-        items.push({
-          id: f.id,
-          title: f.question,
-          description: f.answer?.slice(0, 100) || "",
-          href: "/faq",
-          type: "faq",
-        });
-      }
-    }
-
-    if (docs.status === "fulfilled" && docs.value.data) {
-      for (const d of docs.value.data) {
-        items.push({
-          id: d.id,
-          title: d.title,
-          description: d.description?.slice(0, 100) || "",
-          href: "/dokumentation",
-          type: "dokument",
-        });
-      }
-    }
-
-    if (team.status === "fulfilled" && team.value.data) {
-      for (const t of team.value.data) {
-        items.push({
-          id: t.id,
-          title: t.name,
-          description: t.role + (t.email ? ` — ${t.email}` : ""),
-          href: "/om",
-          type: "team",
-        });
-      }
-    }
-
-    if (contacts.status === "fulfilled" && contacts.value.data) {
-      for (const c of contacts.value.data) {
-        items.push({
-          id: c.id,
-          title: `${c.label}: ${c.title}`,
-          description: [c.email, c.phone, c.description?.slice(0, 60)].filter(Boolean).join(" — "),
-          href: "/kontakt",
-          type: "kontakt",
-        });
-      }
-    }
-
-    // Also search marketplace assistants
-    try {
-      const res = await fetch("https://marketplace.intric.ai/api/assistants");
-      if (res.ok) {
-        const all = (await res.json()) as Array<{
-          id: string;
-          name: string;
-          description: string;
-          organization: string;
-        }>;
-        const matches = all
-          .filter(
-            (a) =>
-              a.organization.toLowerCase() === "katrineholms kommun" &&
-              (a.name.toLowerCase().includes(lq) ||
-                a.description?.toLowerCase().includes(lq))
-          )
-          .slice(0, 5);
-
-        for (const a of matches) {
-          if (!items.some((i) => i.id === a.id)) {
-            items.push({
-              id: a.id,
-              title: a.name,
-              description: a.description?.slice(0, 100) || "",
-              href: `/assistenter/${a.id}`,
-              type: "assistent",
-            });
-          }
+      for (const a of matches) {
+        if (!items.some((i) => i.id === a.id)) {
+          items.push({
+            id: a.id,
+            title: a.name,
+            description: a.description?.slice(0, 100) || "",
+            href: `/assistenter/${a.id}`,
+            type: "assistent",
+          });
         }
       }
-    } catch {
-      // ignore marketplace errors
     }
 
     setResults(items);

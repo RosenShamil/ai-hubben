@@ -120,6 +120,7 @@ async function fetchSupabaseAssistants(): Promise<IntricAssistant[]> {
   const { data, error } = await supabase
     .from("assistants")
     .select("*")
+    .eq("status", "approved")
     .order("created_at", { ascending: false });
 
   if (error) throw error;

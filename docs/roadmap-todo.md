@@ -9,21 +9,16 @@ Uppdaterad: 2026-03-24
 
 ## 1. OGJORT (befintlig plattform)
 
-### 1.1 Projektsidan (`/projekt`)
-- **Status:** Ej implementerad. Enda saknade feature fran original-masterplanen.
-- 5 projekt beskrivna: hemtjanst-AI, AI-kameror, SDK, digital post, katrineholm.se-assistent
-- Behover: route, komponenter, data, admin-sida
-
-### 1.2 Domanbyte till kommunai.se
+### 1.1 Domanbyte till kommunai.se
 - Doman registrerad. Se `memory/project_domain_migration.md` for steg.
 - Vercel, DNS, kodreferenser, Supabase Auth SMTP
 
-### 1.3 Regulatorisk compliance
+### 1.2 Regulatorisk compliance
 - Se `docs/regelverk-och-compliance.md` for fullstandig rapport.
 - **Kritiskt:** DPA med Supabase/Vercel, integritetspolicy, tillganglighetsredogorelse, radera-konto-funktion, registerforteckning
 - **Fore 2026-08-02:** EU AI Act — riskklassificering, transparensmeddelanden, DPIA, AI-policy
 
-### 1.4 Meddelandesystem (Niva 1 + 2)
+### 1.3 Meddelandesystem (Niva 1 + 2)
 Nuvarande: enkel inkorg med lasa/ta bort + mailto-svar. Behover uppgradering.
 
 **Niva 1 — Svar direkt fran admin:**
@@ -36,7 +31,7 @@ Nuvarande: enkel inkorg med lasa/ta bort + mailto-svar. Behover uppgradering.
 - [ ] Tilldela meddelande till annan admin/person
 - [ ] Svarsmallar for vanliga fragor ("Tack for ditt meddelande, vi aterkommer inom 48h")
 
-### 1.5 iKAI — AI-hubben kunskapsfix
+### 1.4 iKAI — AI-hubben kunskapsfix
 Testresultat: 93% OK (40/43 fragor). Atgarder:
 
 **Kunskapsdokumentet (ikai-aihubben-kunskap.md):**
@@ -49,16 +44,7 @@ Testresultat: 93% OK (40/43 fragor). Atgarder:
 - [ ] Lagg till: "Ange inte specifika forvaltningars AI-anvandning utan aktuell data — hanvisa till statistiksidan"
 - [ ] Valfritt: Notera att kunskapsbanken nas via /utbildning?flik=begrepp (inte /kunskapsbanken)
 
-### 1.6 Domanbyte och domanregistrering
-- [ ] Registrera ny doman (kommunai.se ar registrerad, behover DNS-konfigurering)
-- [ ] Vercel: Lagg till kommunai.se + www.kommunai.se som custom domain
-- [ ] DNS: Peka A-record/CNAME till Vercel
-- [ ] Kod: Uppdatera BASE_URL/SITE_URL i sitemap.ts, robots.ts, rss.xml/route.ts, layout.tsx (OG), CLAUDE.md, masterplan
-- [ ] Redirect: aihubben.se → kommunai.se (Vercel redirect rule)
-- [ ] Supabase Auth: Konfigurera SMTP med kommunai.se-epost for auth-mejl
-- Se aven `memory/project_domain_migration.md` for detaljerade steg
-
-### 1.7 Smarre forbattringar
+### 1.5 Smarre forbattringar
 - [ ] Community assistant uploads — lagga till moderationsflode (status-falt, admin-godkannande)
 - [ ] Skeleton loading states (nuvarande: spinners)
 - [ ] Full-text search i Supabase (nuvarande: `ilike` substring)
@@ -320,10 +306,9 @@ Gors EN gang, atervands i alla mallar for alla kommuner. Uppdateras vid nya laga
 - [x] URL-import API-route for nyhetsartiklar
 - [x] assistant_overrides-tabell for marketplace-overrides
 - [x] iKAI kunskapsdokument + tillaggsprompt + testlista (93% godkant)
-- [ ] `/projekt`-sidan
-- [ ] Compliance-atgarder (se punkt 1.3)
-- [ ] Domanbyte till kommunai.se (se punkt 1.6)
-- [ ] iKAI-fixar (se punkt 1.5)
+- [ ] Compliance-atgarder (se punkt 1.2)
+- [ ] Domanbyte till kommunai.se (se punkt 1.1)
+- [ ] iKAI-fixar (se punkt 1.4)
 
 ### Fas 1 — MVP anpassade kurser
 - [ ] Mallbibliotek (5-10 mallar)

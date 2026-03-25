@@ -286,7 +286,7 @@ export function SubmitAssistantModal({
               </div>
               <h3 className="mt-6 text-[1.25rem] font-semibold">Tack!</h3>
               <p className="mt-3 max-w-sm text-[0.9375rem] text-foreground/85">
-                Din assistent har lagts till i biblioteket.
+                Din assistent har skickats in och granskas innan publicering.
               </p>
             </div>
           )}

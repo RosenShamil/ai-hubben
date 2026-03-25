@@ -13,6 +13,9 @@ import {
   EyeOff,
   Globe,
   Upload,
+  Clock,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 
 const MARKETPLACE_URL = "https://marketplace.intric.ai/api";
@@ -47,6 +50,7 @@ interface AdminAssistant {
   setup_instructions: string | null;
   submitted_by: string | null;
   created_at: string;
+  status: "pending" | "approved" | "rejected";
   // Override data (marketplace only)
   override?: {
     description_extra: string | null;
@@ -130,6 +134,7 @@ export default function AdminAssistenterPage() {
           setup_instructions: ov?.setup_instructions ?? null,
           submitted_by: null,
           created_at: a.created_at,
+          status: "approved" as const,
           override: ov ?? undefined,
         };
       });
@@ -146,6 +151,7 @@ export default function AdminAssistenterPage() {
         setup_instructions: string | null;
         submitted_by: string | null;
         created_at: string;
+        status: string;
       }) => ({
         id: a.id,
         name: a.name,
@@ -158,6 +164,7 @@ export default function AdminAssistenterPage() {
         setup_instructions: a.setup_instructions ?? null,
         submitted_by: a.submitted_by ?? null,
         created_at: a.created_at,
+        status: (a.status || "approved") as "pending" | "approved" | "rejected",
       })
     );
 
@@ -187,6 +194,7 @@ export default function AdminAssistenterPage() {
   }, [assistants, query, sourceFilter]);
 
   const hiddenCount = assistants.filter((a) => a.override?.hidden).length;
+  const pendingCount = assistants.filter((a) => a.status === "pending").length;
 
   function openEdit(a: AdminAssistant) {
     setEditingAssistant(a);
@@ -291,6 +299,19 @@ export default function AdminAssistenterPage() {
     fetchAll();
   }
 
+  async function handleSetStatus(id: string, status: "approved" | "rejected") {
+    const { error } = await supabase
+      .from("assistants")
+      .update({ status })
+      .eq("id", id);
+    if (error) {
+      showToast("error", "Kunde inte uppdatera status: " + error.message);
+    } else {
+      showToast("success", status === "approved" ? "Assistenten godkänd" : "Assistenten avvisad");
+    }
+    fetchAll();
+  }
+
   async function handleDelete(id: string) {
     const { error } = await supabase.from("assistants").delete().eq("id", id);
     if (error) {
@@ -337,7 +358,7 @@ export default function AdminAssistenterPage() {
         <p className="text-[0.8125rem] text-muted-foreground" style={monoStyle}>
           {loading
             ? "..."
-            : `${assistants.length} totalt${hiddenCount > 0 ? ` · ${hiddenCount} dolda` : ""}`}
+            : `${assistants.length} totalt${pendingCount > 0 ? ` · ${pendingCount} väntar` : ""}${hiddenCount > 0 ? ` · ${hiddenCount} dolda` : ""}`}
         </p>
       </div>
 
@@ -387,7 +408,7 @@ export default function AdminAssistenterPage() {
         <table className="w-full text-[0.8125rem]">
           <thead>
             <tr className="border-b border-border">
-              {["Namn", "Organisation", "Kalla", "Chattlank", "Atgarder"].map(
+              {["Namn", "Organisation", "Kalla", "Status", "Atgarder"].map(
                 (h) => (
                   <th
                     key={h}
@@ -423,11 +444,13 @@ export default function AdminAssistenterPage() {
                     className={`border-b border-border last:border-0 transition-colors hover:bg-secondary/50 ${
                       isHidden
                         ? "opacity-40"
-                        : !chatUrl
+                        : a.status === "pending"
                           ? "bg-amber-50/50 dark:bg-amber-950/20"
-                          : i % 2 === 0
-                            ? ""
-                            : "bg-secondary/20"
+                          : a.status === "rejected"
+                            ? "opacity-50"
+                            : i % 2 === 0
+                              ? ""
+                              : "bg-secondary/20"
                     }`}
                   >
                     <td className="px-4 py-3">
@@ -466,18 +489,35 @@ export default function AdminAssistenterPage() {
                         </span>
                       )}
                     </td>
-                    <td className="max-w-[180px] truncate px-4 py-3">
-                      {chatUrl ? (
-                        <a
-                          href={chatUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline dark:text-blue-400"
+                    <td className="px-4 py-3">
+                      {a.source === "marketplace" ? (
+                        <span
+                          className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wide text-green-700 dark:bg-green-950 dark:text-green-300"
+                          style={monoStyle}
                         >
-                          Oppen
-                        </a>
+                          <CheckCircle2 size={10} /> Live
+                        </span>
+                      ) : a.status === "pending" ? (
+                        <span
+                          className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wide text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                          style={monoStyle}
+                        >
+                          <Clock size={10} /> Väntar
+                        </span>
+                      ) : a.status === "rejected" ? (
+                        <span
+                          className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wide text-red-700 dark:bg-red-950 dark:text-red-300"
+                          style={monoStyle}
+                        >
+                          <XCircle size={10} /> Avvisad
+                        </span>
                       ) : (
-                        <span className="text-amber-600 dark:text-amber-400">Saknas</span>
+                        <span
+                          className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wide text-green-700 dark:bg-green-950 dark:text-green-300"
+                          style={monoStyle}
+                        >
+                          <CheckCircle2 size={10} /> Godkänd
+                        </span>
                       )}
                     </td>
                     <td className="px-4 py-3">
@@ -497,6 +537,23 @@ export default function AdminAssistenterPage() {
                           >
                             {isHidden ? <Eye size={14} /> : <EyeOff size={14} />}
                           </button>
+                        ) : a.status === "pending" ? (
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => handleSetStatus(a.id, "approved")}
+                              className="rounded-md p-1.5 text-green-600 transition-colors hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-950"
+                              title="Godkänn"
+                            >
+                              <CheckCircle2 size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleSetStatus(a.id, "rejected")}
+                              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                              title="Avvisa"
+                            >
+                              <XCircle size={14} />
+                            </button>
+                          </div>
                         ) : deleteConfirm === a.id ? (
                           <div className="flex items-center gap-1">
                             <button
