@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="rainbow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c83228"/>
+      <stop offset="20%" stop-color="#fb873f"/>
+      <stop offset="40%" stop-color="#d3dd92"/>
+      <stop offset="60%" stop-color="#59824f"/>
+      <stop offset="80%" stop-color="#2874d7"/>
+      <stop offset="100%" stop-color="#99c2ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="#0a0a0a"/>
+  <circle cx="256" cy="256" r="200" fill="none" stroke="url(#rainbow)" stroke-width="3.5"/>
+  <text x="256" y="290" text-anchor="middle" fill="#fafafa" font-family="'Bodoni Moda', 'Bodoni MT', 'Didot', serif" font-size="155" font-weight="400" letter-spacing="-4">AI</text>
+</svg>
