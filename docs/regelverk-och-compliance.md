@@ -565,8 +565,8 @@ Se avsnitt 3.2 ovan.
 | # | Åtgärd | Regelverk | Status |
 |---|--------|-----------|--------|
 | 1 | Verifiera att Supabase körs i EU-region | GDPR | ✅ Bekräftat: eu-west-1 (Irland) |
-| 2 | Teckna DPA med Supabase | GDPR | 📋 Gör via Supabase Dashboard → Settings → Legal → DPA. Inkludera SCC. |
-| 3 | Teckna DPA med Vercel | GDPR | 📋 Tillgängligt på vercel.com/legal/dpa. Vercel är DPF-certifierade. |
+| 2 | Teckna DPA med Supabase | GDPR | ✅ Signerad 2026-03-26. Se `Compliance/Supabase User DPA (March 12, 2026).pdf` |
+| 3 | Teckna DPA med Vercel | GDPR | ✅ Gäller automatiskt via ToS. Inkluderar EU SCCs. Kopia sparad i `Compliance/`. |
 | 4 | Publicera integritetspolicy/dataskyddsinformation | GDPR | ✅ `/integritetspolicy` — DPO via Sydarkivera, rättsliga grunder, rättigheter, cookies, AI-transparens |
 | 5 | Publicera tillgänglighetsredogörelse | DOS-lagen | ✅ `/tillganglighet` — DIGG-mall, WCAG 2.1 AA, kända brister, DIGG-anmälningslänk |
 | 6 | Upprätta registerförteckning (Art. 30) | GDPR | ✅ `docs/registerforteckning.md` — 7 behandlingar, biträdesförteckning, rättighetstöd |
@@ -577,9 +577,9 @@ Se avsnitt 3.2 ovan.
 
 | # | Åtgärd | Regelverk | Status |
 |---|--------|-----------|--------|
-| 9 | Genomför AI-riskklassificering | EU AI Act | 📋 Redan bedömt i avsnitt 1.1: assistenter=begränsad risk, akademin=potentiellt hög om AI-bedömning, övrigt=minimal. Formalisera i dokument. |
+| 9 | Genomför AI-riskklassificering | EU AI Act | ✅ `docs/ai-riskklassificering.md` — Assistenter=begränsad risk, akademin=minimal, övrigt=utanför AI Act |
 | 10 | Implementera AI-transparensmeddelanden | EU AI Act Art. 50 | ✅ Chatwidget, assistentdetaljsida, assistentbibliotek — "drivs av AI, granska svaren" |
-| 11 | Genomför DPIA (konsekvensbedömning) | GDPR Art. 35 | 📋 Krävs för AI-assistenter + utbildningsdata. Använd IMY:s DPIA-mall. |
+| 11 | Genomför DPIA (konsekvensbedömning) | GDPR Art. 35 | ✅ `docs/intric-dpia.md` (~25 sidor) — Fullständig DPIA för Intric. Inväntar DPO-samråd med Sydarkivera. Research i `docs/dpia-research-underlag.md` |
 | 12 | Ta fram kommunens AI-policy | DIGG riktlinje 1 | 📋 Organisatoriskt beslut. Kan publiceras i AI-hubbens dokumentationssektion. |
 | 13 | Genomför suveränitetsanalys för molntjänster | OSL + eSam | 📋 Använd eSam:s metodstöd. Supabase=AWS Irland, Vercel=USA+EU (DPF). |
 | 14 | Klassificera information (KLASSA) | MSB/cybersäkerhetslagen | 📋 Använd SKR:s KLASSA-verktyg (klassa.skr.se). |
