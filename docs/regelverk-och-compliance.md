@@ -595,8 +595,8 @@ Se avsnitt 3.2 ovan.
 | 19 | Förbered för WCAG 2.2 AA | EN 301 549 v4.1.1 | ✅ Target size ≥24px på alla interaktiva element, aria-labels på stängknappar |
 | 20 | Verifiera Intric:s DPA och datalokalisering | GDPR | ✅ PUB-avtal tecknat (SKR-mall). Data i Sverige (GleSys). Dokumenterat i DPIA + suveränitetsanalys. |
 | 21 | Verifiera Umami Cloud:s DPA och datalokalisering | GDPR | 📋 Kontakta Umami — eller överväg self-hosting (#25). |
-| 22 | Utbildningsmaterial om informationsklassning vid AI-användning | DIGG riktlinje 15 | 📋 Innehåll täckt i AI-policyn (avsnitt 7+9). Kan läggas till som kurs i AI-akademin. |
-| 23 | Etiska riktlinjer i akademin | DIGG riktlinje 18 | 📋 Innehåll täckt i AI-policyn (avsnitt 5). Kan läggas till som kurs i AI-akademin. |
+| 22 | Utbildningsmaterial om informationsklassning vid AI-användning | DIGG riktlinje 15 | ✅ Redan i AI-akademin: kurs-1-3/mod-1-3-2 "Informationssäkerhet & GDPR" med "Vad får du skriva till en AI?" + AI-policyn avsnitt 7+9. |
+| 23 | Etiska riktlinjer i akademin | DIGG riktlinje 18 | ✅ Redan i AI-akademin: kurs-2-4/mod-2-4-3 "Etisk AI i offentlig sektor" med "AI-etik i praktiken" + AI-policyn avsnitt 5. |
 | 24 | Riskbedömning av plattformens cybersäkerhet | ISO 27001 | 📋 Organisatoriskt — samordna med kommunens informationssäkerhetsansvarig. Klassificering gjord i #14. |
 
 ### Prioritet 4: LÅGT (bra praxis)
