@@ -580,11 +580,11 @@ Se avsnitt 3.2 ovan.
 | 9 | Genomför AI-riskklassificering | EU AI Act | ✅ `docs/ai-riskklassificering.md` — Assistenter=begränsad risk, akademin=minimal, övrigt=utanför AI Act |
 | 10 | Implementera AI-transparensmeddelanden | EU AI Act Art. 50 | ✅ Chatwidget, assistentdetaljsida, assistentbibliotek — "drivs av AI, granska svaren" |
 | 11 | Genomför DPIA (konsekvensbedömning) | GDPR Art. 35 | ✅ `docs/intric-dpia.md` (~25 sidor) — Fullständig DPIA för Intric. Inväntar DPO-samråd med Sydarkivera. Research i `docs/dpia-research-underlag.md` |
-| 12 | Ta fram kommunens AI-policy | DIGG riktlinje 1 | 📋 Organisatoriskt beslut. Kan publiceras i AI-hubbens dokumentationssektion. |
-| 13 | Genomför suveränitetsanalys för molntjänster | OSL + eSam | 📋 Använd eSam:s metodstöd. Supabase=AWS Irland, Vercel=USA+EU (DPF). |
-| 14 | Klassificera information (KLASSA) | MSB/cybersäkerhetslagen | 📋 Använd SKR:s KLASSA-verktyg (klassa.skr.se). |
-| 15 | Upprätta incidentrapporteringsrutin | Cybersäkerhetslagen | 📋 Rapportering till MCF. Samordna med kommunens IT-säkerhet. |
-| 16 | Dokumentera AI-system (teknisk dokumentation) | EU AI Act | 📋 Dokumentera Intric-integrationen, AI-modeller, dataflöden. CLAUDE.md är en bra utgångspunkt. |
+| 12 | Ta fram kommunens AI-policy | DIGG riktlinje 1 | ✅ `docs/ai-policy.md` — 18 sektioner, DIGG-baserad. Kompletterar befintlig "Vägledning för AI-användning". Inväntar beslut av kommunstyrelsen. |
+| 13 | Genomför suveränitetsanalys för molntjänster | OSL + eSam | ✅ `docs/suveranitetsanalys.md` — Alla 4 tjänster analyserade (Intric, Supabase, Vercel, Umami). Alla godkända. |
+| 14 | Klassificera information (KLASSA) | MSB/cybersäkerhetslagen | ✅ `docs/informationsklassificering.md` — K3/R2/T2. Formalisera i KLASSA-verktyget vid tillgång. |
+| 15 | Upprätta incidentrapporteringsrutin | Cybersäkerhetslagen | ✅ `docs/incidentrapporteringsrutin.md` — NIS2 3-stegsmodell (24h/72h/1mån), GDPR Art. 33, flödesschema. |
+| 16 | Dokumentera AI-system (teknisk dokumentation) | EU AI Act | ✅ `docs/ai-systemdokumentation.md` — Arkitektur, AI-modeller, dataflöden, risker, transparens, leverantörer. |
 
 ### Prioritet 3: MEDIUM (rekommenderat, bör göras)
 
