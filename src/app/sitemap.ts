@@ -29,6 +29,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/faq`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE_URL}/om`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/kontakt`, changeFrequency: "yearly", priority: 0.4 },
+    { url: `${BASE_URL}/integritetspolicy`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${BASE_URL}/tillganglighet`, changeFrequency: "yearly", priority: 0.3 },
   ];
 
   const coursePages: MetadataRoute.Sitemap = COURSES.map((course) => ({

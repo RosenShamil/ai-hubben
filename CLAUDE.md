@@ -40,7 +40,7 @@ No test framework is configured. Build uses webpack because Serwist service work
 
 Two layout groups under `src/app/`:
 
-- **`(main)/`** — Public pages: `/`, `/assistenter`, `/assistenter/[id]`, `/statistik`, `/utbildning` (tabbed: utbildning/akademin/begrepp), `/utbildning/akademin/[courseId]`, `/utbildning/akademin/certifikat`, `/dokumentation`, `/nyheter`, `/nyheter/[slug]`, `/faq`, `/om`, `/kontakt`, `/logga-in`, `/registrera`, `/profil`
+- **`(main)/`** — Public pages: `/`, `/assistenter`, `/assistenter/[id]`, `/statistik`, `/utbildning` (tabbed: utbildning/akademin/begrepp), `/utbildning/akademin/[courseId]`, `/utbildning/akademin/certifikat`, `/dokumentation`, `/nyheter`, `/nyheter/[slug]`, `/faq`, `/om`, `/kontakt`, `/logga-in`, `/registrera`, `/profil`, `/integritetspolicy`, `/tillganglighet`
 - **`(admin)/admin/`** — Protected admin CRUD: `/admin/startsida`, `/admin/nyheter`, `/admin/statistik`, `/admin/akademin`, `/admin/assistenter`, `/admin/utbildning`, `/admin/dokument`, `/admin/faq`, `/admin/team`, `/admin/innehall`, `/admin/meddelanden`, `/admin/kontakt`, `/admin/resurser`, `/admin/login`, `/admin/anvandare`
 
 **Redirects:** `/akademin` -> `/utbildning?flik=akademin`, `/kunskapsbank` -> `/utbildning?flik=begrepp`
@@ -71,7 +71,7 @@ Client-side only via `AuthProvider` context (`src/components/shared/auth-provide
 - `src/lib/supabase-auth.ts` — Auth helpers (signIn, signUp, signOut, isCurrentUserAdmin, etc.)
 - `src/lib/constants.ts` — Navigation links, mobile tabs, footer links, brand gradient
 - `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
-- `src/app/actions.ts` — Server actions (revalidateStats for ISR cache invalidation)
+- `src/app/actions.ts` — Server actions (revalidateStats, deleteUserAccount, exportUserData)
 - `src/hooks/use-swipe-navigation.ts` — Reusable Framer Motion swipe gesture hook
 - `src/sw.ts` — Serwist service worker config
 - `src/app/manifest.ts` — PWA web app manifest
@@ -108,25 +108,42 @@ Data files in `src/lib/` follow `{feature}-{concern}.ts` naming (e.g., `educatio
 - Design goal: **Speakeasy-inspired** — premium, sophisticated, not generic AI/Tailwind-look
 - Mobile-first PWA with app-like feel (bottom tab bar, swipe gestures, pull-to-refresh)
 - Max 2-3 heavy animations per page
-- WCAG 2.1 AA accessibility (focus-visible, aria-labels, prefers-reduced-motion)
+- WCAG 2.1 AA + 2.2 prep (focus-visible, aria-labels, prefers-reduced-motion, target size ≥24px)
 - Workflow: explain -> approve -> implement -> test -> push
 
 ## Design Decisions (Intentional)
 
 - Statistics are admin-managed (not live API) — Intric has no stats endpoints
 - News uses custom markdown parser (not MDX) — supports bold, headings, lists, links, emails
-- Search uses `ilike` substring matching — sufficient for current data volume
+- Search uses PostgreSQL full-text search (`search_all` RPC) with Swedish stemming + prefix matching + ilike fallback
 - Community assistant uploads go live immediately (no moderation queue)
+- GDPR consent required at registration (acceptPrivacy checkbox + Zod validation)
+- Account deletion available via profile page (two-step confirmation, deletes all data)
+- Data export available via profile page (JSON download)
 
 ## Not Yet Implemented
 
 - **Domain migration** — `kommunai.se` registered but not configured (see `docs/roadmap-todo.md`)
 - **LMS / custom courses** — Concept designed but not built (see `docs/roadmap-todo.md`)
+- **Compliance (organizational)** — 8 of 28 items remain, all requiring organizational action (MCF, archiving, Umami DPA, cybersecurity assessment, network participation). See `docs/regelverk-och-compliance.md`.
 
 ## Documentation
 
 - `docs/aihubben-masterplan.md` — Design brief, database schema, feature roadmap
 - `docs/design-system.md` — Color tokens, typography scales, spacing, component patterns
 - `docs/roadmap-todo.md` — LMS concept, multi-kommun vision, business model, prioritized phases
-- `docs/regelverk-och-compliance.md` — GDPR, DOS-lagen, NIS2, EU AI Act compliance report
 - `docs/ikai-*.md` — iKAI knowledge base, system prompt, and test checklist
+
+### Compliance & Regulatory (docs/)
+
+- `regelverk-och-compliance.md` — Master checklist (28 items, 20 complete) with status
+- `intric-dpia.md` — DPIA for Intric AI (~28 pages, IMY 10-step model)
+- `dpia-research-underlag.md` — Research compilation for DPIA
+- `ai-riskklassificering.md` — EU AI Act risk classification
+- `ai-policy.md` — Municipal AI policy (18 sections, DIGG-based)
+- `ai-systemdokumentation.md` — Technical AI system documentation
+- `registerforteckning.md` — GDPR Art. 30 register of processing activities
+- `suveranitetsanalys.md` — Cloud sovereignty analysis (eSam methodology)
+- `informationsklassificering.md` — KLASSA-based information classification
+- `incidentrapporteringsrutin.md` — NIS2 incident reporting routine
+- `kontinuitetsplan.md` — Business continuity plan
