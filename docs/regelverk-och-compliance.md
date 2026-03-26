@@ -590,14 +590,14 @@ Se avsnitt 3.2 ovan.
 
 | # | Åtgärd | Regelverk | Status |
 |---|--------|-----------|--------|
-| 17 | Gallringsplan med kommunarkivarie | Arkivlagen | 📋 Kontakta kommunarkivarien. Gäller kontaktmeddelanden, nyheter, styrdokument. |
+| 17 | Gallringsplan med kommunarkivarie | Arkivlagen | 📋 Organisatoriskt — kontakta kommunarkivarien. Gäller kontaktmeddelanden, nyheter, styrdokument. |
 | 18 | Exportfunktion för användardata | GDPR Art. 20 | ✅ Profilsidan — JSON-export av profil, framsteg, favoriter, anmälningar |
 | 19 | Förbered för WCAG 2.2 AA | EN 301 549 v4.1.1 | ✅ Target size ≥24px på alla interaktiva element, aria-labels på stängknappar |
-| 20 | Verifiera Intric:s DPA och datalokalisering | GDPR | 📋 Kontakta Intric — fråga om DPA och var AI-bearbetning sker. |
+| 20 | Verifiera Intric:s DPA och datalokalisering | GDPR | ✅ PUB-avtal tecknat (SKR-mall). Data i Sverige (GleSys). Dokumenterat i DPIA + suveränitetsanalys. |
 | 21 | Verifiera Umami Cloud:s DPA och datalokalisering | GDPR | 📋 Kontakta Umami — eller överväg self-hosting (#25). |
-| 22 | Utbildningsmaterial om informationsklassning vid AI-användning | DIGG riktlinje 15 | 📋 Kan läggas till i AI-akademin som en kurs/modul. |
-| 23 | Etiska riktlinjer i akademin | DIGG riktlinje 18 | 📋 Kan läggas till i AI-akademin som en kurs/modul. |
-| 24 | Riskbedömning av plattformens cybersäkerhet | ISO 27001 | 📋 Samordna med kommunens informationssäkerhetsansvarig. |
+| 22 | Utbildningsmaterial om informationsklassning vid AI-användning | DIGG riktlinje 15 | 📋 Innehåll täckt i AI-policyn (avsnitt 7+9). Kan läggas till som kurs i AI-akademin. |
+| 23 | Etiska riktlinjer i akademin | DIGG riktlinje 18 | 📋 Innehåll täckt i AI-policyn (avsnitt 5). Kan läggas till som kurs i AI-akademin. |
+| 24 | Riskbedömning av plattformens cybersäkerhet | ISO 27001 | 📋 Organisatoriskt — samordna med kommunens informationssäkerhetsansvarig. Klassificering gjord i #14. |
 
 ### Prioritet 4: LÅGT (bra praxis)
 
@@ -606,7 +606,7 @@ Se avsnitt 3.2 ovan.
 | 25 | Överväg self-hosting av Umami | Datalokaliseringsprincip | 📋 Löser #21 automatiskt. Kan köras på Vercel eller egen server. |
 | 26 | Delta i SKR/AI Sweden-nätverk | SKR rekommendation | 📋 ai.se/kraftsamling, skr.se/ai |
 | 27 | Utvärdera svensk/europeisk hosting-alternativ | Suveränitetsprincip | 📋 Alternativ: Safespring, Elastx, City Cloud (svenska moln). |
-| 28 | Upprätta kontinuitetsplan | ISO 27001 / NIS2 | 📋 Dokumentera vad som händer om Supabase/Vercel går ner. |
+| 28 | Upprätta kontinuitetsplan | ISO 27001 / NIS2 | ✅ `docs/kontinuitetsplan.md` — 5 scenarier, exitstrategier per tjänst, backup-strategi, kommunikationsplan. |
 
 ---
 
