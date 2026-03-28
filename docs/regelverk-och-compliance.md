@@ -604,7 +604,7 @@ Se avsnitt 3.2 ovan.
 | # | Åtgärd | Regelverk | Status |
 |---|--------|-----------|--------|
 | 25 | Överväg self-hosting av Umami | Datalokaliseringsprincip | 📋 Löser #21 automatiskt. Kan köras på Vercel eller egen server. |
-| 26 | Delta i SKR/AI Sweden-nätverk | SKR rekommendation | 📋 ai.se/kraftsamling, skr.se/ai |
+| 26 | Delta i SKR/AI Sweden-nätverk | SKR rekommendation | ✅ Katrineholm är partner med AI Sweden. SKR-nätverk kan utökas. |
 | 27 | Utvärdera svensk/europeisk hosting-alternativ | Suveränitetsprincip | 📋 Alternativ: Safespring, Elastx, City Cloud (svenska moln). |
 | 28 | Upprätta kontinuitetsplan | ISO 27001 / NIS2 | ✅ `docs/kontinuitetsplan.md` — 5 scenarier, exitstrategier per tjänst, backup-strategi, kommunikationsplan. |
 
