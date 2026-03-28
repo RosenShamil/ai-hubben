@@ -2,7 +2,7 @@
 
 Katrineholms kommuns centrala plattform för AI-assistenter, statistik, utbildning och resurser.
 
-**Domän:** [aihubben.se](https://aihubben.se)
+**Domän:** [ai-hubben.eu](https://ai-hubben.eu)
 
 ---
 
