@@ -1,6 +1,6 @@
 import { fetchPublishedPosts } from "@/lib/posts";
 
-const SITE_URL = "https://ai-hubben.vercel.app";
+const SITE_URL = "https://ai-hubben.eu";
 
 export async function GET() {
   const posts = await fetchPublishedPosts();

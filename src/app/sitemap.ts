@@ -3,7 +3,7 @@ import { fetchPublishedPosts } from "@/lib/posts";
 import { fetchAssistants } from "@/lib/intric";
 import { COURSES } from "@/lib/education-data";
 
-const BASE_URL = "https://aihubben.se";
+const BASE_URL = "https://ai-hubben.eu";
 
 export const revalidate = 3600;
 

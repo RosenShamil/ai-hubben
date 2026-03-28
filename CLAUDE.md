@@ -5,13 +5,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project
 
 AI-hubben is Katrineholm municipality's PWA platform for AI assistants, statistics, training, and resources.
-Domain: aihubben.se | Hosting: Vercel | Repo: github.com/RosenShamil/ai-hubben
+Domain: ai-hubben.eu | Hosting: Vercel | Repo: github.com/RosenShamil/ai-hubben
 
 ## Commands
 
 ```bash
 pnpm dev          # Start dev server (turbopack)
-pnpm build        # Production build (webpack — turbopack is dev-only)
+pnpm build        # Production build (uses --webpack flag — required by Serwist)
+pnpm start        # Serve production build locally
 pnpm lint         # ESLint
 ```
 
@@ -123,7 +124,6 @@ Data files in `src/lib/` follow `{feature}-{concern}.ts` naming (e.g., `educatio
 
 ## Not Yet Implemented
 
-- **Domain migration** — `kommunai.se` registered but not configured (see `docs/roadmap-todo.md`)
 - **LMS / custom courses** — Concept designed but not built (see `docs/roadmap-todo.md`)
 - **Compliance (organizational)** — 8 of 28 items remain, all requiring organizational action (MCF, archiving, Umami DPA, cybersecurity assessment, network participation). See `docs/regelverk-och-compliance.md`.
 

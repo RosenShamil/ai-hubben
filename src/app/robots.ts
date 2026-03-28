@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/profil", "/logga-in", "/registrera", "/~offline"],
       },
     ],
-    sitemap: "https://aihubben.se/sitemap.xml",
+    sitemap: "https://ai-hubben.eu/sitemap.xml",
   };
 }
