@@ -19,6 +19,7 @@ import {
   UserPlus,
   User,
   LogOut,
+  Shield,
 } from "lucide-react";
 import { useAuth } from "@/components/shared/auth-provider";
 
@@ -43,13 +44,14 @@ const BASE_MORE_LINKS = [
 export function BottomTabBar() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   const moreLinks = [
     ...BASE_MORE_LINKS,
+    ...(isAdmin ? [{ label: "Adminpanel", href: "/admin", icon: Shield }] : []),
     ...(user
       ? [{ label: "Min profil", href: "/profil", icon: User }]
       : [

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -12,6 +12,7 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
+import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 import { BRAND_GRADIENT } from "@/lib/constants";
 import { getModuleById, getQuizQuestionsForModule } from "@/lib/education-data";
 import { saveModuleQuizScore, completeModule, getModuleQuizScore } from "@/lib/education-progress";
@@ -103,11 +104,19 @@ export function ModuleQuiz({
     setShowResult(false);
   };
 
+  const handleSwipeNext = useCallback(() => {
+    if (showExplanation) handleNext();
+  }, [showExplanation, handleNext]);
+
+  const { dragProps } = useSwipeNavigation({
+    onSwipeLeft: handleSwipeNext,
+  });
+
   // Results screen
   if (showResult) {
     return (
       <motion.div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-background"
+        className="fixed inset-0 z-[1000] flex items-center justify-center bg-background"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
@@ -237,10 +246,12 @@ export function ModuleQuiz({
           <AnimatePresence mode="wait">
             <motion.div
               key={question.id}
+              {...dragProps}
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -30 }}
               transition={{ duration: 0.2 }}
+              style={{ touchAction: "pan-y" }}
             >
               <p className="text-[1.0625rem] font-medium leading-[1.5]">
                 {question.question}

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -21,6 +22,7 @@ import {
   getCourseById,
   getModulesByCourse,
   getLessonsByModule,
+  getLessonById,
   getLevelConfig,
   getQuizQuestionsForModule,
 } from "@/lib/education-data";
@@ -40,13 +42,28 @@ const COURSE_ICONS: Record<string, React.ComponentType<{ size?: number; classNam
 };
 
 export function CourseOverview({ courseId }: { courseId: string }) {
+  const searchParams = useSearchParams();
   const [progress, setProgress] = useState<EducationProgress | null>(null);
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
   const [activeQuizModuleId, setActiveQuizModuleId] = useState<string | null>(null);
+  const deepLinkHandled = useRef(false);
 
   useEffect(() => {
     setProgress(getEducationProgress());
   }, []);
+
+  // Auto-open lesson from query params (e.g. ?lektion=lesson-id)
+  useEffect(() => {
+    if (deepLinkHandled.current) return;
+    const lessonParam = searchParams.get("lektion");
+    if (lessonParam) {
+      const lesson = getLessonById(lessonParam);
+      if (lesson) {
+        setActiveLessonId(lessonParam);
+        deepLinkHandled.current = true;
+      }
+    }
+  }, [searchParams]);
 
   // Refresh progress when returning from lesson/quiz
   const refreshProgress = () => setProgress(getEducationProgress());
