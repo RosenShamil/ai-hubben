@@ -4,10 +4,10 @@
 ---
 
 > **Dokumenttyp:** Konsekvensbedömning enligt GDPR Art. 35
-> **Version:** 1.0
-> **Datum:** 2026-03-26
-> **Status:** Utkast — inväntar samråd med dataskyddsombudet
-> **Klassificering:** Intern handling (allmän handling vid begäran)
+> **Version:** 1.1
+> **Datum:** 2026-04-01
+> **Status:** Komplett — överlämnad för DPO-samråd
+> **Klassificering:** Allmän handling
 > **Nästa planerad granskning:** 2026-09-26
 
 ---
@@ -646,7 +646,7 @@ Enligt Art. 36 ska personuppgiftsansvarig samråda med tillsynsmyndigheten (IMY)
 |---|--------|----------|-----------|-----------|
 | 1 | Begränsa standardmodeller till EU/svenska via Intrics säkerhetsklassificering | Digitaliseringsavdelningen | Hög | 2026-04-15 |
 | 2 | Konfigurera automatisk konversationsgallring (90 dagar) | Digitaliseringsavdelningen | Hög | 2026-04-15 |
-| 3 | Skicka DPIA till Sydarkivera för DPO-samråd | Digitaliseringsavdelningen | Hög | 2026-04-01 |
+| 3 | Skicka DPIA till Sydarkivera för DPO-samråd | Digitaliseringsavdelningen | Hög | 2026-04-01 ✅ |
 | 4 | Skapa AI-policy för kommunen (inkl. informationsklassning vid AI-användning) | Digitaliseringsavdelningen + ledning | Hög | 2026-06-01 |
 | 5 | Skapa utbildningsmaterial: "Vad får/får inte matas in i AI" | Digitaliseringsavdelningen | Hög | 2026-06-01 |
 | 6 | Aktivera PII-redigering på känsliga Spaces | Digitaliseringsavdelningen | Medel | 2026-05-01 |
@@ -713,7 +713,8 @@ DPIA:n ska omgranskas vid:
 
 | Version | Datum | Deltagare | Godkänd av | Förändringar |
 |---------|-------|-----------|-----------|-------------|
-| 1.0 | 2026-03-26 | Digitaliseringsavdelningen | ⬜ Inväntar | Första version |
+| 1.0 | 2026-03-26 | Digitaliseringsavdelningen | — | Första version (utkast) |
+| 1.1 | 2026-04-01 | Digitaliseringsavdelningen | ⬜ Inväntar DPO-yttrande | Statusuppdatering, överlämnad för DPO-samråd och allmän handling |
 
 ---
 
