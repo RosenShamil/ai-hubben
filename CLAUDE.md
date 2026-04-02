@@ -79,6 +79,11 @@ Client-side only via `AuthProvider` context (`src/components/shared/auth-provide
 
 Data files in `src/lib/` follow `{feature}-{concern}.ts` naming (e.g., `education-data.ts`, `education-progress.ts`, `knowledge-bank.ts`).
 
+**AI-Akademin data structure:**
+- `education-data.ts` — Levels (nivå 1–3), courses, modules (with quiz question IDs and lesson IDs)
+- `education-data-niva2.ts` — Nivå 2 lesson content, quiz questions (`QUIZ_QUESTIONS_NIVA_2`), and final exam (`FINAL_EXAM_POOL_NIVA_2`)
+- `education-system.ts` — Types and interfaces for the education system
+
 ### Supabase Tables
 
 `profiles`, `user_progress`, `user_favorites`, `admins`, `assistants`, `featured_assistants`, `assistant_overrides`, `posts`, `faqs`, `documents`, `team_members`, `contact_messages`, `contact_entries`, `training_resources`, `training_sessions` (has `status` column: open/closed/full/completed), `training_registrations`, `site_content`, `stats_data`, `education_events`
