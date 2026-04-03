@@ -41,7 +41,7 @@ No test framework is configured. Build uses webpack because Serwist service work
 
 Two layout groups under `src/app/`:
 
-- **`(main)/`** — Public pages: `/`, `/assistenter`, `/assistenter/[id]`, `/statistik`, `/utbildning` (tabbed: utbildning/akademin/begrepp), `/utbildning/akademin/[courseId]`, `/utbildning/akademin/certifikat`, `/dokumentation`, `/nyheter`, `/nyheter/[slug]`, `/faq`, `/om`, `/kontakt`, `/logga-in`, `/registrera`, `/profil`, `/integritetspolicy`, `/tillganglighet`
+- **`(main)/`** — Public pages: `/`, `/assistenter`, `/assistenter/[id]`, `/statistik`, `/utbildning` (tabbed: utbildning/akademin/begrepp/lathundar/workshops), `/utbildning/akademin/[courseId]`, `/utbildning/akademin/certifikat`, `/dokumentation`, `/nyheter`, `/nyheter/[slug]`, `/faq`, `/om`, `/kontakt`, `/logga-in`, `/registrera`, `/profil`, `/integritetspolicy`, `/tillganglighet`
 - **`(admin)/admin/`** — Protected admin CRUD: `/admin/startsida`, `/admin/nyheter`, `/admin/statistik`, `/admin/akademin`, `/admin/assistenter`, `/admin/utbildning`, `/admin/dokument`, `/admin/faq`, `/admin/team`, `/admin/innehall`, `/admin/meddelanden`, `/admin/kontakt`, `/admin/resurser`, `/admin/login`, `/admin/anvandare`
 
 **Redirects:** `/akademin` -> `/utbildning?flik=akademin`, `/kunskapsbank` -> `/utbildning?flik=begrepp`
@@ -84,6 +84,13 @@ Data files in `src/lib/` follow `{feature}-{concern}.ts` naming (e.g., `educatio
 - `education-data-niva2.ts` — Nivå 2 lesson content, quiz questions (`QUIZ_QUESTIONS_NIVA_2`), and final exam (`FINAL_EXAM_POOL_NIVA_2`)
 - `education-system.ts` — Types and interfaces for the education system
 
+**Lathundar (Intric guides):**
+- `guides-data.ts` — Guide definitions, types (`Guide`, `GuideStep`, `GuideImage`, `GuideExample`), progress helpers (localStorage)
+- `src/components/lathundar/` — `guides-page.tsx` (grid + filter), `step-guide.tsx` (step-by-step + images + examples), `guide-pdf.tsx` (print/PDF view)
+- `public/images/lathundar/{guide-id}/` — Real Intric screenshots per guide
+- Tab: `/utbildning?flik=lathundar` (5th tab in utbildning-tabs.tsx)
+- 12 guides planned, #1 "Personlig chatt" complete. See memory for full list and Intric-specific rules.
+
 ### Supabase Tables
 
 `profiles`, `user_progress`, `user_favorites`, `admins`, `assistants`, `featured_assistants`, `assistant_overrides`, `posts`, `faqs`, `documents`, `team_members`, `contact_messages`, `contact_entries`, `training_resources`, `training_sessions` (has `status` column: open/closed/full/completed), `training_registrations`, `site_content`, `stats_data`, `education_events`
@@ -99,7 +106,7 @@ Data files in `src/lib/` follow `{feature}-{concern}.ts` naming (e.g., `educatio
 
 - `src/components/shared/` — Navbar, Footer, BottomTabBar, ChatWidget, ThemeProvider, AuthProvider, SearchModal, etc.
 - `src/components/ui/` — shadcn + Aceternity animated components
-- `src/components/{feature}/` — Feature-specific components (akademin, kunskapsbank, ai-guide, etc.)
+- `src/components/{feature}/` — Feature-specific components (akademin, kunskapsbank, ai-guide, lathundar, etc.)
 
 ### SEO
 

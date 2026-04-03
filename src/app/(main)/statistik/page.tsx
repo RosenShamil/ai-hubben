@@ -29,6 +29,7 @@ export default async function StatistikPage() {
       yearComparison={allStats.yearComparison}
       userRoles={allStats.userRoles}
       platformOverview={allStats.platformOverview}
+      activityHeatmap={allStats.activityHeatmap}
     />
   );
 }

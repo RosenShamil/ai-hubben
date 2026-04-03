@@ -66,6 +66,9 @@ export interface PlatformOverview {
   totalAssistants: number;
 }
 
+// Activity heatmap: 7 days × 24 hours
+export type ActivityHeatmap = number[][];
+
 // ── All stats data interface ──
 
 export interface AllStatsData {
@@ -78,6 +81,7 @@ export interface AllStatsData {
   yearComparison: YearComparison[];
   userRoles: Record<Period, UserRoles[]>;
   platformOverview: PlatformOverview;
+  activityHeatmap: ActivityHeatmap;
 }
 
 // ── Default / fallback data ──
@@ -308,8 +312,12 @@ export async function fetchPlatformOverview(): Promise<PlatformOverview> {
   return fetchStatsValue("platform_overview", DEFAULT_PLATFORM_OVERVIEW);
 }
 
+export async function fetchActivityHeatmap(): Promise<ActivityHeatmap> {
+  return fetchStatsValue<ActivityHeatmap>("activity_heatmap", []);
+}
+
 export async function fetchAllStats(): Promise<AllStatsData> {
-  const [keyMetrics, dailyInteractions, topAssistants, modelUsage, assistantSplit, fileUploads, yearComparison, userRoles, platformOverview] =
+  const [keyMetrics, dailyInteractions, topAssistants, modelUsage, assistantSplit, fileUploads, yearComparison, userRoles, platformOverview, activityHeatmap] =
     await Promise.all([
       fetchKeyMetrics(),
       fetchDailyInteractions(),
@@ -320,6 +328,7 @@ export async function fetchAllStats(): Promise<AllStatsData> {
       fetchYearComparison(),
       fetchUserRoles(),
       fetchPlatformOverview(),
+      fetchActivityHeatmap(),
     ]);
 
   return {
@@ -332,5 +341,6 @@ export async function fetchAllStats(): Promise<AllStatsData> {
     yearComparison,
     userRoles,
     platformOverview,
+    activityHeatmap,
   };
 }

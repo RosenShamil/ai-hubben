@@ -32,6 +32,7 @@ import type {
   YearComparison,
   UserRoles,
   PlatformOverview,
+  ActivityHeatmap,
 } from "@/lib/stats-data";
 import type { TrainingStats } from "@/lib/training-data";
 import { TrendingUp } from "lucide-react";
@@ -118,6 +119,7 @@ interface StatsDashboardProps {
   yearComparison: YearComparison[];
   userRoles: Record<Period, UserRoles[]>;
   platformOverview: PlatformOverview;
+  activityHeatmap: ActivityHeatmap;
 }
 
 /* ── Main dashboard ── */
@@ -133,6 +135,7 @@ export function StatsDashboard({
   yearComparison,
   userRoles,
   platformOverview,
+  activityHeatmap,
 }: StatsDashboardProps) {
   const [period, setPeriod] = useState<Period>("all");
 
@@ -218,14 +221,14 @@ export function StatsDashboard({
           const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
           const findMetric = (label: string) => metrics.find((m) => normalize(m.label) === normalize(label));
           const topRow = [
-            findMetric("Aktiva användare"),
+            findMetric("Användare"),
             findMetric("Skapade assistenter"),
             findMetric("Interaktioner"),
           ];
           const bottomRow = [
-            findMetric("Registrerade användare") ?? { label: "Registrerade användare", formatted: String(platformOverview.registeredUsers), change: 0, changeLabel: "" },
-            findMetric("Skapade spaces") ?? { label: "Skapade spaces", formatted: String(platformOverview.spaces), change: 0, changeLabel: "" },
             findMetric("Utbildade"),
+            findMetric("Aktiveringsgrad"),
+            findMetric("Snitt frågor/användare"),
           ];
           const allCards = [topRow, bottomRow];
 
@@ -498,7 +501,7 @@ export function StatsDashboard({
                 className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
                 style={{ fontFamily: "var(--font-geist-mono), monospace" }}
               >
-                Roller
+                Status
               </p>
               <h2
                 className="mt-3 text-[1.5rem] tracking-[-0.04em] md:text-[2rem]"
@@ -507,7 +510,7 @@ export function StatsDashboard({
                   fontWeight: 400,
                 }}
               >
-                Användarroller
+                Aktivitetsstatus
               </h2>
               <div className="mt-8 h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -739,6 +742,131 @@ export function StatsDashboard({
           </SectionCard>
         </FadeIn>
       </section>
+
+      {/* ─── Activity Heatmap ─── */}
+      {activityHeatmap.length > 0 && (
+        <>
+          <div className="mx-auto max-w-[68.75rem] px-6">
+            <div
+              className="h-px"
+              style={{
+                background:
+                  "linear-gradient(to right, transparent, var(--border) 50%, transparent)",
+              }}
+            />
+          </div>
+          <section className="mx-auto max-w-[68.75rem] px-6 py-12 md:py-16">
+            <FadeIn>
+              <SectionCard>
+                <p
+                  className="text-[0.6875rem] font-medium uppercase tracking-[0.15em] text-muted-foreground"
+                  style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                >
+                  Aktivitet
+                </p>
+                <h2
+                  className="mt-3 text-[1.5rem] tracking-[-0.04em] md:text-[2rem]"
+                  style={{
+                    fontFamily: "var(--font-bodoni), serif",
+                    fontWeight: 400,
+                  }}
+                >
+                  När används AI?
+                </h2>
+                <p className="mt-2 text-[0.8125rem] text-muted-foreground">
+                  Antal frågor per veckodag och timme (2026)
+                </p>
+                <div className="mt-8 overflow-x-auto">
+                  {(() => {
+                    const days = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
+                    const maxVal = Math.max(...activityHeatmap.flat());
+                    const hours = Array.from({ length: 24 }, (_, i) => i);
+                    // Only show 6–22 to reduce noise
+                    const visibleHours = hours.filter((h) => h >= 6 && h <= 22);
+
+                    return (
+                      <div className="inline-block min-w-[600px]">
+                        {/* Hour labels */}
+                        <div className="mb-1 flex">
+                          <div className="w-10 shrink-0" />
+                          {visibleHours.map((h) => (
+                            <div
+                              key={h}
+                              className="flex-1 text-center text-[0.625rem] text-muted-foreground"
+                              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                            >
+                              {h}
+                            </div>
+                          ))}
+                        </div>
+                        {/* Rows */}
+                        {activityHeatmap.map((dayData, dayIdx) => (
+                          <div key={dayIdx} className="mb-0.5 flex items-center">
+                            <div
+                              className="w-10 shrink-0 text-[0.6875rem] text-muted-foreground"
+                              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                            >
+                              {days[dayIdx]}
+                            </div>
+                            {visibleHours.map((h) => {
+                              const val = dayData[h] ?? 0;
+                              const intensity = maxVal > 0 ? val / maxVal : 0;
+                              return (
+                                <div
+                                  key={h}
+                                  className="group relative mx-px flex-1"
+                                  title={`${days[dayIdx]} kl ${h}:00 — ${val} frågor`}
+                                >
+                                  <div
+                                    className="aspect-square w-full rounded-sm transition-transform group-hover:scale-110"
+                                    style={{
+                                      backgroundColor:
+                                        intensity === 0
+                                          ? "var(--border)"
+                                          : `rgba(200, 50, 40, ${0.15 + intensity * 0.85})`,
+                                    }}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ))}
+                        {/* Legend */}
+                        <div className="mt-4 flex items-center justify-end gap-2">
+                          <span
+                            className="text-[0.625rem] text-muted-foreground"
+                            style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                          >
+                            Färre
+                          </span>
+                          {[0, 0.25, 0.5, 0.75, 1].map((level) => (
+                            <div
+                              key={level}
+                              className="h-3 w-3 rounded-sm"
+                              style={{
+                                backgroundColor:
+                                  level === 0
+                                    ? "var(--border)"
+                                    : `rgba(200, 50, 40, ${0.15 + level * 0.85})`,
+                              }}
+                            />
+                          ))}
+                          <span
+                            className="text-[0.625rem] text-muted-foreground"
+                            style={{ fontFamily: "var(--font-geist-mono), monospace" }}
+                          >
+                            Fler
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </SectionCard>
+            </FadeIn>
+          </section>
+        </>
+      )}
 
       {/* ─── Fading divider ─── */}
       <div className="mx-auto max-w-[68.75rem] px-6">
