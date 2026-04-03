@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { revalidateStats } from "@/app/actions";
+import { revalidateStats, syncIntricStats } from "@/app/actions";
 import { Check, Loader2, Plus, Trash2, ExternalLink, RefreshCw } from "lucide-react";
 
 /* ── Types ── */
@@ -95,6 +95,7 @@ function mergeDailyInteractions(a: DateInteractionRow[], b: DateInteractionRow[]
 
 function buildYearComparison(m2025: KeyMetricRow[], m2026: KeyMetricRow[]): YearComparisonRow[] {
   const labelToCategory: Record<string, string> = {
+    "Användare": "Användare",
     "Aktiva användare": "Användare",
     "Interaktioner": "Interaktioner",
     "Skapade assistenter": "Assistenter",
@@ -241,6 +242,7 @@ export default function AdminStatistikPage() {
   // Saving state
   const [savingSection, setSavingSection] = useState<string | null>(null);
   const [unsavedKeys, setUnsavedKeys] = useState<string[]>([]);
+  const [syncing, setSyncing] = useState(false);
 
   const showToast = useCallback(
     (type: "success" | "error", message: string) => {
@@ -433,6 +435,22 @@ export default function AdminStatistikPage() {
     setUnsavedKeys((prev) => prev.filter((k) => k !== "platform_overview"));
   }
 
+  async function triggerSync() {
+    setSyncing(true);
+    try {
+      const result = await syncIntricStats();
+      if (result.success) {
+        showToast("success", "Synk klar! Data uppdaterad från Intric API.");
+        window.location.reload();
+      } else {
+        showToast("error", `Synk misslyckades: ${result.error}`);
+      }
+    } catch {
+      showToast("error", "Kunde inte köra synk");
+    }
+    setSyncing(false);
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12 text-muted-foreground">
@@ -474,7 +492,8 @@ export default function AdminStatistikPage() {
             Statistik
           </h1>
           <p className="mt-2 text-[0.875rem] text-muted-foreground">
-            Redigera statistikdata per period. <strong>Totalt</strong>, <strong>Årsjämförelse</strong> och <strong>Förändring %</strong> beräknas automatiskt från 2025 + 2026.
+            De flesta sektioner synkas automatiskt från Intric API varje natt kl 07:00.
+            <strong> Utbildade</strong> och <strong>Spaces</strong> hanteras manuellt.
           </p>
           {unsavedKeys.length > 0 && (
             <p className="mt-2 text-[0.75rem] text-amber-600 dark:text-amber-400" style={monoStyle}>
@@ -482,16 +501,27 @@ export default function AdminStatistikPage() {
             </p>
           )}
         </div>
-        <a
-          href="/statistik"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-[0.8125rem] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          style={monoStyle}
-        >
-          <ExternalLink size={14} />
-          Visa live
-        </a>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={triggerSync}
+            disabled={syncing}
+            className="flex items-center gap-1.5 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-[0.8125rem] font-medium text-blue-700 transition-colors hover:bg-blue-100 disabled:opacity-50 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300 dark:hover:bg-blue-900"
+            style={monoStyle}
+          >
+            <RefreshCw size={14} className={syncing ? "animate-spin" : ""} />
+            {syncing ? "Synkar..." : "Synka från Intric"}
+          </button>
+          <a
+            href="/statistik"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-[0.8125rem] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            style={monoStyle}
+          >
+            <ExternalLink size={14} />
+            Visa live
+          </a>
+        </div>
       </div>
 
       {/* Table of contents */}
@@ -508,7 +538,7 @@ export default function AdminStatistikPage() {
             ["sec-metrics-2026", "Nyckeltal 2026"],
             ["sec-daily", "Dagliga interaktioner"],
             ["sec-platform", "Plattform"],
-            ["sec-roles", "Användarroller"],
+            ["sec-roles", "Aktivitetsstatus"],
             ["sec-top", "Topp assistenter"],
             ["sec-models", "AI-modeller"],
             ["sec-split", "Personliga vs anpassade"],
@@ -530,7 +560,10 @@ export default function AdminStatistikPage() {
       <div className="space-y-10">
         {/* ── Key Metrics 2025 ── */}
         <section id="sec-metrics-2025" className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
-          <SectionHeader label="Nyckeltal" title="2025" />
+          <SectionHeader label="Nyckeltal" title="2025" auto />
+          <p className="mb-4 text-[0.75rem] text-amber-600 dark:text-amber-400" style={monoStyle}>
+            Synkas automatiskt utom &quot;Utbildade&quot; — manuella ändringar i andra fält skrivs över vid nästa synk.
+          </p>
           <KeyMetricsEditor rows={metrics2025} onChange={setMetrics2025} />
           <div className="mt-4 flex justify-end">
             <SaveButton
@@ -542,7 +575,10 @@ export default function AdminStatistikPage() {
 
         {/* ── Key Metrics 2026 ── */}
         <section id="sec-metrics-2026" className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
-          <SectionHeader label="Nyckeltal" title="2026" />
+          <SectionHeader label="Nyckeltal" title="2026" auto />
+          <p className="mb-4 text-[0.75rem] text-amber-600 dark:text-amber-400" style={monoStyle}>
+            Synkas automatiskt utom &quot;Utbildade&quot; — manuella ändringar i andra fält skrivs över vid nästa synk.
+          </p>
           <KeyMetricsEditor rows={metrics2026} onChange={setMetrics2026} />
           <div className="mt-4 flex justify-end">
             <SaveButton
@@ -558,7 +594,7 @@ export default function AdminStatistikPage() {
           ["daily_interactions_2026", "Dagliga interaktioner 2026", dailyInteractions2026, setDailyInteractions2026],
         ] as const).map(([key, title, data, setData], i) => (
           <section key={key} id={i === 0 ? "sec-daily" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
-            <SectionHeader label="Diagram" title={title} />
+            <SectionHeader label="Diagram" title={title} auto />
             <DateInteractionsEditor rows={data as DateInteractionRow[]} onChange={setData as (rows: DateInteractionRow[]) => void} />
             <div className="mt-4 flex justify-end">
               <SaveButton saving={savingSection === key} onClick={() => saveWithSync(key, data)} />
@@ -568,7 +604,10 @@ export default function AdminStatistikPage() {
 
         {/* ── Platform Overview ── */}
         <section id="sec-platform" className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
-          <SectionHeader label="Plattform" title="Plattformsöversikt" />
+          <SectionHeader label="Plattform" title="Plattformsöversikt" auto />
+          <p className="mb-4 text-[0.75rem] text-amber-600 dark:text-amber-400" style={monoStyle}>
+            Synkas automatiskt utom &quot;Spaces&quot; — det fältet hanteras manuellt.
+          </p>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {(["registeredUsers", "activeUsers", "spaces", "totalAssistants"] as const).map((key) => {
               const labels = { registeredUsers: "Registrerade", activeUsers: "Aktiva", spaces: "Spaces", totalAssistants: "Assistenter" };
@@ -587,11 +626,11 @@ export default function AdminStatistikPage() {
 
         {/* ── User Roles ── */}
         {([
-          ["user_roles_2025", "Användarroller 2025", userRoles2025, setUserRoles2025],
-          ["user_roles_2026", "Användarroller 2026", userRoles2026, setUserRoles2026],
+          ["user_roles_2025", "Aktivitetsstatus 2025", userRoles2025, setUserRoles2025],
+          ["user_roles_2026", "Aktivitetsstatus 2026", userRoles2026, setUserRoles2026],
         ] as const).map(([key, title, data, setData], i) => (
           <section key={key} id={i === 0 ? "sec-roles" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
-            <SectionHeader label="Diagram" title={title} />
+            <SectionHeader label="Diagram" title={title} auto />
             <NameValueEditor rows={data as NameValueRow[]} onChange={setData as (rows: NameValueRow[]) => void} nameLabel="Roll" valueLabel="Antal" />
             <div className="mt-4 flex justify-end">
               <SaveButton saving={savingSection === key} onClick={() => saveWithSync(key, data)} />
@@ -605,7 +644,7 @@ export default function AdminStatistikPage() {
           ["top_assistants_2026", "Topp assistenter 2026", topAssistants2026, setTopAssistants2026],
         ] as const).map(([key, title, data, setData], i) => (
           <section key={key} id={i === 0 ? "sec-top" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
-            <SectionHeader label="Diagram" title={title} />
+            <SectionHeader label="Diagram" title={title} auto />
             <NameMessagesEditor rows={data as NameMessagesRow[]} onChange={setData as (rows: NameMessagesRow[]) => void} />
             <div className="mt-4 flex justify-end">
               <SaveButton saving={savingSection === key} onClick={() => saveWithSync(key, data)} />
@@ -619,7 +658,7 @@ export default function AdminStatistikPage() {
           ["model_usage_2026", "AI-modeller 2026", modelUsage2026, setModelUsage2026],
         ] as const).map(([key, title, data, setData], i) => (
           <section key={key} id={i === 0 ? "sec-models" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
-            <SectionHeader label="Diagram" title={title} />
+            <SectionHeader label="Diagram" title={title} auto />
             <NameValueEditor rows={data as NameValueRow[]} onChange={setData as (rows: NameValueRow[]) => void} nameLabel="Modell" valueLabel="Antal" />
             <div className="mt-4 flex justify-end">
               <SaveButton saving={savingSection === key} onClick={() => saveWithSync(key, data)} />
@@ -633,7 +672,7 @@ export default function AdminStatistikPage() {
           ["assistant_split_2026", "Personliga vs anpassade 2026", assistantSplit2026, setAssistantSplit2026],
         ] as const).map(([key, title, data, setData], i) => (
           <section key={key} id={i === 0 ? "sec-split" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
-            <SectionHeader label="Diagram" title={title} />
+            <SectionHeader label="Diagram" title={title} auto />
             <NameValueEditor rows={data as NameValueRow[]} onChange={setData as (rows: NameValueRow[]) => void} nameLabel="Typ" valueLabel="Antal" />
             <div className="mt-4 flex justify-end">
               <SaveButton saving={savingSection === key} onClick={() => saveWithSync(key, data)} />
@@ -647,7 +686,7 @@ export default function AdminStatistikPage() {
           ["file_uploads_2026", "Filuppladdningar 2026", fileUploads2026, setFileUploads2026],
         ] as const).map(([key, title, data, setData], i) => (
           <section key={key} id={i === 0 ? "sec-files" : undefined} className="scroll-mt-20 rounded-lg border border-border bg-card p-6">
-            <SectionHeader label="Diagram" title={title} />
+            <SectionHeader label="Diagram" title={title} auto />
             <FileUploadsEditor rows={data as FileUploadRow[]} onChange={setData as (rows: FileUploadRow[]) => void} />
             <div className="mt-4 flex justify-end">
               <SaveButton saving={savingSection === key} onClick={() => saveWithSync(key, data)} />

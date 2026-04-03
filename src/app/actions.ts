@@ -7,6 +7,25 @@ export async function revalidateStats() {
   revalidatePath("/statistik");
 }
 
+export async function syncIntricStats(): Promise<{ success: boolean; error?: string }> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ? "http://localhost:3000" : "http://localhost:3000";
+    const secret = process.env.CRON_SECRET ?? "";
+    const url = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}/api/cron/sync-stats?secret=${secret}`
+      : `http://localhost:3000/api/cron/sync-stats?secret=${secret}`;
+    const res = await fetch(url, { cache: "no-store" });
+    const data = await res.json();
+    if (data.success) {
+      revalidatePath("/statistik");
+      return { success: true };
+    }
+    return { success: false, error: data.error ?? "Okänt fel" };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : "Okänt fel" };
+  }
+}
+
 export async function deleteUserAccount(userId: string) {
   if (!userId) throw new Error("Inget användar-ID angavs");
 
