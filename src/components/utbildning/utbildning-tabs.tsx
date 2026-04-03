@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { GraduationCap, BookOpen, Calendar, TreePine } from "lucide-react";
+import { GraduationCap, BookOpen, Calendar, TreePine, FileText } from "lucide-react";
 import { FadeIn } from "@/components/shared/fade-in";
 import { BRAND_GRADIENT } from "@/lib/constants";
 import { DailyByteCard } from "@/components/kunskapsbank/daily-byte";
@@ -10,11 +10,13 @@ import { AcademyPage } from "@/components/akademin/academy-page";
 import { KunskapsbankPage } from "@/components/kunskapsbank/kunskapsbank-page";
 import { WorkshopsSection } from "./workshops-section";
 import { MyJourney } from "@/components/kunskapsbank/my-journey";
+import { GuidesPage } from "@/components/lathundar/guides-page";
 import type { TrainingSession } from "@/lib/training-resources";
 
 const TABS = [
   { key: "akademin", label: "Akademin", icon: GraduationCap },
   { key: "begrepp", label: "Begrepp", icon: BookOpen },
+  { key: "lathundar", label: "Lathundar", icon: FileText },
   { key: "workshops", label: "Workshops", icon: Calendar },
   { key: "resa", label: "Min resa", icon: TreePine },
 ] as const;
@@ -97,6 +99,7 @@ export function UtbildningTabs({ allSessions, pastTraining }: UtbildningTabsProp
         <div className="mt-6">
           {activeTab === "akademin" && <AcademyPage embedded />}
           {activeTab === "begrepp" && <KunskapsbankPage embedded />}
+          {activeTab === "lathundar" && <GuidesPage embedded />}
           {activeTab === "workshops" && (
             <WorkshopsSection allSessions={allSessions} pastTraining={pastTraining} />
           )}

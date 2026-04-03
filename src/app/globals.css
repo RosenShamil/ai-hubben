@@ -168,3 +168,14 @@
     @apply font-sans;
   }
 }
+
+/* Print styles for lathundar PDF export */
+@media print {
+  body { background: white !important; color: black !important; }
+  nav, footer, .print\\:hidden { display: none !important; }
+  .print\\:bg-white { background: white !important; }
+  .print\\:border-none { border: none !important; }
+  .print\\:rounded-none { border-radius: 0 !important; }
+  .print\\:text-black { color: black !important; }
+  .print\\:break-inside-avoid { break-inside: avoid; }
+}
